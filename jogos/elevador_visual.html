@@ -4,63 +4,134 @@
     <meta charset="UTF-8">
     <title>Elevador Visual</title>
     <style>
-        body { background: #121212; color: #FFF; font-family: sans-serif; overflow: hidden; margin: 0; }
-        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
-        .screen.active { display: flex; }
+        :root { --bg-color: #121212; --surface-color: #1E1E1E; --primary-color: #00E5FF; --text-color: #E0E0E0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
         
-        .target { font-size: 5rem; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); display: none; }
-        #top-target { top: 5%; color: #00E5FF; }
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .instructions-box { background: #2c2c2c; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO */
+        .target { font-size: 6rem; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); display: none; cursor: pointer; }
+        #top-target { top: 5%; color: #00E676; }
         #bot-target { bottom: 5%; color: #FFEA00; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
     </style>
 </head>
 <body>
+
     <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
         <h1>uarr Elevador Visual</h1>
-        <p>Olhe para cima e para baixo alternadamente.</p>
-        <button style="padding:15px; font-size:1.2rem; cursor:pointer;" onclick="startGame()">Iniciar</button>
-        <br><br>
-        <button style="padding:10px; cursor:pointer;" onclick="window.location.href='../index.html'">Voltar</button>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Alterne o olhar entre o topo e a base da tela. Leia a letra em voz alta.</p>
+            <p><strong>Terapeuta:</strong> Pressione <strong>ESPAÇO</strong> cada vez que o paciente ler a letra para trocar.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Tipo de Estímulo:</label>
+            <select id="cfg-type"><option value="letters">Letras</option><option value="numbers">Números</option><option value="shapes">Formas</option></select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
     </div>
 
     <div id="screen-game" class="screen">
         <div id="top-target" class="target">A</div>
         <div id="bot-target" class="target">B</div>
-        <div style="position:fixed; top:50%; color:#555;">ESPAÇO: Alternar | ESC: Sair</div>
+        <div style="position:absolute; top:50%; transform:translateY(-50%); color:#555; font-size:2rem;">Ciclos: <span id="hud-cycles" style="color:white">0</span></div>
+        <div style="position:fixed; bottom:10px; color:#555;">ESPAÇO: Alternar | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Histórico</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
     </div>
 
     <script>
-        let isTop = true;
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const state = { patient: "Visitante", cycles: 0, isTop: true, type: 'letters' };
+        const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const SHAPES = ["●", "■", "▲", "★"];
+
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('patient-display').innerText = "Paciente: " + state.patient; };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
 
         function startGame() {
-            document.getElementById('screen-home').classList.remove('active');
-            document.getElementById('screen-game').classList.add('active');
+            state.cycles = 0; state.isTop = true;
+            state.type = document.getElementById('cfg-type').value;
             updateTargets();
+            showScreen('screen-game');
+        }
+
+        function getChar() {
+            if(state.type === 'letters') return CHARS[Math.floor(Math.random() * CHARS.length)];
+            if(state.type === 'numbers') return Math.floor(Math.random() * 9) + 1;
+            return SHAPES[Math.floor(Math.random() * SHAPES.length)];
         }
 
         function updateTargets() {
-            const char = chars[Math.floor(Math.random() * chars.length)];
+            const char = getChar();
             const top = document.getElementById('top-target');
             const bot = document.getElementById('bot-target');
             
-            if(isTop) {
-                top.innerText = char;
-                top.style.display = 'block';
-                bot.style.display = 'none';
+            if(state.isTop) {
+                top.innerText = char; top.style.display = 'block'; bot.style.display = 'none';
             } else {
-                bot.innerText = char;
-                bot.style.display = 'block';
-                top.style.display = 'none';
+                bot.innerText = char; bot.style.display = 'block'; top.style.display = 'none';
             }
+            document.getElementById('hud-cycles').innerText = state.cycles;
         }
 
         window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
             if(e.code === 'Space') {
-                isTop = !isTop;
+                state.isTop = !state.isTop;
+                state.cycles++;
                 updateTargets();
             }
-            if(e.code === 'Escape') window.location.href='../index.html';
+            if(e.code === 'Escape') endGame();
         });
+
+        function endGame() {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_elevador_visual_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, cycles: state.cycles });
+            localStorage.setItem('neuro_opt_elevador_visual_history', JSON.stringify(h));
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_elevador_visual_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Ciclos Realizados</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.cycles}</td></tr>`).join('')}</table>`;
+        }
     </script>
 </body>
 </html>
