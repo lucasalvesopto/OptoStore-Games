@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>O Farol Invisível</title>
+    <style>
+        body { background: #000; color: #FFF; font-family: sans-serif; overflow: hidden; margin: 0; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        #target { position: absolute; width: 30px; height: 30px; background: yellow; border-radius: 50%; box-shadow: 0 0 20px yellow; display: none; }
+        .btn { padding: 15px 30px; font-size: 1.2rem; cursor: pointer; background: #FF9800; border: none; border-radius: 5px; color: black; margin-top:20px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>Lighthouse O Farol</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <p>Aponte para onde a luz apareceu.</p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" style="background:#333; color:white" onclick="window.location.href='../index.html'">Sair</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="target"></div>
+        <div style="position:fixed; bottom:10px; color:#555;">ENTER: Revelar | Espaço: Novo Alvo</div>
+    </div>
+
+    <script>
+        const state = { isRevealed: false };
+        window.onload = () => { document.getElementById('p-name').innerText = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            spawnTarget();
+        }
+
+        function spawnTarget() {
+            const t = document.getElementById('target');
+            const x = Math.random() * (window.innerWidth - 100) + 50;
+            const y = Math.random() * (window.innerHeight - 100) + 50;
+            
+            t.style.left = x + 'px';
+            t.style.top = y + 'px';
+            t.style.display = 'block';
+            state.isRevealed = true;
+            
+            // Flash de 1s, depois apaga
+            setTimeout(() => {
+                t.style.display = 'none';
+                state.isRevealed = false;
+            }, 1000);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Enter') {
+                // Revela para conferir
+                document.getElementById('target').style.display = 'block';
+            }
+            if(e.code === 'Space') {
+                spawnTarget();
+            }
+            if(e.code === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

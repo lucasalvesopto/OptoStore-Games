@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>O Elevador Dimensional</title>
+    <style>
+        :root { --bg-color: #FFF; --text-color: #333; --primary-color: #FF5722; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; text-align: center; }
+        .instructions-box { background: #333; color: #eee; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #333; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #555; cursor: pointer; }
+
+        /* JOGO */
+        #cube-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; font-size: 10rem; }
+        
+        .anaglyph-obj {
+            position: absolute; font-weight: bold;
+            transition: transform 0.1s; /* Salto rápido, mas não instantâneo */
+        }
+        
+        /* Cores de Mistura Multiply para fundo branco */
+        .layer-red { color: red; mix-blend-mode: multiply; }
+        .layer-cyan { color: cyan; mix-blend-mode: multiply; }
+
+        #hud { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; text-align: right; }
+        .highlight { color: var(--primary-color); font-weight: bold; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #eee; color: #000; border: 1px solid #aaa; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #eee; }
+        th, td { padding: 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>↕️ O Elevador Dimensional</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        <div class="instructions-box">
+            <p><strong>⚠️ Requer Óculos Vermelho/Azul.</strong></p>
+            <p><strong>Paciente:</strong> O objeto vai pular para FRENTE e para TRÁS. Junte a imagem o mais rápido possível e avise "JÁ".</p>
+            <p><strong>Terapeuta:</strong> Aperte <strong>ESPAÇO</strong> a cada aviso do paciente para registrar o ciclo.</p>
+        </div>
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Nível de Separação (Prisma):</label>
+            <select id="cfg-prism">
+                <option value="10">Baixo (10px)</option>
+                <option value="30">Médio (30px)</option>
+                <option value="60">Alto (60px)</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Objeto:</label>
+            <select id="cfg-obj"><option value="📦">Cubo</option><option value="🐱">Gato</option><option value="★">Estrela</option></select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="hud">
+            Tempo: <span id="hud-time">00:00</span><br>
+            Ciclos: <span id="hud-cycles" class="highlight">0</span>
+        </div>
+        <div style="position:absolute; top:20px; left:20px; font-weight:bold; color:#555;">Estado: <span id="hud-state">---</span></div>
+        
+        <div id="cube-container">
+            <div id="l-red" class="anaglyph-obj layer-red">📦</div>
+            <div id="l-cyan" class="anaglyph-obj layer-cyan">📦</div>
+        </div>
+        
+        <div style="position:fixed; bottom:10px; color:#555;">ESPAÇO: Confirmar Fusão | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { patient: "Visitante", cycles: 0, currentState: 'base', startTime: 0, timerInterval: null, isRunning: false };
+        const settings = { prism: 30, obj: '📦' };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.prism = parseInt(document.getElementById('cfg-prism').value);
+            settings.obj = document.getElementById('cfg-obj').value;
+            
+            document.getElementById('l-red').innerText = settings.obj;
+            document.getElementById('l-cyan').innerText = settings.obj;
+            
+            state.cycles = 0;
+            state.currentState = 'base'; // Base (Zero) -> Frente -> Base -> Fundo -> Base...
+            state.isRunning = true;
+            state.startTime = Date.now();
+            
+            updateVisuals();
+            showScreen('screen-game');
+            
+            state.timerInterval = setInterval(() => {
+                const d = Math.floor((Date.now() - state.startTime)/1000);
+                const m = Math.floor(d/60).toString().padStart(2,'0');
+                const s = (d%60).toString().padStart(2,'0');
+                document.getElementById('hud-time').innerText = `${m}:${s}`;
+            }, 1000);
+            
+            // Inicia primeiro salto
+            setTimeout(jump, 1000);
+        }
+
+        function jump() {
+            if(!state.isRunning) return;
+            // Alterna: Frente (Convergence) <-> Fundo (Divergence)
+            if(state.currentState === 'front') state.currentState = 'back';
+            else state.currentState = 'front';
+            updateVisuals();
+        }
+
+        function updateVisuals() {
+            const red = document.getElementById('l-red');
+            const cyan = document.getElementById('l-cyan');
+            const p = settings.prism;
+            
+            if(state.currentState === 'front') {
+                // Frente (Cruzado): Red Esq, Cyan Dir (Olho esquerdo vê imagem da direita?)
+                // Anaglifo: Red lens (Left eye) sees Cyan ink (Dark). Cyan lens (Right eye) sees Red ink.
+                // Para cruzar (convergência, imagem na frente): Imagem do olho esquerdo (Red lens -> vê Cyan ink) deve estar à DIREITA.
+                // Imagem do olho direito (Cyan lens -> vê Red ink) deve estar à ESQUERDA.
+                
+                // Red Ink (visto pelo olho Direito/Cyan): Esquerda (-X)
+                // Cyan Ink (visto pelo olho Esquerdo/Red): Direita (+X)
+                red.style.transform = `translateX(-${p}px)`;
+                cyan.style.transform = `translateX(${p}px)`;
+                document.getElementById('hud-state').innerText = "FRENTE (Convergência)";
+            } else {
+                // Fundo (Descruzado): 
+                // Red Ink (visto pelo OD): Direita (+X)
+                // Cyan Ink (visto pelo OE): Esquerda (-X)
+                red.style.transform = `translateX(${p}px)`;
+                cyan.style.transform = `translateX(-${p}px)`;
+                document.getElementById('hud-state').innerText = "FUNDO (Divergência)";
+            }
+            document.getElementById('hud-cycles').innerText = state.cycles;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!state.isRunning) return;
+            if(e.code === 'Space' || e.code === 'Enter') {
+                state.cycles++;
+                jump(); // Imediatamente pula para o próximo estado
+            }
+            if(e.code === 'Escape') endGame();
+        });
+
+        function endGame() {
+            state.isRunning = false; clearInterval(state.timerInterval);
+            const durationMin = (Date.now() - state.startTime)/1000/60;
+            const cpm = state.cycles / durationMin || 0;
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_elevador_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, prism: settings.prism, cpm: cpm.toFixed(1) });
+            localStorage.setItem('neuro_opt_elevador_history', JSON.stringify(h));
+            
+            alert(`Sessão Finalizada!\nCPM: ${cpm.toFixed(1)}`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_elevador_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Prisma (px)</th><th>CPM</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.prism}</td><td><strong>${i.cpm}</strong></td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

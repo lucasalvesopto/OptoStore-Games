@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Nevoeiro - Contraste</title>
+    <style>
+        :root { --bg-color: #808080; --text-color: #FFF; --highlight: #00E676; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; transition: background 0.3s; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; background: inherit; }
+        .screen.active { display: flex; z-index: 2; }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 3px black; }
+        .instructions-box { background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--highlight); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--highlight); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #FFF; color: #FFF; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #FFF; padding: 10px 20px; color: #DDD; cursor: pointer; }
+
+        /* JOGO */
+        #game-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; height: 100%; }
+        .quadrant { display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        
+        #target {
+            width: 150px; height: 150px; border-radius: 50%;
+            /* Gabor Patch Simulado */
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(128,128,128,0) 70%);
+            opacity: 1; transition: opacity 0.5s;
+        }
+
+        #hud { position: absolute; top: 10px; right: 10px; font-size: 1.2rem; text-shadow: 1px 1px 2px black; }
+        .feedback { position: absolute; font-size: 5rem; font-weight: bold; opacity: 0; transition: opacity 0.5s; text-shadow: 2px 2px 5px black; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: rgba(0,0,0,0.5); color: white; border: 1px solid #777; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: rgba(0,0,0,0.8); }
+        th, td { padding: 12px; border-bottom: 1px solid #555; text-align: left; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>im🌫️ O Nevoeiro</h1>
+        <div id="patient-display" style="color:var(--highlight); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Aponte onde está o círculo (Cima, Baixo, Esquerda ou Direita). Ele vai sumindo!</p>
+            <p><strong>Terapeuta:</strong> Use as <strong>SETAS</strong> para registrar a resposta.</p>
+        </div>
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Fundo Base:</label>
+            <select id="cfg-bg">
+                <option value="gray">Cinza Médio (Padrão)</option>
+                <option value="white">Branco (Alto Brilho)</option>
+                <option value="black">Preto (Escotópico)</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="hud">Nível: <span id="hud-level">1</span> | Opacidade: <span id="hud-opac">100%</span></div>
+        <div id="game-grid">
+            <div class="quadrant" id="q-tl"></div> <div class="quadrant" id="q-tr"></div>
+            <div class="quadrant" id="q-bl"></div> <div class="quadrant" id="q-br"></div>
+        </div>
+        <div id="target"></div>
+        <div id="fb-msg" class="feedback">✔</div>
+        <div style="position:fixed; bottom:10px; left:10px; opacity:0.7;">Setas: Responder | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { patient: "Visitante", level: 1, opacity: 1.0, currentPos: null, minOpacityReached: 1.0, rounds: 0 };
+        const settings = { bg: 'gray' };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.bg = document.getElementById('cfg-bg').value;
+            const root = document.documentElement;
+            if(settings.bg === 'gray') root.style.setProperty('--bg-color', '#808080');
+            if(settings.bg === 'white') root.style.setProperty('--bg-color', '#E0E0E0'); // Não 100% branco para ver alvo
+            if(settings.bg === 'black') root.style.setProperty('--bg-color', '#202020');
+
+            state.level = 1; state.opacity = 0.5; state.minOpacityReached = 0.5; state.rounds = 0;
+            
+            showScreen('screen-game');
+            nextRound();
+        }
+
+        function nextRound() {
+            const positions = ['tl', 'tr', 'bl', 'br']; // TopLeft, TopRight...
+            // Remove alvo antigo
+            const target = document.getElementById('target');
+            if(target.parentElement) target.parentElement.removeChild(target);
+
+            // Escolhe nova posição
+            state.currentPos = positions[Math.floor(Math.random() * 4)];
+            const container = document.getElementById('q-' + state.currentPos);
+            container.appendChild(target);
+
+            // Ajusta visual
+            target.style.opacity = state.opacity;
+            
+            // Atualiza HUD
+            document.getElementById('hud-level').innerText = state.level;
+            document.getElementById('hud-opac').innerText = (state.opacity*100).toFixed(1) + '%';
+        }
+
+        function handleInput(dir) {
+            // Mapeia setas para quadrantes
+            // Logica simplificada: 
+            // Cima = tl ou tr? Depende. Vamos assumir:
+            // Esquerda = tl ou bl. Direita = tr ou br. Cima = tl ou tr. Baixo = bl ou br.
+            // Para ser preciso, precisamos mapear Exatamente 4 teclas para 4 quadrantes?
+            // Melhor: O prompt pediu Cima/Baixo/Esq/Dir.
+            // Vamos mapear:
+            // ArrowUp -> tl e tr são "Cima". Se o alvo está em tl e user aperta Up -> Acerto (generoso) ou precisa de tecla exata?
+            // Vamos usar lógica estrita de direção do quadrante em relação ao centro.
+            // tl = Cima E Esquerda.
+            
+            // Vamos simplificar para o terapeuta:
+            // 7 (Home) = TL, 9 (PgUp) = TR, 1 (End) = BL, 3 (PgDn) = BR? NumPad é bom.
+            // Mas o prompt pediu Setas.
+            
+            // Vamos usar um sistema de confirmação visual:
+            // O terapeuta vê onde está. Se o paciente acertar, aperta ESPAÇO. Se errar, aperta E.
+            // Isso é mais flexível. Mas o prompt diz "Terapeuta usa as setas correspondentes".
+            
+            // Ok, vamos tentar interpretar a intenção:
+            // Se alvo está em TL: Cima ou Esquerda contam como acerto?
+            // Vamos fazer assim: Se está em TL, aceita ArrowUp ou ArrowLeft.
+            
+            let isCorrect = false;
+            
+            if (state.currentPos === 'tl' && (dir === 'ArrowUp' || dir === 'ArrowLeft')) isCorrect = true;
+            if (state.currentPos === 'tr' && (dir === 'ArrowUp' || dir === 'ArrowRight')) isCorrect = true;
+            if (state.currentPos === 'bl' && (dir === 'ArrowDown' || dir === 'ArrowLeft')) isCorrect = true;
+            if (state.currentPos === 'br' && (dir === 'ArrowDown' || dir === 'ArrowRight')) isCorrect = true;
+
+            if (isCorrect) {
+                showFeedback("✔", "green");
+                state.level++;
+                state.opacity = Math.max(0.01, state.opacity * 0.8); // Reduz 20%
+                if(state.opacity < state.minOpacityReached) state.minOpacityReached = state.opacity;
+            } else {
+                showFeedback("❌", "red");
+                state.level = Math.max(1, state.level - 1);
+                state.opacity = Math.min(1.0, state.opacity * 1.5); // Aumenta contraste
+            }
+            
+            state.rounds++;
+            setTimeout(nextRound, 800);
+        }
+
+        function showFeedback(txt, color) {
+            const el = document.getElementById('fb-msg');
+            el.innerText = txt; el.style.color = color; el.style.opacity = 1;
+            setTimeout(() => el.style.opacity = 0, 500);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
+            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) handleInput(e.key);
+            if(e.key === 'Escape') endGame();
+        });
+
+        function endGame() {
+            const bestContrast = (state.minOpacityReached * 100).toFixed(1);
+            let h = JSON.parse(localStorage.getItem('neuro_opt_nevoeiro_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, bg: settings.bg, bestContrast: bestContrast + '%' });
+            localStorage.setItem('neuro_opt_nevoeiro_history', JSON.stringify(h));
+            alert(`Menor Contraste: ${bestContrast}%`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_nevoeiro_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Fundo</th><th>Menor Opacidade</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.bg}</td><td>${i.bestContrast}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

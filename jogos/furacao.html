@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Olho do Furacão</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+        .screen { display: none; width: 100vw; height: 100vh; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        /* O Fundo Caótico */
+        #background-noise {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: repeating-conic-gradient(#000 0% 5%, #333 5% 10%);
+            animation: spin 5s linear infinite;
+            z-index: 0;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* O Alvo Estático */
+        #target {
+            position: absolute; z-index: 10;
+            width: 30px; height: 30px; background: red; border-radius: 50%;
+            border: 3px solid white; box-shadow: 0 0 20px black;
+        }
+
+        #hud { position: absolute; top: 10px; left: 10px; z-index: 20; color: white; background: rgba(0,0,0,0.7); padding: 10px; }
+        .btn { padding: 10px; cursor: pointer; z-index: 20; position: relative; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active" style="flex-direction:column; background:#222; color:white;">
+        <h1>🌪️ O Olho do Furacão</h1>
+        <p>Mantenha o olho no ponto vermelho. Ignore o fundo!</p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <br><br>
+        <button class="btn" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="background-noise"></div>
+        <div id="target"></div>
+        <div id="hud">Perdas de Fixação: <span id="errors">0</span> | Espaço: Registrar Erro | Setas: Velocidade</div>
+    </div>
+
+    <script>
+        let speed = 5;
+        let errors = 0;
+        
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            errors = 0; updateHUD();
+        }
+
+        function updateHUD() {
+            document.getElementById('errors').innerText = errors;
+            document.getElementById('background-noise').style.animationDuration = (11 - speed) + 's';
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') { errors++; updateHUD(); alert("Perda registrada!"); }
+            if(e.code === 'ArrowUp') { speed = Math.min(10, speed+1); updateHUD(); }
+            if(e.code === 'ArrowDown') { speed = Math.max(1, speed-1); updateHUD(); }
+            if(e.code === 'Escape') {
+                // Save logic here if needed
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
+</body>
+</html>

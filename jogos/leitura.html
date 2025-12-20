@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>A Janela Mágica</title>
+    <style>
+        :root { --bg-color: #121212; --text-dim: #444; --text-active: #FFF; --primary: #00E676; }
+        body { background: var(--bg-color); color: var(--text-dim); font-family: 'Georgia', serif; overflow: hidden; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+        .screen.active { display: flex; }
+        
+        #text-container { width: 80%; font-size: 2.5rem; line-height: 1.6; text-align: left; height: 60vh; overflow: hidden; position: relative; }
+        .word { color: var(--text-dim); padding: 0 5px; transition: color 0.1s; }
+        .word.active { color: var(--text-active); background: #333; border-radius: 5px; }
+        
+        .btn { padding: 10px 20px; font-size: 1.2rem; background: var(--primary); border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        select, textarea { padding: 10px; width: 300px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1 style="color:var(--primary)">📖 A Janela Mágica</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <textarea id="cfg-text" rows="4">O sol estava brilhando forte no céu azul. Os pássaros cantavam alegremente nas árvores altas da floresta encantada.</textarea>
+        <br>
+        <label style="color:#AAA">Velocidade (PPM): <span id="val-ppm">120</span></label>
+        <input type="range" id="cfg-ppm" min="60" max="400" value="120" oninput="document.getElementById('val-ppm').innerText=this.value">
+        <br>
+        <button class="btn" onclick="startGame()">Ler Agora</button>
+        <button class="btn" style="background:#555; color:white" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="position:fixed; top:10px; color:#888;">PPM: <span id="hud-ppm">120</span> | Espaço: Pausa | Setas: Ajustar Velocidade</div>
+        <div id="text-container"></div>
+        <div style="position:fixed; bottom:10px; color:#555;">ESC: Sair</div>
+    </div>
+
+    <script>
+        const state = { patient: "", words: [], currentIdx: 0, isRunning: false, interval: null, ppm: 120 };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            state.ppm = parseInt(document.getElementById('cfg-ppm').value);
+            const rawText = document.getElementById('cfg-text').value;
+            state.words = rawText.split(/\s+/);
+            state.currentIdx = 0;
+            
+            const container = document.getElementById('text-container');
+            container.innerHTML = state.words.map((w, i) => `<span id="w-${i}" class="word">${w}</span>`).join(' ');
+            
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            
+            startLoop();
+        }
+
+        function startLoop() {
+            state.isRunning = true;
+            clearInterval(state.interval);
+            const ms = 60000 / state.ppm;
+            state.interval = setInterval(nextWord, ms);
+            document.getElementById('hud-ppm').innerText = state.ppm;
+        }
+
+        function nextWord() {
+            if(state.currentIdx >= state.words.length) { pauseGame(); return; }
+            
+            // Limpa anterior
+            if(state.currentIdx > 0) document.getElementById(`w-${state.currentIdx-1}`).classList.remove('active');
+            
+            // Ativa atual
+            const el = document.getElementById(`w-${state.currentIdx}`);
+            el.classList.add('active');
+            el.scrollIntoView({behavior: "smooth", block: "center"});
+            
+            state.currentIdx++;
+        }
+
+        function pauseGame() {
+            state.isRunning = false; clearInterval(state.interval);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') { if(state.isRunning) pauseGame(); else startLoop(); }
+            if(e.code === 'ArrowRight') { state.ppm += 10; startLoop(); }
+            if(e.code === 'ArrowLeft') { state.ppm = Math.max(10, state.ppm - 10); startLoop(); }
+            if(e.code === 'Escape') { pauseGame(); window.location.href='../index.html'; }
+        });
+    </script>
+</body>
+</html>

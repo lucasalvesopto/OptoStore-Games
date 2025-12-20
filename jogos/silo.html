@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Zoom Mental (SILO)</title>
+    <style>
+        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: white; font-family: sans-serif; }
+        #tunnel {
+            width: 100px; height: 100px;
+            background: repeating-radial-gradient(circle, #FFF, #FFF 10px, #000 10px, #000 20px);
+            border-radius: 50%;
+            animation: pulse 10s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.5); }
+            50% { transform: scale(10); } /* Grande (perto) */
+            100% { transform: scale(0.5); } /* Pequeno (longe) */
+        }
+        #hud { position: absolute; top: 10px; left: 10px; }
+    </style>
+</head>
+<body>
+    <div id="hud">Sinta o objeto indo e vindo. ESC para Sair.</div>
+    <div id="tunnel"></div>
+    <script>
+        window.addEventListener('keydown', (e) => { if(e.key === 'Escape') window.location.href='../index.html'; });
+    </script>
+</body>
+</html>

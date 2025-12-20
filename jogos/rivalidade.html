@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Duelo de Cores</title>
+    <style>
+        body { background: #FFF; color: #333; font-family: sans-serif; text-align: center; overflow: hidden; margin: 0; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        /* CAIXA DE RIVALIDADE */
+        #rivalry-box {
+            position: relative; width: 300px; height: 300px; border: 2px solid #000;
+        }
+        .layer {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            mix-blend-mode: multiply; /* Segredo do Anaglifo na Web */
+        }
+        /* Vermelho (Visto pelo olho Ciano): Listras para direita */
+        .layer-red {
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, #FF0000 10px, #FF0000 20px);
+        }
+        /* Ciano (Visto pelo olho Vermelho): Listras para esquerda */
+        .layer-cyan {
+            background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #00FFFF 10px, #00FFFF 20px);
+        }
+
+        .btn-opt { padding: 10px 20px; margin: 5px; font-size: 1rem; cursor: pointer; border: 1px solid #333; background: #eee; }
+        .btn-opt:hover { background: #ccc; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>⚔️ Duelo de Cores</h1>
+        <p>⚠️ Use Óculos Red/Cyan.</p>
+        <p>O que você vê? Xadrez? Só Vermelho? Só Azul?</p>
+        <button class="btn-opt" onclick="startGame()">Iniciar</button>
+        <button class="btn-opt" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="rivalry-box">
+            <div class="layer layer-red"></div>
+            <div class="layer layer-cyan"></div>
+        </div>
+        <div style="margin-top:20px;">
+            <p>O que o paciente relata?</p>
+            <button class="btn-opt" onclick="logResult('Fusão (Xadrez)')">1. Fusão (Xadrez)</button>
+            <button class="btn-opt" onclick="logResult('Rivalidade (Alterna)')">2. Rivalidade (Pisca)</button>
+            <button class="btn-opt" onclick="logResult('Supressão')">3. Supressão (Cor Única)</button>
+        </div>
+        <div id="log" style="margin-top:10px; color:blue;"></div>
+    </div>
+
+    <script>
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+        }
+        function logResult(res) {
+            document.getElementById('log').innerText = "Registrado: " + res;
+            // Salvar no localStorage aqui
+        }
+    </script>
+</body>
+</html>

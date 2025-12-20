@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>O Camaleão</title>
+    <style>
+        body { background: #222; color: #FFF; font-family: sans-serif; text-align: center; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 400px; height: 400px; }
+        .cell { border-radius: 10px; border: 4px solid transparent; }
+        .cell.selected { border-color: white; transform: scale(1.05); }
+        .btn { padding: 15px; background: #E91E63; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>🎨 O Camaleão</h1>
+        <p>Encontre o quadrado com cor diferente.</p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <br><br>
+        <button class="btn" style="background:#555" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="grid"></div>
+        <p>Setas: Navegar | Enter: Escolher</p>
+    </div>
+
+    <script>
+        const state = { diff: 40, targetIdx: 0, cursor: 0 };
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            nextRound();
+        }
+
+        function nextRound() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            state.targetIdx = Math.floor(Math.random() * 16);
+            state.cursor = 0;
+            
+            const baseHue = Math.floor(Math.random() * 360);
+            
+            for(let i=0; i<16; i++) {
+                const d = document.createElement('div');
+                d.className = 'cell';
+                d.id = 'c-'+i;
+                // Alvo tem luminosidade diferente
+                const l = (i === state.targetIdx) ? 50 + state.diff : 50;
+                d.style.backgroundColor = `hsl(${baseHue}, 100%, ${l}%)`;
+                grid.appendChild(d);
+            }
+            updateCursor();
+        }
+
+        function updateCursor() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+            document.getElementById('c-'+state.cursor).classList.add('selected');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight') state.cursor = (state.cursor + 1) % 16;
+            if(e.key === 'ArrowLeft') state.cursor = (state.cursor - 1 + 16) % 16;
+            if(e.key === 'ArrowDown') state.cursor = (state.cursor + 4) % 16;
+            if(e.key === 'ArrowUp') state.cursor = (state.cursor - 4 + 16) % 16;
+            
+            if(e.key === 'Enter') {
+                if(state.cursor === state.targetIdx) {
+                    alert("ACERTOU!");
+                    state.diff = Math.max(5, state.diff - 5); // Fica mais difícil
+                    nextRound();
+                } else {
+                    alert("Errou!");
+                }
+            }
+            updateCursor();
+            if(e.key === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

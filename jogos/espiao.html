@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Espião - Figura Fundo</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #FFC107; /* Amarelo: Atenção e Alerta */
+            --secondary-color: #00E5FF;
+            --text-color: #E0E0E0;
+            --success-color: #00C853;
+            --danger-color: #D50000;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- Utilitários de Tela --- */
+        .screen {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0; left: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            z-index: 1;
+        }
+
+        .screen.active { display: flex; z-index: 2; }
+
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; text-align: center; color: var(--primary-color); text-transform: uppercase; letter-spacing: 3px; }
+        h2 { font-size: 2rem; margin-bottom: 1rem; color: var(--secondary-color); }
+
+        /* --- Layout e Painéis --- */
+        .instructions-box {
+            background-color: #2c2c2c;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 800px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        .instructions-box strong { color: white; color: var(--primary-color); }
+
+        .patient-tag {
+            background-color: #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* --- Botões --- */
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        
+        button {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); filter: brightness(1.1); }
+        button.secondary { background-color: transparent; border: 2px solid #555; color: #fff; }
+        button.danger { background-color: var(--danger-color); color: white; }
+
+        .back-to-hub {
+            position: absolute; top: 20px; left: 20px;
+            background: transparent; border: 1px solid #555;
+            padding: 10px 20px; font-size: 1rem; color: #aaa;
+            cursor: pointer;
+        }
+
+        /* --- Área do Jogo (Canvas) --- */
+        #game-container {
+            position: relative;
+            width: 90vw;
+            height: 80vh;
+            border: 2px solid #333;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas { display: block; }
+
+        /* HUD do Jogo */
+        .hud-top {
+            position: absolute; top: 10px; width: 100%;
+            display: flex; justify-content: space-between; padding: 0 40px;
+            box-sizing: border-box; font-size: 1.5rem; color: #888;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .highlight { color: var(--primary-color); font-weight: bold; }
+
+        /* Mensagens Flutuantes (Memorize, Ache) */
+        #phase-message {
+            position: absolute;
+            top: 10%; /* Fica no topo para não cobrir o alvo */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            pointer-events: none;
+            transition: opacity 0.5s;
+            width: 100%;
+            text-align: center;
+            z-index: 20;
+        }
+
+        /* --- Configurações --- */
+        .settings-group { margin-bottom: 25px; width: 60%; max-width: 600px; text-align: left; }
+        label { display: block; font-size: 1.2rem; margin-bottom: 10px; color: #ddd; }
+        input[type=range], select { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; }
+
+        /* --- Tabela Histórico --- */
+        table { width: 100%; max-width: 800px; border-collapse: collapse; margin-top: 20px; background: var(--surface-color); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { background-color: #333; color: var(--primary-color); }
+
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar ao Menu</button>
+        
+        <h1>🔍 O Espião</h1>
+        <div id="display-patient-name" class="patient-tag">Paciente: ---</div>
+
+        <div class="instructions-box">
+            <p><strong>🎯 Objetivo:</strong> Encontrar a figura escondida no meio da confusão visual.</p>
+            <p><strong>⚠️ Regra de Ouro:</strong> O paciente deve procurar a figura EXATAMENTE igual:</p>
+            <ul style="margin-top:0">
+                <li>Mesma <strong>COR</strong>.</li>
+                <li>Mesma <strong>ORIENTAÇÃO/ÂNGULO</strong> (Ex: Se a ponta da estrela está para cima, procure a que está para cima).</li>
+            </ul>
+            <p><strong>👨‍⚕️ Terapeuta:</strong> Quando o paciente apontar corretamente, pressione <strong>ESPAÇO</strong>.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="prepareGame()">▶ INICIAR SESSÃO</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        
+        <div class="settings-group">
+            <label>Nível de Poluição (Distratores): <span id="val-clutter" class="highlight">Médio</span></label>
+            <input type="range" id="cfg-clutter" min="10" max="200" value="50" oninput="updateUI()">
+        </div>
+
+        <div class="settings-group">
+            <label>Dificuldade de Semelhança:</label>
+            <select id="cfg-similarity">
+                <option value="easy">Fácil (Cores Diferentes)</option>
+                <option value="hard">Difícil (Mesma Cor - Atenção à Forma)</option>
+            </select>
+        </div>
+
+        <div class="settings-group">
+            <label>Tempo Limite por Rodada: <span id="val-time">30s</span></label>
+            <input type="range" id="cfg-time" min="10" max="60" value="30" oninput="updateUI()">
+        </div>
+        
+        <div class="settings-group">
+            <label>Total de Rodadas:</label>
+            <select id="cfg-rounds">
+                <option value="5">5 Rodadas</option>
+                <option value="10">10 Rodadas</option>
+                <option value="15">15 Rodadas</option>
+            </select>
+        </div>
+
+        <button onclick="showScreen('screen-home')">Salvar e Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div class="hud-top">
+            <span>Rodada: <span id="hud-round" class="highlight">1/10</span></span>
+            <span>Tempo: <span id="hud-timer" class="highlight">00.0</span>s</span>
+        </div>
+
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="phase-message">MEMORIZE O ALVO</div>
+        </div>
+
+        <div style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+            Espaço: Confirmar Acerto | ESC: Cancelar
+        </div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Histórico: <span id="hist-patient-name" style="color: white"></span></h2>
+        <div id="history-content"></div>
+        <div class="btn-container">
+            <button class="danger" onclick="clearHistory()">Limpar Este Paciente</button>
+            <button class="secondary" onclick="showScreen('screen-home')">Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ESTADO GLOBAL ---
+        const state = {
+            patient: "Visitante",
+            currentRound: 0,
+            totalRounds: 10,
+            times: [],
+            phase: 'IDLE', // IDLE, MEMORIZE, SEARCH, FEEDBACK
+            targetShape: null, // {type, color, x, y, size, rotation}
+            distractors: [],
+            startTime: 0,
+            timerInterval: null
+        };
+
+        const settings = {
+            clutter: 50,
+            similarity: 'easy',
+            timeLimit: 30
+        };
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- INICIALIZAÇÃO ---
+        window.onload = function() {
+            // Ler Paciente da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const p = urlParams.get('paciente');
+            if (p) {
+                state.patient = p;
+                document.getElementById('display-patient-name').textContent = "Paciente: " + p;
+            } else {
+                document.getElementById('display-patient-name').textContent = "Paciente: Visitante / Demo";
+            }
+
+            updateUI();
+            
+            window.addEventListener('resize', resizeCanvas);
+        };
+
+        function resizeCanvas() {
+            const container = document.getElementById('game-container');
+            if (container && container.clientWidth > 0) {
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                
+                // Redesenha para não perder o jogo ao mudar tamanho da tela
+                if (state.phase === 'MEMORIZE') drawMemorizePhase();
+                if (state.phase === 'SEARCH') drawSearchPhase();
+                if (state.phase === 'FEEDBACK') drawFeedbackPhase(true);
+            }
+        }
+
+        // --- NAVEGAÇÃO ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if(id === 'screen-history') loadHistory();
+        }
+
+        // CORREÇÃO: Função específica chamada pelo botão
+        function showHistory() {
+            showScreen('screen-history');
+        }
+
+        function updateUI() {
+            settings.clutter = parseInt(document.getElementById('cfg-clutter').value);
+            settings.timeLimit = parseInt(document.getElementById('cfg-time').value);
+            settings.similarity = document.getElementById('cfg-similarity').value;
+            state.totalRounds = parseInt(document.getElementById('cfg-rounds').value);
+
+            let clutterText = "Médio";
+            if(settings.clutter < 40) clutterText = "Baixo (Fácil)";
+            if(settings.clutter > 100) clutterText = "Alto (Poluído)";
+            
+            document.getElementById('val-clutter').innerText = clutterText;
+            document.getElementById('val-time').innerText = settings.timeLimit + "s";
+        }
+
+        // --- MOTOR DO JOGO ---
+        function prepareGame() {
+            state.currentRound = 0;
+            state.times = [];
+            
+            showScreen('screen-game');
+            
+            // Pequeno delay para garantir que o container esteja visível antes de calcular tamanho
+            setTimeout(() => {
+                resizeCanvas();
+                startRound();
+            }, 100); 
+        }
+
+        function startRound() {
+            state.currentRound++;
+            if (state.currentRound > state.totalRounds) {
+                endGame();
+                return;
+            }
+
+            document.getElementById('hud-round').innerText = `${state.currentRound}/${state.totalRounds}`;
+            document.getElementById('hud-timer').innerText = "0.0";
+            
+            // Fase 1: Memorização
+            state.phase = 'MEMORIZE';
+            generateLevelData(); 
+            
+            drawMemorizePhase();
+            
+            const msg = document.getElementById('phase-message');
+            msg.innerText = "MEMORIZE O ALVO";
+            msg.style.opacity = 1;
+
+            // Espera 3 segundos e vai para busca
+            setTimeout(() => {
+                msg.style.opacity = 0;
+                startSearchPhase();
+            }, 3000);
+        }
+
+        function startSearchPhase() {
+            state.phase = 'SEARCH';
+            state.startTime = Date.now();
+            
+            drawSearchPhase(); 
+
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                const now = Date.now();
+                const diff = (now - state.startTime) / 1000;
+                document.getElementById('hud-timer').innerText = diff.toFixed(1);
+
+                if (diff >= settings.timeLimit) {
+                    finishRound(false); 
+                }
+            }, 100);
+        }
+
+        function finishRound(success) {
+            clearInterval(state.timerInterval);
+            state.phase = 'FEEDBACK';
+
+            const endTime = Date.now();
+            const reactionTime = (endTime - state.startTime) / 1000;
+
+            if (success) {
+                state.times.push(reactionTime);
+                drawFeedbackPhase(true); 
+            } else {
+                state.times.push(settings.timeLimit); 
+                drawFeedbackPhase(false);
+            }
+
+            setTimeout(startRound, 2500);
+        }
+
+        function endGame() {
+            const sum = state.times.reduce((a, b) => a + b, 0);
+            const avg = (sum / state.times.length) || 0;
+
+            saveResult(avg);
+            alert(`Sessão Finalizada!\nMédia de Tempo: ${avg.toFixed(2)}s`);
+            showScreen('screen-home');
+        }
+
+        // --- LÓGICA GRÁFICA (CANVAS) ---
+        // CORREÇÃO: Removemos círculos. Adicionamos Seta e Pentágono.
+        const SHAPES = ['square', 'triangle', 'diamond', 'star', 'pentagon', 'arrow'];
+        const COLORS = ['#FF0000', '#00FF00', '#00E5FF', '#FFFF00', '#FF00FF', '#FFFFFF'];
+
+        function generateLevelData() {
+            const targetType = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+            let targetColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            let size = Math.min(w, h) * 0.05; 
+            if (size < 30) size = 30; 
+            const padding = 60;
+
+            // Alvo sempre na rotação 0 (Vertical/Padrão)
+            state.targetShape = {
+                type: targetType,
+                color: targetColor,
+                x: Math.random() * (w - padding * 2) + padding,
+                y: Math.random() * (h - padding * 2) + padding,
+                size: size,
+                rotation: 0 
+            };
+
+            state.distractors = [];
+            
+            const distractorPoolColors = settings.similarity === 'hard' ? [targetColor] : COLORS;
+
+            for (let i = 0; i < settings.clutter; i++) {
+                const isTrickShape = Math.random() < 0.2; 
+                
+                let dType = isTrickShape ? targetType : SHAPES[Math.floor(Math.random() * SHAPES.length)];
+                let dColor = distractorPoolColors[Math.floor(Math.random() * distractorPoolColors.length)];
+                
+                // Rotação aleatória
+                let dRotation = Math.random() * Math.PI * 2;
+                
+                // GARANTIA: Se for a mesma forma e cor, não deixa o ângulo ser perto de 0
+                if (isTrickShape && dColor === targetColor) {
+                    // Se o ângulo for menor que 45 graus (aprox 0.8 rad), força girar mais
+                    if (Math.abs(dRotation) < 0.8 || Math.abs(dRotation - Math.PI*2) < 0.8) {
+                        dRotation = Math.PI; // Vira de cabeça pra baixo
+                    }
+                }
+
+                state.distractors.push({
+                    type: dType,
+                    color: dColor,
+                    x: Math.random() * (w - padding * 2) + padding,
+                    y: Math.random() * (h - padding * 2) + padding,
+                    size: size * (0.8 + Math.random() * 0.4), 
+                    rotation: dRotation
+                });
+            }
+        }
+
+        function drawShape(ctx, x, y, size, type, color, rotation) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+
+            if (type === 'square') {
+                ctx.rect(-size/2, -size/2, size, size);
+            } else if (type === 'triangle') {
+                ctx.moveTo(0, -size/2);
+                ctx.lineTo(size/2, size/2);
+                ctx.lineTo(-size/2, size/2);
+            } else if (type === 'diamond') {
+                ctx.moveTo(0, -size/2);
+                ctx.lineTo(size/2, 0);
+                ctx.lineTo(0, size/2);
+                ctx.lineTo(-size/2, 0);
+            } else if (type === 'star') {
+                const spikes = 5;
+                const outerRadius = size/2;
+                const innerRadius = size/4;
+                for(let i=0; i<spikes*2; i++){
+                    const r = (i%2 === 0) ? outerRadius : innerRadius;
+                    const a = (Math.PI / spikes) * i;
+                    ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+                }
+                ctx.closePath();
+            } else if (type === 'pentagon') {
+                const sides = 5;
+                const radius = size/2;
+                for (let i = 0; i < sides; i++) {
+                    // Começa do topo (-PI/2)
+                    const angle = (i * 2 * Math.PI / sides) - Math.PI/2;
+                    const px = radius * Math.cos(angle);
+                    const py = radius * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+            } else if (type === 'arrow') {
+                // Desenha uma seta apontando para cima
+                const w = size/3;  // largura tronco
+                const h = size/2;  // altura tronco
+                const headSize = size/1.5;
+                
+                // Tronco
+                ctx.rect(-w/2, 0, w, h); 
+                // Cabeça
+                ctx.moveTo(0, -size/2);
+                ctx.lineTo(headSize/1.5, 0);
+                ctx.lineTo(-headSize/1.5, 0);
+                ctx.closePath();
+            }
+            
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawMemorizePhase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Desenha o alvo no CENTRO
+            drawShape(ctx, canvas.width/2, canvas.height/2, 120, state.targetShape.type, state.targetShape.color, 0);
+        }
+
+        function drawSearchPhase() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Distratores
+            state.distractors.forEach(d => {
+                drawShape(ctx, d.x, d.y, d.size, d.type, d.color, d.rotation);
+            });
+
+            // Alvo (Misturado, rotação 0)
+            const t = state.targetShape;
+            drawShape(ctx, t.x, t.y, t.size, t.type, t.color, t.rotation);
+        }
+
+        function drawFeedbackPhase(found) {
+            ctx.fillStyle = "rgba(0,0,0,0.85)";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            const t = state.targetShape;
+            
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, t.size * 2, 0, Math.PI*2);
+            ctx.strokeStyle = found ? "#00E5FF" : "#FF0000";
+            ctx.lineWidth = 4;
+            ctx.setLineDash([10, 5]); 
+            ctx.stroke();
+            ctx.setLineDash([]); 
+
+            drawShape(ctx, t.x, t.y, t.size, t.type, t.color, t.rotation);
+
+            ctx.fillStyle = found ? "#00E5FF" : "#FF0000";
+            ctx.font = "bold 40px Segoe UI";
+            ctx.textAlign = "center";
+            ctx.fillText(found ? "ENCONTRADO!" : "TEMPO ESGOTADO", canvas.width/2, canvas.height/2 + 150);
+        }
+
+        // --- INPUT ---
+        window.addEventListener('keydown', (e) => {
+            if (state.phase === 'SEARCH' && e.code === 'Space') {
+                e.preventDefault();
+                finishRound(true);
+            }
+            if (e.code === 'Escape') {
+                clearInterval(state.timerInterval);
+                showScreen('screen-home');
+            }
+        });
+
+        // --- SALVAMENTO ---
+        function saveResult(avgTime) {
+            const result = {
+                date: new Date().toLocaleString('pt-BR'),
+                patient: state.patient,
+                difficulty: settings.similarity === 'hard' ? 'Difícil' : 'Fácil',
+                clutter: settings.clutter,
+                avgTime: avgTime.toFixed(2) + 's'
+            };
+
+            let history = JSON.parse(localStorage.getItem('neuro_opt_espiao_history') || '[]');
+            history.unshift(result);
+            localStorage.setItem('neuro_opt_espiao_history', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const name = state.patient;
+            document.getElementById('hist-patient-name').innerText = name;
+            const container = document.getElementById('history-content');
+            
+            const allHistory = JSON.parse(localStorage.getItem('neuro_opt_espiao_history') || '[]');
+            const pHistory = allHistory.filter(h => h.patient === name);
+
+            if (pHistory.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#666;'>Nenhum histórico encontrado para este paciente.</p>";
+                return;
+            }
+
+            let html = `<table><thead><tr><th>Data</th><th>Dificuldade</th><th>Tempo Médio</th></tr></thead><tbody>`;
+            pHistory.slice(0, 15).forEach(h => {
+                html += `<tr><td>${h.date}</td><td>${h.difficulty} <br><small>(${h.clutter} itens)</small></td><td>${h.avgTime}</td></tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function clearHistory() {
+            if(confirm("Apagar histórico deste paciente?")) {
+                let all = JSON.parse(localStorage.getItem('neuro_opt_espiao_history') || '[]');
+                let newHist = all.filter(h => h.patient !== state.patient);
+                localStorage.setItem('neuro_opt_espiao_history', JSON.stringify(newHist));
+                loadHistory();
+            }
+        }
+
+    </script>
+</body>
+</html>

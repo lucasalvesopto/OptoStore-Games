@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Ocular</title>
+    <style>
+        body { background: #121212; color: #FFF; font-family: sans-serif; overflow: hidden; margin: 0; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        #num-display { position: absolute; font-size: 5rem; font-weight: bold; }
+        .btn { padding: 15px; font-size: 1.2rem; background: #FF9800; color: #000; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        select { padding: 10px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>➕ Calculadora Ocular</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <p>Some os números que aparecerem na tela.</p>
+        <label>Números:</label> <select id="cfg-count"><option value="3">3</option><option value="5">5</option><option value="10">10</option></select>
+        <br><br>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" style="background:#333; color:white;" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="num-display"></div>
+    </div>
+
+    <script>
+        const state = { patient: "", sum: 0, count: 0, max: 5 };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            state.max = parseInt(document.getElementById('cfg-count').value);
+            state.count = 0; state.sum = 0;
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            nextNumber();
+        }
+
+        function nextNumber() {
+            if(state.count >= state.max) {
+                document.getElementById('num-display').style.top = '50%';
+                document.getElementById('num-display').style.left = '50%';
+                document.getElementById('num-display').style.transform = 'translate(-50%, -50%)';
+                document.getElementById('num-display').innerText = "Resultado?";
+                setTimeout(() => {
+                    if(confirm(`O paciente disse ${state.sum}?`)) saveResult("Acertou");
+                    else saveResult("Errou");
+                }, 1000);
+                return;
+            }
+
+            const val = Math.floor(Math.random() * 9) + 1;
+            state.sum += val;
+            state.count++;
+
+            const el = document.getElementById('num-display');
+            el.innerText = val;
+            el.style.transform = 'none';
+            // Posição Aleatória (Margem 10%)
+            el.style.top = (Math.random() * 80 + 10) + '%';
+            el.style.left = (Math.random() * 80 + 10) + '%';
+            el.style.display = 'block';
+
+            setTimeout(() => {
+                el.style.display = 'none';
+                setTimeout(nextNumber, 1000); // Intervalo
+            }, 1000); // Exposição
+        }
+
+        function saveResult(res) {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_calc_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString(), patient: state.patient, result: res, sum: state.sum });
+            localStorage.setItem('neuro_opt_calc_history', JSON.stringify(h));
+            alert(res + "! Soma era " + state.sum);
+            window.location.href='../index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiro ao Alvo</title>
+    <style>
+        body { background: #000; overflow: hidden; margin: 0; font-family: sans-serif; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        #target {
+            position: absolute; width: 80px; height: 80px; border-radius: 50%;
+            background: radial-gradient(circle, red 40%, white 40%, white 60%, red 60%);
+            display: none; cursor: crosshair;
+        }
+        
+        #feedback { position: absolute; font-size: 3rem; font-weight: bold; color: white; display: none; }
+        
+        .btn { padding: 15px; font-size: 1.2rem; cursor: pointer; background: #FF5722; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1 style="color:#FF5722">👉 Tiro ao Alvo</h1>
+        <p style="color:#DDD">Aponte rápido para o alvo!</p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <br><br>
+        <button class="btn" style="background:#333" onclick="window.location.href='../index.html'">Sair</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="target"></div>
+        <div id="feedback">RÁPIDO!</div>
+        <div style="position:fixed; bottom:10px; color:#888;">
+            Terapeuta: 1 (Rápido) | 2 (Lento) | 3 (Errou)
+        </div>
+    </div>
+
+    <script>
+        const state = { patient: "", stats: {fast:0, slow:0, miss:0} };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            spawnTarget();
+        }
+
+        function spawnTarget() {
+            const t = document.getElementById('target');
+            const x = Math.random() * (window.innerWidth - 100) + 50;
+            const y = Math.random() * (window.innerHeight - 100) + 50;
+            t.style.left = x + 'px'; t.style.top = y + 'px';
+            t.style.display = 'block';
+        }
+
+        function handleJudge(type) {
+            const t = document.getElementById('target');
+            t.style.display = 'none';
+            
+            const fb = document.getElementById('feedback');
+            fb.style.display = 'block';
+            fb.style.top = t.style.top; fb.style.left = t.style.left;
+            
+            if(type === 1) { fb.innerText = "⚡ RÁPIDO!"; fb.style.color = "#00E676"; state.stats.fast++; }
+            if(type === 2) { fb.innerText = "🐢 Lento"; fb.style.color = "#FFEB3B"; state.stats.slow++; }
+            if(type === 3) { fb.innerText = "❌ Errou"; fb.style.color = "#FF1744"; state.stats.miss++; }
+            
+            saveResult();
+            
+            setTimeout(() => {
+                fb.style.display = 'none';
+                setTimeout(spawnTarget, Math.random() * 1000 + 500);
+            }, 500);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === '1') handleJudge(1);
+            if(e.key === '2') handleJudge(2);
+            if(e.key === '3') handleJudge(3);
+            if(e.key === 'Escape') window.location.href='../index.html';
+        });
+
+        function saveResult() {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_tiro_history') || '[]');
+            // Mantem apenas 1 entrada por sessao ou atualiza
+            // Simplificado para log
+            localStorage.setItem('neuro_opt_tiro_history', JSON.stringify([{
+                date: new Date().toLocaleString(), 
+                patient: state.patient, 
+                score: `Fast:${state.stats.fast} Slow:${state.stats.slow}`
+            }]));
+        }
+    </script>
+</body>
+</html>

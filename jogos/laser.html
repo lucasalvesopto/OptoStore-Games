@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>O Laser Guiado</title>
+    <style>
+        body { background: #000; margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        canvas { border: 1px solid #333; }
+        #hud { position: absolute; top: 10px; color: white; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="hud">Siga o ponto vermelho. ESC para sair.</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let progress = 0;
+        const speed = 0.002; // Velocidade
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function getPathPoint(t) {
+            // Curva de Lissajous ou Espiral
+            const w = canvas.width / 2;
+            const h = canvas.height / 2;
+            // Espiral
+            const angle = t * 20; // Voltas
+            const radius = t * (Math.min(w,h) - 50);
+            
+            return {
+                x: w + radius * Math.cos(angle),
+                y: h + radius * Math.sin(angle)
+            };
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha trilho
+            ctx.beginPath();
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 20;
+            for(let t=0; t<=1; t+=0.005) {
+                const p = getPathPoint(t);
+                if(t===0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            }
+            ctx.stroke();
+
+            // Desenha Laser
+            const p = getPathPoint(progress);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "red";
+
+            progress += speed;
+            if(progress > 1) progress = 0;
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

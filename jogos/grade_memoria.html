@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Grade de Memória</title>
+    <style>
+        body { background: #121212; color: #FFF; font-family: sans-serif; text-align: center; margin: 0; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        #grid { display: grid; gap: 10px; margin: 20px; background: #222; padding: 10px; border-radius: 10px; }
+        .cell { width: 80px; height: 80px; background: #444; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
+        .cell.active { background: #00E676; } /* Show pattern */
+        .cell.selected { background: #2196F3; } /* User selection */
+        .cell.correct { background: #00E676 !important; border: 3px solid white; }
+        .cell.wrong { background: #F44336 !important; }
+        .cell.missed { border: 3px solid #00E676; }
+
+        .btn { padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #FF9800; border: none; border-radius: 5px; color: black; margin: 10px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>#️⃣ Grade de Memória</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" style="background:#333; color:white" onclick="window.location.href='../index.html'">Sair</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="grid"></div>
+        <p style="color:#888;">Mouse: Selecionar | Espaço: Confirmar/Próximo</p>
+    </div>
+
+    <script>
+        const state = { patient: "", pattern: [], size: 3, inputLocked: true, roundPhase: 'show' };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            nextRound();
+        }
+
+        function nextRound() {
+            state.roundPhase = 'show';
+            state.inputLocked = true;
+            state.pattern = [];
+            
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${state.size}, 1fr)`;
+            
+            const total = state.size * state.size;
+            // Gera padrão (aprox 1/3 da grade)
+            for(let i=0; i<total; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = 'c-'+i;
+                cell.onclick = () => handleClick(i, cell);
+                grid.appendChild(cell);
+                
+                if(Math.random() < 0.35) {
+                    state.pattern.push(i);
+                    cell.classList.add('active');
+                }
+            }
+
+            // Esconde após 2s
+            setTimeout(() => {
+                document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+                state.inputLocked = false;
+                state.roundPhase = 'input';
+            }, 2000);
+        }
+
+        function handleClick(idx, el) {
+            if(state.inputLocked) return;
+            el.classList.toggle('selected');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') {
+                if(state.roundPhase === 'input') {
+                    // Check Result
+                    state.inputLocked = true;
+                    state.roundPhase = 'result';
+                    
+                    document.querySelectorAll('.cell').forEach((c, i) => {
+                        const isSelected = c.classList.contains('selected');
+                        const isTarget = state.pattern.includes(i);
+                        
+                        if(isSelected && isTarget) c.classList.add('correct');
+                        else if(isSelected && !isTarget) c.classList.add('wrong');
+                        else if(!isSelected && isTarget) c.classList.add('missed');
+                    });
+                } else if (state.roundPhase === 'result') {
+                    nextRound();
+                }
+            }
+            if(e.code === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

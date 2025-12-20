@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Flash de Memória</title>
+    <style>
+        body { background: #000; color: #FFF; font-family: sans-serif; text-align: center; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        #stimulus-box { font-size: 5rem; font-weight: bold; height: 100px; display: flex; align-items: center; justify-content: center; }
+        .btn { padding: 15px 30px; font-size: 1.2rem; cursor: pointer; margin: 10px; }
+        input, select { padding: 10px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>⚡ Flash de Memória</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" onclick="window.location.href='../index.html'">Sair</button>
+        <br><br>
+        <label>Tempo (ms):</label> <select id="cfg-time"><option value="1000">1000ms</option><option value="500">500ms</option><option value="200">200ms</option><option value="100">100ms</option><option value="50">50ms</option></select>
+        <label>Dígitos:</label> <input type="number" id="cfg-len" value="3" min="1" max="8">
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="stimulus-box">+</div>
+        <p style="color:#888; margin-top:50px;">ENTER: Revelar | Seta Dir: Acertou | Seta Esq: Errou</p>
+        <div id="feedback" style="font-size:2rem;"></div>
+    </div>
+
+    <script>
+        let state = { patient: "", currentVal: "", isShowing: false };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            prepareRound();
+        }
+
+        function prepareRound() {
+            document.getElementById('stimulus-box').innerText = "+";
+            state.isShowing = false;
+        }
+
+        function triggerFlash() {
+            if(state.isShowing) return;
+            state.isShowing = true;
+            
+            // Gera valor
+            const len = parseInt(document.getElementById('cfg-len').value);
+            state.currentVal = Math.floor(Math.random() * Math.pow(10, len)).toString().padStart(len, '0');
+            const time = parseInt(document.getElementById('cfg-time').value);
+            
+            const box = document.getElementById('stimulus-box');
+            box.innerText = state.currentVal;
+            
+            setTimeout(() => {
+                box.innerText = "####"; // Máscara
+            }, time);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') triggerFlash();
+            if(e.key === 'ArrowRight') { alert("Acerto registrado!"); prepareRound(); }
+            if(e.key === 'ArrowLeft') { alert(`Era: ${state.currentVal}`); prepareRound(); }
+            if(e.key === 'Escape') window.location.href = '../index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Encontre o Intruso</title>
+    <style>
+        body { background: #121212; color: #EEE; font-family: sans-serif; text-align: center; overflow: hidden; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        #grid { display: grid; gap: 10px; padding: 20px; background: #222; border-radius: 10px; }
+        .cell { font-size: 3rem; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; background: #333; border: 2px solid transparent; cursor: pointer; }
+        .cell.selected { border-color: #00E676; background: #444; }
+        
+        .btn { padding: 10px 20px; font-size: 1.2rem; cursor: pointer; margin: 10px; background: #FF4081; border: none; color: white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>🔎 Encontre o Intruso</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="hud">Tempo: <span id="timer">0.0</span>s</div>
+        <div id="grid"></div>
+        <p>Setas: Navegar | ENTER: Confirmar</p>
+    </div>
+
+    <script>
+        const state = { patient: "", intruderIdx: 0, size: 3, cursor: 0, startTime: 0, interval: null };
+        const ICONS = { common: "😊", intruder: "😐" }; // Simplificado
+
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            state.size = 4; // Grid 4x4
+            nextRound();
+        }
+
+        function nextRound() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            grid.style.gridTemplateColumns = `repeat(${state.size}, 1fr)`;
+            
+            const total = state.size * state.size;
+            state.intruderIdx = Math.floor(Math.random() * total);
+            state.cursor = 0;
+            
+            for(let i=0; i<total; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = 'c-'+i;
+                cell.innerText = (i === state.intruderIdx) ? ICONS.intruder : ICONS.common;
+                grid.appendChild(cell);
+            }
+            updateCursor();
+            
+            state.startTime = Date.now();
+            clearInterval(state.interval);
+            state.interval = setInterval(() => {
+                document.getElementById('timer').innerText = ((Date.now() - state.startTime)/1000).toFixed(1);
+            }, 100);
+        }
+
+        function updateCursor() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+            document.getElementById('c-'+state.cursor).classList.add('selected');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight') state.cursor = (state.cursor + 1) % (state.size*state.size);
+            if(e.key === 'ArrowLeft') state.cursor = (state.cursor - 1 + (state.size*state.size)) % (state.size*state.size);
+            if(e.key === 'ArrowDown') state.cursor = (state.cursor + state.size) % (state.size*state.size);
+            if(e.key === 'ArrowUp') state.cursor = (state.cursor - state.size + (state.size*state.size)) % (state.size*state.size);
+            
+            if(e.key === 'Enter') {
+                if(state.cursor === state.intruderIdx) {
+                    clearInterval(state.interval);
+                    alert("ACERTOU!");
+                    nextRound();
+                } else {
+                    alert("Errou!");
+                }
+            }
+            updateCursor();
+        });
+    </script>
+</body>
+</html>

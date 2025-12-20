@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Rastro do Inseto - Seguimentos</title>
+    <style>
+        :root { --bg-color: #121212; --primary-color: #76FF03; --text-color: #E0E0E0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: var(--bg-color); z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; text-align: center; }
+        .instructions-box { background: #222; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; color: #ccc; margin-bottom: 20px; }
+        
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO */
+        #game-area { position: relative; width: 100%; height: 100%; overflow: hidden; background-size: 50px 50px; }
+        
+        /* O Inseto */
+        #target {
+            position: absolute; width: 60px; height: 60px;
+            font-size: 60px; line-height: 1; text-align: center;
+            transform: translate(-50%, -50%);
+            will-change: top, left; /* Otimização de performance */
+        }
+
+        /* HUD */
+        #hud-stats { position: absolute; top: 10px; right: 20px; font-size: 1.2rem; color: #888; pointer-events: none; text-align: right; }
+        .val { color: var(--primary-color); font-weight: bold; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        
+        /* Grid Background opcional */
+        .bg-grid { background-image: linear-gradient(#222 1px, transparent 1px), linear-gradient(90deg, #222 1px, transparent 1px); }
+        .bg-plain { background: #121212; }
+
+        /* Histórico */
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>🐞 O Rastro do Inseto</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Siga a joaninha apenas com os olhos. Mantenha a cabeça parada!</p>
+            <p><strong>Terapeuta:</strong></p>
+            <ul>
+                <li><strong>ESPAÇO:</strong> Registra "Perda de Fixação" (Erro).</li>
+                <li><strong>Setas CIMA/BAIXO:</strong> Aumenta/Diminui velocidade durante o jogo.</li>
+            </ul>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Padrão de Movimento:</label>
+            <select id="cfg-pattern">
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+                <option value="circle">Circular</option>
+                <option value="infinity">Infinito (Oito)</option>
+                <option value="random">Aleatório Suave</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Velocidade Inicial: <span id="val-speed">3</span></label>
+            <input type="range" id="cfg-speed" min="1" max="10" value="3" oninput="document.getElementById('val-speed').innerText=this.value">
+        </div>
+        <div class="settings-group">
+            <label>Tamanho do Alvo:</label>
+            <input type="range" id="cfg-size" min="30" max="150" value="60">
+        </div>
+        <div class="settings-group">
+            <label>Fundo de Tela:</label>
+            <select id="cfg-bg">
+                <option value="bg-plain">Liso (Preto)</option>
+                <option value="bg-grid">Gradeado (Estímulo Periférico)</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="hud-stats">
+            Tempo: <span id="hud-time" class="val">00:00</span><br>
+            Perdas de Fixação: <span id="hud-errors" class="val" style="color:#FF5252">0</span><br>
+            Velocidade: <span id="hud-speed">3</span>
+        </div>
+        <div id="game-area" class="bg-plain">
+            <div id="target">🐞</div>
+        </div>
+        <div style="position:fixed; bottom:10px; left:10px; color:#555;">ESPAÇO: Erro | ⬆⬇: Velocidade | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { 
+            patient: "Visitante", 
+            isRunning: false, 
+            startTime: 0, 
+            errors: 0, 
+            animationId: null,
+            timerInterval: null,
+            speed: 3,
+            time: 0, // variável para seno/cosseno
+            randomTarget: {x:0, y:0}, // para modo aleatório
+            randomCurrent: {x:0, y:0}
+        };
+
+        const settings = { pattern: 'horizontal', size: 60, bg: 'bg-plain' };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.pattern = document.getElementById('cfg-pattern').value;
+            settings.bg = document.getElementById('cfg-bg').value;
+            state.speed = parseInt(document.getElementById('cfg-speed').value);
+            const size = parseInt(document.getElementById('cfg-size').value);
+
+            // Setup Visual
+            const area = document.getElementById('game-area');
+            area.className = settings.bg; // Aplica classe do fundo
+            const target = document.getElementById('target');
+            target.style.fontSize = size + 'px';
+            target.style.width = size + 'px';
+            target.style.height = size + 'px';
+
+            // Reset State
+            state.isRunning = true;
+            state.errors = 0;
+            state.time = 0;
+            state.startTime = Date.now();
+            // Inicializa posição aleatória no centro
+            state.randomCurrent = { x: window.innerWidth/2, y: window.innerHeight/2 };
+            pickNewRandomTarget();
+
+            updateHUD();
+            showScreen('screen-game');
+            
+            // Timer
+            state.timerInterval = setInterval(() => {
+                const d = Math.floor((Date.now() - state.startTime)/1000);
+                const m = Math.floor(d/60).toString().padStart(2,'0');
+                const s = (d%60).toString().padStart(2,'0');
+                document.getElementById('hud-time').innerText = `${m}:${s}`;
+            }, 1000);
+
+            animate();
+        }
+
+        function animate() {
+            if(!state.isRunning) return;
+
+            const target = document.getElementById('target');
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            // Fator de velocidade base
+            const speedFactor = state.speed * 0.005; 
+            state.time += speedFactor;
+
+            let x, y;
+
+            if (settings.pattern === 'horizontal') {
+                // Seno para ir e voltar suavemente
+                // Mapeia -1 a 1 para margem da tela (10% a 90%)
+                x = (w/2) + (w * 0.4) * Math.sin(state.time);
+                y = h/2;
+            } 
+            else if (settings.pattern === 'vertical') {
+                x = w/2;
+                y = (h/2) + (h * 0.4) * Math.sin(state.time);
+            }
+            else if (settings.pattern === 'circle') {
+                const radius = Math.min(w, h) * 0.35;
+                x = (w/2) + radius * Math.cos(state.time);
+                y = (h/2) + radius * Math.sin(state.time);
+            }
+            else if (settings.pattern === 'infinity') {
+                const scale = Math.min(w, h) * 0.4;
+                x = (w/2) + scale * Math.cos(state.time);
+                y = (h/2) + (scale/2) * Math.sin(2 * state.time);
+            }
+            else if (settings.pattern === 'random') {
+                // Interpolação linear simples para um alvo aleatório
+                const dx = state.randomTarget.x - state.randomCurrent.x;
+                const dy = state.randomTarget.y - state.randomCurrent.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if(dist < 10) {
+                    pickNewRandomTarget();
+                } else {
+                    // Move em direção ao alvo
+                    const moveSpeed = state.speed * 2;
+                    state.randomCurrent.x += (dx/dist) * moveSpeed;
+                    state.randomCurrent.y += (dy/dist) * moveSpeed;
+                }
+                x = state.randomCurrent.x;
+                y = state.randomCurrent.y;
+            }
+
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+
+            state.animationId = requestAnimationFrame(animate);
+        }
+
+        function pickNewRandomTarget() {
+            const padding = 100;
+            state.randomTarget = {
+                x: Math.random() * (window.innerWidth - padding*2) + padding,
+                y: Math.random() * (window.innerHeight - padding*2) + padding
+            };
+        }
+
+        // --- CONTROLES ---
+        window.addEventListener('keydown', (e) => {
+            if(!state.isRunning) return;
+
+            if(e.code === 'Space') {
+                state.errors++;
+                updateHUD();
+                // Feedback visual sutil
+                document.getElementById('hud-errors').style.transform = "scale(1.5)";
+                setTimeout(() => document.getElementById('hud-errors').style.transform = "scale(1)", 200);
+            }
+            if(e.code === 'ArrowUp') {
+                if(state.speed < 10) state.speed++;
+                updateHUD();
+            }
+            if(e.code === 'ArrowDown') {
+                if(state.speed > 1) state.speed--;
+                updateHUD();
+            }
+            if(e.code === 'Escape') endGame();
+        });
+
+        function updateHUD() {
+            document.getElementById('hud-errors').innerText = state.errors;
+            document.getElementById('hud-speed').innerText = state.speed;
+        }
+
+        function endGame() {
+            state.isRunning = false;
+            cancelAnimationFrame(state.animationId);
+            clearInterval(state.timerInterval);
+            
+            const duration = Math.floor((Date.now() - state.startTime)/1000);
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_rastro_history') || '[]');
+            h.unshift({
+                date: new Date().toLocaleString('pt-BR'),
+                patient: state.patient,
+                duration: duration + 's',
+                pattern: settings.pattern,
+                fixationLosses: state.errors
+            });
+            localStorage.setItem('neuro_opt_rastro_history', JSON.stringify(h));
+            
+            alert(`Fim!\nDuração: ${duration}s\nPerdas de Fixação: ${state.errors}`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_rastro_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Padrão</th><th>Duração</th><th>Perdas</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.pattern}</td><td>${i.duration}</td><td><strong style="color:#FF5252">${i.fixationLosses}</strong></td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

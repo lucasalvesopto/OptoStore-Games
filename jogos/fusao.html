@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fusão Dinâmica</title>
+    <style>
+        :root { --bg-color: #FFF; --text-color: #333; --primary-color: #FF4081; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .instructions-box { background: #333; color: #eee; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #FFF; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #333; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #555; cursor: pointer; }
+
+        /* ALVO FUSIONAL */
+        #fusion-target { position: relative; width: 200px; height: 200px; font-size: 8rem; display: flex; justify-content: center; align-items: center; }
+        .layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-align: center; mix-blend-mode: multiply; }
+        .red { color: red; }
+        .cyan { color: cyan; }
+
+        /* Barra de Esforço */
+        #effort-bar-container { width: 60%; height: 20px; background: #ddd; margin-top: 50px; border-radius: 10px; overflow: hidden; position: relative; }
+        #effort-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #81C784, #FFEB3B, #F44336); transition: width 0.1s; }
+        
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #eee; color: #000; border: 1px solid #aaa; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #eee; }
+        th, td { padding: 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>🏋️ Fusão Dinâmica</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Mantenha a imagem única (Fundida). Avise quando virar duas.</p>
+            <p><strong>Terapeuta:</strong></p>
+            <ul>
+                <li><strong>ESPAÇO:</strong> Quebrou (Diplopia) / Recobrou (Fusão).</li>
+                <li><strong>SETA BAIXO:</strong> Iniciar Recobro (Aproximar imagens).</li>
+            </ul>
+        </div>
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Velocidade:</label>
+            <input type="range" id="cfg-speed" min="1" max="5" value="2">
+        </div>
+        <div class="settings-group">
+            <label>Alvo:</label>
+            <select id="cfg-target"><option value="🐱">Gato</option><option value="●">Círculo</option><option value="★">Estrela</option></select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="margin-bottom:20px; font-size:1.5rem;">Separação: <span id="val-sep">0</span>px</div>
+        
+        <div id="fusion-target">
+            <div class="layer red" id="l-red">🐱</div>
+            <div class="layer cyan" id="l-cyan">🐱</div>
+        </div>
+
+        <div id="effort-bar-container"><div id="effort-bar"></div></div>
+        <div id="status-msg" style="margin-top:10px; font-weight:bold; color:#555;">Fase: SEPARANDO...</div>
+        
+        <div style="position:fixed; bottom:10px; color:#888;">Espaço: Marca Quebra/Recobro | Seta Baixo: Inicia Volta | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { patient: "Visitante", separation: 0, phase: 'idle', animationId: null, breakPoint: 0, recoveryPoint: 0 };
+        const settings = { speed: 2, target: '🐱' };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.speed = parseInt(document.getElementById('cfg-speed').value) * 0.5;
+            settings.target = document.getElementById('cfg-target').value;
+            
+            document.getElementById('l-red').innerText = settings.target;
+            document.getElementById('l-cyan').innerText = settings.target;
+            
+            state.separation = 0; state.phase = 'separating'; state.breakPoint=0; state.recoveryPoint=0;
+            
+            showScreen('screen-game');
+            animate();
+        }
+
+        function animate() {
+            if(state.phase === 'separating') {
+                state.separation += settings.speed;
+                document.getElementById('status-msg').innerText = "Fase: AFASTANDO (Mantenha Fusão)";
+            } else if (state.phase === 'recovering') {
+                state.separation -= settings.speed;
+                if(state.separation < 0) state.separation = 0;
+                document.getElementById('status-msg').innerText = "Fase: APROXIMANDO (Tente Recobrar)";
+            }
+
+            // Aplica separação: Red Esq, Cyan Dir (Divergência) ou vice versa.
+            // Para simplicidade, movemos ambos.
+            const s = state.separation;
+            document.getElementById('l-red').style.transform = `translateX(-${s/2}px)`;
+            document.getElementById('l-cyan').style.transform = `translateX(${s/2}px)`;
+            
+            document.getElementById('val-sep').innerText = s.toFixed(0);
+            document.getElementById('effort-bar').style.width = Math.min(100, s/3) + '%'; // 300px = 100%
+
+            if(state.phase !== 'stopped') state.animationId = requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
+
+            if(e.code === 'Space') {
+                if(state.phase === 'separating') {
+                    // Marcou QUEBRA
+                    state.breakPoint = state.separation;
+                    state.phase = 'stopped'; // Pausa para anotar
+                    cancelAnimationFrame(state.animationId);
+                    alert(`QUEBRA registrada em ${state.breakPoint.toFixed(0)}px.\nPressione SETA BAIXO para iniciar Recobro.`);
+                } else if (state.phase === 'recovering') {
+                    // Marcou RECOBRO
+                    state.recoveryPoint = state.separation;
+                    state.phase = 'stopped';
+                    cancelAnimationFrame(state.animationId);
+                    endGame();
+                }
+            }
+            if(e.code === 'ArrowDown') {
+                if(state.phase === 'stopped' && state.breakPoint > 0) {
+                    state.phase = 'recovering';
+                    animate();
+                }
+            }
+            if(e.code === 'Escape') { cancelAnimationFrame(state.animationId); showScreen('screen-home'); }
+        });
+
+        function endGame() {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_fusao_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, break: state.breakPoint.toFixed(0), recovery: state.recoveryPoint.toFixed(0) });
+            localStorage.setItem('neuro_opt_fusao_history', JSON.stringify(h));
+            alert(`Sessão Finalizada!\nQuebra: ${state.breakPoint.toFixed(0)}\nRecobro: ${state.recoveryPoint.toFixed(0)}`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_fusao_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Quebra (px)</th><th>Recobro (px)</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.break}</td><td>${i.recovery}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

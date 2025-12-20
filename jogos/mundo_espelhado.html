@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Espelhado - Orientação</title>
+    <style>
+        :root { --bg-color: #121212; --primary-color: #E040FB; --text-color: #E0E0E0; --correct: #00E676; --wrong: #FF1744; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: var(--bg-color); z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; text-align: center; }
+        .instructions-box { background: #222; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; color: #ccc; margin-bottom: 20px; }
+        
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO */
+        #game-grid {
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "model model"
+                "opt1 opt2";
+            gap: 20px;
+            width: 80%; max-width: 800px; height: 70vh;
+        }
+
+        .card {
+            background: #1E1E1E; border: 2px solid #333; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 8rem; color: white;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        #model-card { grid-area: model; background: #2a2a2a; border-color: var(--primary-color); }
+        #opt1-card { grid-area: opt1; cursor: pointer; }
+        #opt2-card { grid-area: opt2; cursor: pointer; }
+
+        /* Classes para animação de feedback */
+        .card.correct { border-color: var(--correct); background: rgba(0, 230, 118, 0.1); }
+        .card.wrong { border-color: var(--wrong); opacity: 0.5; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+
+        /* Histórico */
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>mirror Mundo Espelhado</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Olhe o modelo no TOPO. Qual das figuras de baixo é IGUAL a ele (apenas girada)? Cuidado com as espelhadas!</p>
+            <p><strong>Terapeuta:</strong> Use as <strong>SETAS (Esquerda/Direita)</strong> para selecionar a resposta do paciente.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Estímulos:</label>
+            <select id="cfg-type">
+                <option value="letters">Letras (b, d, p, q)</option>
+                <option value="hands">Mãos e Pés</option>
+                <option value="shapes">Objetos Assimétricos</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Dificuldade (Rotação):</label>
+            <select id="cfg-diff">
+                <option value="easy">Fácil (Rotação leve)</option>
+                <option value="hard">Difícil (Rotação completa)</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="margin-bottom:10px; font-size:1.5rem; color:#888;">
+            Acertos: <span id="hud-score" style="color:white">0</span> | 
+            Tempo Médio: <span id="hud-time" style="color:white">0.0s</span>
+        </div>
+
+        <div id="game-grid">
+            <div id="model-card" class="card">b</div>
+            <div id="opt1-card" class="card">q</div>
+            <div id="opt2-card" class="card">b</div>
+        </div>
+        
+        <div style="position:fixed; bottom:10px; color:#555;">⬅ ➡: Selecionar Opção | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { 
+            patient: "Visitante", 
+            rounds: 0, 
+            score: 0, 
+            reactionTimes: [], 
+            startTime: 0, 
+            correctSide: null, // 'left' or 'right'
+            isWaiting: false 
+        };
+
+        const settings = { type: 'letters', diff: 'easy' };
+
+        const ASSETS = {
+            letters: ["b", "d", "p", "q", "R", "F", "L", "E"],
+            hands: ["👍", "👎", "👆", "👇", "👉", "👈", "✋", "🖖"],
+            shapes: ["👟", "👠", "🚗", "🔫", "🎸", "🎺", "🔑", "🔨"]
+        };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.type = document.getElementById('cfg-type').value;
+            settings.diff = document.getElementById('cfg-diff').value;
+            
+            state.rounds = 0; state.score = 0; state.reactionTimes = [];
+            updateHUD();
+            showScreen('screen-game');
+            nextRound();
+        }
+
+        function nextRound() {
+            state.rounds++;
+            
+            // 1. Escolher Símbolo Base
+            const pool = ASSETS[settings.type];
+            const symbol = pool[Math.floor(Math.random() * pool.length)];
+
+            // 2. Definir Rotação do Modelo (Base)
+            // O modelo sempre aparece "correto" (ou levemente girado para dificultar a identificação da vertical)
+            const modelRot = 0; 
+
+            // 3. Definir Rotação da Opção CORRETA
+            // Fácil: -45 a 45 graus. Difícil: 0 a 360 graus.
+            let correctRot;
+            if (settings.diff === 'easy') {
+                correctRot = (Math.random() - 0.5) * 90; 
+            } else {
+                correctRot = Math.random() * 360;
+            }
+
+            // 4. Definir Opção Distratora (Espelhada + Rotação)
+            const distractorRot = Math.random() * 360;
+
+            // 5. Renderizar
+            const modelCard = document.getElementById('model-card');
+            const opt1 = document.getElementById('opt1-card');
+            const opt2 = document.getElementById('opt2-card');
+
+            // Limpa classes anteriores
+            opt1.className = 'card';
+            opt2.className = 'card';
+
+            // Define conteúdo
+            modelCard.innerText = symbol;
+            opt1.innerText = symbol;
+            opt2.innerText = symbol;
+
+            // Define onde está a resposta certa (Esq ou Dir)
+            state.correctSide = Math.random() < 0.5 ? 'left' : 'right';
+
+            // Aplica transformações
+            // Modelo
+            modelCard.style.transform = `rotate(${modelRot}deg)`;
+
+            // Opções
+            if (state.correctSide === 'left') {
+                // Esquerda é certa
+                opt1.style.transform = `rotate(${correctRot}deg)`; // Apenas rotação
+                opt2.style.transform = `rotate(${distractorRot}deg) scaleX(-1)`; // Espelhado!
+            } else {
+                // Direita é certa
+                opt1.style.transform = `rotate(${distractorRot}deg) scaleX(-1)`; // Espelhado!
+                opt2.style.transform = `rotate(${correctRot}deg)`; // Apenas rotação
+            }
+
+            state.startTime = Date.now();
+            state.isWaiting = true;
+        }
+
+        function handleInput(side) {
+            if(!state.isWaiting) return;
+            state.isWaiting = false;
+
+            const time = Date.now() - state.startTime;
+            state.reactionTimes.push(time);
+
+            const opt1 = document.getElementById('opt1-card');
+            const opt2 = document.getElementById('opt2-card');
+
+            if (side === state.correctSide) {
+                // ACERTOU
+                state.score++;
+                if(side === 'left') opt1.classList.add('correct');
+                else opt2.classList.add('correct');
+                // Toca som de acerto? (opcional)
+            } else {
+                // ERROU
+                if(side === 'left') opt1.classList.add('wrong');
+                else opt2.classList.add('wrong');
+                
+                // Mostra qual era a certa
+                if(state.correctSide === 'left') opt1.classList.add('correct');
+                else opt2.classList.add('correct');
+            }
+
+            updateHUD();
+
+            // Próxima rodada em 1.5s
+            setTimeout(nextRound, 1500);
+        }
+
+        function updateHUD() {
+            const avg = state.reactionTimes.length ? (state.reactionTimes.reduce((a,b)=>a+b,0)/state.reactionTimes.length/1000).toFixed(1) : 0.0;
+            document.getElementById('hud-score').innerText = `${state.score}/${state.rounds}`;
+            document.getElementById('hud-time').innerText = `${avg}s`;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!state.isWaiting) return;
+            if(e.key === 'ArrowLeft') handleInput('left');
+            if(e.key === 'ArrowRight') handleInput('right');
+            if(e.key === 'Escape') endGame();
+        });
+
+        function endGame() {
+            state.isWaiting = false;
+            const avg = state.reactionTimes.length ? (state.reactionTimes.reduce((a,b)=>a+b,0)/state.reactionTimes.length/1000).toFixed(2) : 0;
+            const acc = state.rounds ? ((state.score/state.rounds)*100).toFixed(0) : 0;
+
+            let h = JSON.parse(localStorage.getItem('neuro_opt_mirror_history') || '[]');
+            h.unshift({
+                date: new Date().toLocaleString('pt-BR'),
+                patient: state.patient,
+                type: settings.type,
+                accuracy: acc + '%',
+                time: avg + 's'
+            });
+            localStorage.setItem('neuro_opt_mirror_history', JSON.stringify(h));
+            
+            alert(`Sessão Finalizada!\nAcertos: ${acc}%\nTempo Médio: ${avg}s`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_mirror_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Tipo</th><th>Acurácia</th><th>Tempo</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.accuracy}</td><td>${i.time}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

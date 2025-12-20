@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>OKN - Listras</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #stripes {
+            width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(90deg, #000, #000 50px, #FFF 50px, #FFF 100px);
+            background-size: 200vw 100vh; /* Dobro da largura para loop */
+        }
+        #hud { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.5); color: white; padding: 10px; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="stripes"></div>
+    <div id="hud">Velocidade: <span id="spd">5</span> | Espaço: Inverter | ESC: Sair</div>
+
+    <script>
+        let pos = 0;
+        let speed = 5; // Pixels por frame
+        const el = document.getElementById('stripes');
+
+        function animate() {
+            pos += speed;
+            el.style.backgroundPosition = `${pos}px 0`;
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowUp') speed++;
+            if(e.key === 'ArrowDown') speed--;
+            if(e.code === 'Space') speed = -speed;
+            if(e.key === 'Escape') window.location.href='../index.html';
+            document.getElementById('spd').innerText = speed;
+        });
+    </script>
+</body>
+</html>

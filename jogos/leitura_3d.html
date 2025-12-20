@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Palavras Fantasmas</title>
+    <style>
+        :root { --bg-color: #FFF; --text-color: #000; --primary-color: #D32F2F; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Georgia', serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .instructions-box { background: #333; color: white; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #FFF; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #333; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #555; cursor: pointer; }
+
+        /* JOGO */
+        #text-area { font-size: 3rem; text-align: center; max-width: 80%; line-height: 1.5; font-weight: bold; }
+        .char-red { color: red; }
+        .char-cyan { color: cyan; }
+        .char-black { color: black; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #eee; color: #000; border: 1px solid #aaa; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #eee; }
+        th, td { padding: 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>👓 Palavras Fantasmas</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        <div class="instructions-box">
+            <p><strong>⚠️ Requer Óculos Anaglifo.</strong></p>
+            <p><strong>Paciente:</strong> Leia o texto em voz alta. Se alguma letra sumir, avise!</p>
+            <p><strong>Terapeuta:</strong> Use <strong>SETA BAIXO</strong> para registrar supressão (erro). Use <strong>ENTER</strong> para próxima frase.</p>
+        </div>
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Tamanho do Texto:</label>
+            <input type="range" id="cfg-size" min="20" max="80" value="40">
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="text-area"></div>
+        <div style="position:fixed; bottom:10px; color:#888;">ENTER: Próxima Frase | SETA BAIXO: Erro | ESC: Sair</div>
+        <div id="hud-errors" style="position:absolute; top:20px; right:20px; color:red; font-size:1.5rem;">Supressões: 0</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { patient: "Visitante", errors: 0, currentPhrase: 0 };
+        const PHRASES = [
+            "O RATO ROEU A ROUPA DO REI DE ROMA",
+            "A VISÃO É A PORTA DE ENTRADA PARA O MUNDO",
+            "QUEM TEM BOCA VAI A ROMA",
+            "MAIS VALE UM PÁSSARO NA MÃO DO QUE DOIS VOANDO",
+            "ÁGUA MOLE EM PEDRA DURA TANTO BATE ATÉ QUE FURA",
+            "EM TERRA DE CEGO QUEM TEM UM OLHO É REI"
+        ];
+
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('patient-display').innerText = "Paciente: " + state.patient; };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            const size = document.getElementById('cfg-size').value;
+            document.getElementById('text-area').style.fontSize = size + 'px';
+            state.errors = 0;
+            state.currentPhrase = 0;
+            updateHUD();
+            showScreen('screen-game');
+            renderPhrase();
+        }
+
+        function renderPhrase() {
+            const container = document.getElementById('text-area');
+            const phrase = PHRASES[state.currentPhrase % PHRASES.length];
+            container.innerHTML = "";
+            
+            // Lógica Anaglifo: Alternar cores
+            for (let i = 0; i < phrase.length; i++) {
+                const span = document.createElement('span');
+                span.innerText = phrase[i];
+                if(phrase[i] === " ") {
+                    span.className = "char-black";
+                } else {
+                    // Randomiza: Red, Cyan ou Black
+                    const r = Math.random();
+                    if(r < 0.4) span.className = "char-red";
+                    else if (r < 0.8) span.className = "char-cyan";
+                    else span.className = "char-black";
+                }
+                container.appendChild(span);
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
+            if(e.key === 'ArrowDown') { state.errors++; updateHUD(); alert("Supressão Registrada!"); }
+            if(e.key === 'Enter') { state.currentPhrase++; renderPhrase(); }
+            if(e.key === 'Escape') endGame();
+        });
+
+        function updateHUD() { document.getElementById('hud-errors').innerText = "Supressões: " + state.errors; }
+
+        function endGame() {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_leitura3d_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString(), patient: state.patient, errors: state.errors });
+            localStorage.setItem('neuro_opt_leitura3d_history', JSON.stringify(h));
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_leitura3d_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Supressões</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.errors}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

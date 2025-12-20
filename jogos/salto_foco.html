@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salto de Foco - Flexibilidade</title>
+    <style>
+        :root { --bg-color: #000; --fg-color: #FFF; --highlight: #00E5FF; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #121212; color: #eee; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: #121212; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        #game-area { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: background 0.2s; }
+        .state-near { background-color: #111 !important; color: #333 !important; }
+        .state-near #target-content { display: none; }
+        .state-near #near-icon { display: block; }
+        .state-far #target-content { display: block; }
+        .state-far #near-icon { display: none; }
+
+        #target-content { font-weight: bold; line-height: 1; text-align: center; }
+        #near-icon { font-size: 5rem; opacity: 0.3; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.5; } 100% { opacity: 0.2; } }
+
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--highlight); color: #000; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="secondary" style="position:absolute; top:20px; left:20px;" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1 style="color:var(--highlight);">👀 Salto de Foco</h1>
+        <div id="patient-display" style="color:var(--highlight); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div style="background:#222; padding:20px; max-width:600px; border-left:4px solid var(--highlight); color:#ccc;">
+            <p><strong>Mecânica:</strong> Alterne o foco entre a Tabela de Hart (Mão) e a TV.</p>
+            <p><strong>Comando:</strong> Pressione <strong>ENTER</strong> quando o paciente identificar o alvo.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="printHartChart()" title="Imprimir tabela para o paciente usar na mão">🖨️ Imprimir Hart Chart</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Conteúdo:</label>
+            <select id="cfg-content">
+                <option value="letters">Letras</option>
+                <option value="numbers">Números</option>
+                <option value="animals">Emojis/Animais</option>
+                <option value="shapes">Formas Geométricas Coloridas</option>
+                <option value="e_snellen">E Direcional</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Tamanho: <span id="val-size">200px</span></label>
+            <input type="range" id="cfg-size" min="50" max="400" step="10" value="200" oninput="document.getElementById('val-size').innerText=this.value+'px'">
+        </div>
+        <div class="settings-group">
+            <label>Ritmo:</label>
+            <select id="cfg-mode">
+                <option value="manual">Manual (Tecla ENTER)</option>
+                <option value="auto3">Auto (3s)</option>
+                <option value="auto5">Auto (5s)</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="position: absolute; top: 10px; width: 100%; display: flex; justify-content: space-between; padding: 0 40px; color: #888; font-size: 1.5rem;">
+            <span>Tempo: <span id="timer-display">00:00</span></span>
+            <span>Ciclos: <span id="cycle-display" style="color:var(--highlight)">0</span></span>
+        </div>
+        <div id="game-area" class="state-near">
+            <div id="near-icon">📄<br><span style="font-size:1rem">Procure na Tabela</span></div>
+            <div id="target-content">A</div>
+        </div>
+        <div style="position:fixed; bottom:10px; color:#555;">ENTER: Trocar | ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
+            o.start(); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.1); o.stop(audioCtx.currentTime+0.1);
+        }
+
+        const state = { patient: "Visitante", isFar: false, cycleCount: 0, startTime: 0, timerInterval: null, autoInterval: null, isRunning: false };
+        const settings = { content: 'letters', size: 200, mode: 'manual' };
+        
+        // CONTEÚDO CORRIGIDO E EXPANDIDO
+        const POOLS = {
+            letters: "ABCDEFHJKLMNPQRSTVWXYZ".split(''),
+            numbers: "123456789".split(''),
+            animals: ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🦁","🐮","🐸","🐔"],
+            shapes: ["🟥","🟦","🟩","🟨","🟠","🟣","🔺","🔷"], // Emojis de formas para simplificar render
+            e_snellen: ["E"] 
+        };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            // Carrega Configs
+            settings.content = document.getElementById('cfg-content').value;
+            settings.size = parseInt(document.getElementById('cfg-size').value);
+            settings.mode = document.getElementById('cfg-mode').value;
+            
+            // Aplica tamanho
+            document.getElementById('target-content').style.fontSize = settings.size + 'px';
+
+            state.cycleCount = 0; state.isFar = false; state.isRunning = true; state.startTime = Date.now();
+            showScreen('screen-game');
+            updateGameState();
+
+            state.timerInterval = setInterval(() => {
+                const d = Math.floor((Date.now()-state.startTime)/1000);
+                document.getElementById('timer-display').innerText = `${Math.floor(d/60).toString().padStart(2,'0')}:${(d%60).toString().padStart(2,'0')}`;
+            }, 1000);
+
+            if(settings.mode.startsWith('auto')) {
+                state.autoInterval = setInterval(toggleFocus, settings.mode === 'auto3' ? 3000 : 5000);
+            }
+        }
+
+        function toggleFocus() {
+            state.isFar = !state.isFar;
+            if(state.isFar) {
+                playBeep();
+                generateNewTarget();
+                state.cycleCount++;
+                document.getElementById('cycle-display').innerText = state.cycleCount;
+            }
+            updateGameState();
+        }
+
+        function updateGameState() {
+            const area = document.getElementById('game-area');
+            if(state.isFar) { area.classList.remove('state-near'); area.classList.add('state-far'); area.style.background = "#FFF"; area.style.color="#000"; }
+            else { area.classList.remove('state-far'); area.classList.add('state-near'); area.style.background = "#111"; area.style.color="#333"; }
+        }
+
+        function generateNewTarget() {
+            const el = document.getElementById('target-content');
+            el.style.transform = "rotate(0deg)";
+            
+            const pool = POOLS[settings.content];
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            
+            el.innerText = item;
+
+            if(settings.content === 'e_snellen') {
+                const deg = Math.floor(Math.random() * 4) * 90;
+                el.style.transform = `rotate(${deg}deg)`;
+            }
+        }
+
+        // --- GERADOR DE HART CHART ---
+        function printHartChart() {
+            const content = document.getElementById('cfg-content').value;
+            const pool = POOLS[content];
+            
+            // Cria uma janela nova para impressão
+            const win = window.open('', '', 'width=800,height=600');
+            let html = `
+                <html><head><title>Tabela de Hart - NeuroHub</title>
+                <style>
+                    body { font-family: sans-serif; text-align: center; }
+                    table { margin: 20px auto; border-collapse: collapse; width: 90%; }
+                    td { border: 1px solid #ccc; padding: 15px; font-size: 24px; text-align: center; }
+                    h2 { margin-bottom: 5px; }
+                    p { font-size: 12px; color: #666; }
+                </style>
+                </head><body>
+                <h2>Tabela de Hart Personalizada</h2>
+                <p>Paciente: ${state.patient} | Data: ${new Date().toLocaleDateString()}</p>
+                <table>
+            `;
+
+            // Gera Grid 10x10 aleatória
+            for(let r=0; r<10; r++) {
+                html += "<tr>";
+                for(let c=0; c<10; c++) {
+                    const item = pool[Math.floor(Math.random() * pool.length)];
+                    // Se for E direcional, aplica rotação inline
+                    let style = "";
+                    if(content === 'e_snellen') {
+                        const rot = Math.floor(Math.random() * 4) * 90;
+                        style = `style="display:inline-block; transform:rotate(${rot}deg)"`;
+                    }
+                    html += `<td><span ${style}>${item}</span></td>`;
+                }
+                html += "</tr>";
+            }
+
+            html += `</table><script>window.print();<\/script></body></html>`;
+            win.document.write(html);
+            win.document.close();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!state.isRunning) return;
+            // PADRONIZAÇÃO: Enter ou Espaço
+            if(e.code === 'Enter' || e.code === 'Space') { if(settings.mode === 'manual') toggleFocus(); }
+            if(e.code === 'Escape') endGame();
+        });
+
+        function endGame() {
+            state.isRunning = false; clearInterval(state.timerInterval); clearInterval(state.autoInterval);
+            const d = (Date.now() - state.startTime)/1000;
+            const cpm = (state.cycleCount / (d/60)) || 0;
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_foco_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString(), patient: state.patient, cpm: cpm.toFixed(1), duration: Math.floor(d)+'s' });
+            localStorage.setItem('neuro_opt_foco_history', JSON.stringify(h));
+            
+            alert(`CPM: ${cpm.toFixed(1)}`); showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_foco_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Duração</th><th>CPM</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.duration}</td><td>${i.cpm}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

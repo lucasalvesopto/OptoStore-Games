@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Luminoso - Memória Visual</title>
+    <style>
+        :root {
+            --bg-color: #121212; --surface-color: #1E1E1E; --text-color: #E0E0E0;
+            --primary-color: #00E5FF;
+            --btn-green: #2e7d32; --btn-red: #c62828; --btn-yellow: #f9a825; --btn-blue: #1565c0;
+        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: var(--bg-color); z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; text-align: center; }
+        .instructions-box { background: #2c2c2c; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; font-size: 1.1rem; color: #ccc; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+        #game-board { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; width: 80vmin; height: 80vmin; margin-top: 20px; }
+        .pad { border-radius: 20px; opacity: 0.3; display: flex; justify-content: center; align-items: center; font-size: 5rem; font-weight: bold; color: rgba(255,255,255,0.8); transition: all 0.1s; }
+        .pad.active { opacity: 1; transform: scale(0.95); box-shadow: 0 0 40px currentColor; }
+        #pad-0 { background-color: var(--btn-green); color: var(--btn-green); }
+        #pad-1 { background-color: var(--btn-red); color: var(--btn-red); }
+        #pad-2 { background-color: var(--btn-yellow); color: var(--btn-yellow); }
+        #pad-3 { background-color: var(--btn-blue); color: var(--btn-blue); }
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: var(--surface-color); }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>🧠 Eco Luminoso</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        <div class="instructions-box">
+            <p><strong>👁️ Paciente:</strong> Memorize e repita a sequência.</p>
+            <p><strong>🎮 Terapeuta:</strong></p>
+            <ul>
+                <li><strong>ENTER (ou Seta Direita):</strong> Acertou (Próximo Nível).</li>
+                <li><strong>Seta Esquerda:</strong> Errou.</li>
+                <li><strong>'R':</strong> Repetir sequência.</li>
+            </ul>
+        </div>
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Histórico</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Velocidade: <span id="val-speed">1.0s</span></label>
+            <input type="range" id="cfg-speed" min="400" max="1500" step="100" value="1000" oninput="document.getElementById('val-speed').innerText = (this.value/1000)+'s'">
+        </div>
+        <div class="settings-group">
+            <label>Estímulo:</label>
+            <select id="cfg-type">
+                <option value="color">Cores</option>
+                <option value="number">Números</option>
+                <option value="arrow">Setas</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Início:</label>
+            <select id="cfg-start">
+                <option value="2">2 Itens</option>
+                <option value="3">3 Itens</option>
+                <option value="4">4 Itens</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div style="position: absolute; top: 10px; font-size: 1.5rem; color: #888;">Nível: <span id="level-display" style="color: white;">0</span></div>
+        <div id="game-board">
+            <div id="pad-0" class="pad"></div> <div id="pad-1" class="pad"></div>
+            <div id="pad-2" class="pad"></div> <div id="pad-3" class="pad"></div>
+        </div>
+        <div id="turn-indicator" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.8); padding:20px; border-radius:10px; font-size:2rem; border:2px solid white;">👂 SUA VEZ</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Histórico</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const freqs = [329.63, 440.00, 261.63, 392.00];
+        const state = { patient: "Visitante", sequence: [], isPlaying: false };
+        const settings = { speed: 1000, type: 'color', startLevel: 3 };
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        
+        // CORREÇÃO: Função showHistory agora existe e é acessível
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.speed = parseInt(document.getElementById('cfg-speed').value);
+            settings.type = document.getElementById('cfg-type').value;
+            settings.startLevel = parseInt(document.getElementById('cfg-start').value);
+            
+            state.sequence = [];
+            
+            // Atualiza visuais
+            const pads = document.querySelectorAll('.pad');
+            const arrows = ['↖', '↗', '↙', '↘'];
+            pads.forEach((p, i) => {
+                p.innerText = settings.type === 'number' ? i+1 : (settings.type === 'arrow' ? arrows[i] : '');
+            });
+
+            showScreen('screen-game');
+            for(let i=0; i<settings.startLevel; i++) state.sequence.push(Math.floor(Math.random()*4));
+            setTimeout(playSequence, 1000);
+        }
+
+        function playSequence() {
+            state.isPlaying = true;
+            document.getElementById('turn-indicator').style.display = 'none';
+            document.getElementById('level-display').innerText = state.sequence.length;
+            let i = 0;
+            const interval = setInterval(() => {
+                if(i >= state.sequence.length) { clearInterval(interval); state.isPlaying = false; document.getElementById('turn-indicator').style.display = 'block'; return; }
+                activatePad(state.sequence[i]); i++;
+            }, settings.speed);
+        }
+
+        function activatePad(i) {
+            const pad = document.getElementById('pad-'+i);
+            pad.classList.add('active');
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            osc.frequency.value = freqs[i]; osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3); osc.stop(audioCtx.currentTime+0.3);
+            setTimeout(() => pad.classList.remove('active'), settings.speed * 0.5);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active') || state.isPlaying) return;
+            if(e.key.toLowerCase() === 'r') playSequence();
+            // PADRONIZAÇÃO: Enter ou Seta Direita para acerto
+            if(e.key === 'ArrowRight' || e.key === 'Enter') {
+                document.getElementById('screen-game').style.boxShadow = "inset 0 0 50px #00E676";
+                setTimeout(() => document.getElementById('screen-game').style.boxShadow = "none", 300);
+                state.sequence.push(Math.floor(Math.random()*4));
+                setTimeout(playSequence, 1000);
+            }
+            if(e.key === 'ArrowLeft') {
+                if(confirm("Paciente errou. Encerrar?")) { saveResult(); showScreen('screen-home'); } else playSequence();
+            }
+            if(e.key === 'Escape') { saveResult(); showScreen('screen-home'); }
+        });
+
+        function saveResult() {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_eco_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, maxSeq: state.sequence.length, type: settings.type });
+            localStorage.setItem('neuro_opt_eco_history', JSON.stringify(h));
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_eco_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Modo</th><th>Seq. Máx</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.maxSeq}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

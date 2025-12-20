@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caçador de Fantasmas - Anaglifo</title>
+    <style>
+        :root { --bg-color: #121212; --surface-color: #1E1E1E; --primary-color: #00E5FF; --text-color: #E0E0E0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: var(--bg-color); z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        h1 { font-size: 3rem; color: var(--primary-color); text-align: center; }
+        .instructions-box { background: #2c2c2c; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; font-size: 1.1rem; color: #ccc; margin-bottom: 20px; }
+        
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO */
+        #game-container { position: relative; width: 100%; height: 100%; overflow: hidden; background: white; }
+        canvas { display: block; }
+
+        #therapist-hud {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;
+            font-size: 1rem; pointer-events: none;
+        }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: var(--surface-color); }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>🕶️ Caçador de Fantasmas</h1>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>⚠️ Requer Óculos Vermelho/Azul (Cyan).</strong></p>
+            <p><strong>Paciente:</strong> Conte quantos fantasmas você vê na tela (total).</p>
+            <p><strong>Terapeuta:</strong> Compare com o número real no canto da tela.</p>
+            <ul>
+                <li><strong>ESPAÇO:</strong> Acerto (Binocularidade OK).</li>
+                <li><strong>Tecla 'E':</strong> Erro (Supressão).</li>
+            </ul>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Fundo da Tela:</label>
+            <select id="cfg-bg">
+                <option value="white">Branco (Melhor Cancelamento)</option>
+                <option value="black">Preto</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Quantidade Máxima:</label>
+            <input type="range" id="cfg-qty" min="3" max="20" value="10" oninput="document.getElementById('val-qty').innerText=this.value">
+            <span id="val-qty" style="float:right; color:var(--primary-color)">10</span>
+        </div>
+        <div class="settings-group">
+            <label>Tamanho:</label>
+            <input type="range" id="cfg-size" min="30" max="150" value="60">
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+        <div id="therapist-hud">Total: <span id="hud-total">0</span> | Espaço: OK, 'E': Erro</div>
+        <div style="position:fixed; bottom:10px; left:10px; color:#888; text-shadow: 1px 1px 2px black;">ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { patient: "Visitante", ghosts: [], totalRounds: 0, successes: 0, animationId: null };
+        const settings = { bg: 'white', maxQty: 10, size: 60 };
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        };
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.bg = document.getElementById('cfg-bg').value;
+            settings.maxQty = parseInt(document.getElementById('cfg-qty').value);
+            settings.size = parseInt(document.getElementById('cfg-size').value);
+            
+            state.totalRounds = 0; state.successes = 0;
+            
+            const bgCol = settings.bg === 'white' ? '#FFFFFF' : '#000000';
+            document.getElementById('game-container').style.backgroundColor = bgCol;
+            document.getElementById('therapist-hud').style.color = 'white';
+
+            showScreen('screen-game');
+            spawnGhosts();
+            animate();
+        }
+
+        class Ghost {
+            constructor() {
+                this.x = Math.random() * (canvas.width - 100) + 50;
+                this.y = Math.random() * (canvas.height - 100) + 50;
+                this.dx = (Math.random() - 0.5) * 2;
+                this.dy = (Math.random() - 0.5) * 2;
+                this.size = settings.size;
+                
+                // Tipo de Fantasma: 0=Vermelho, 1=Cyan, 2=Preto(Controle)
+                const r = Math.random();
+                if(r < 0.33) this.type = 'red';
+                else if(r < 0.66) this.type = 'cyan';
+                else this.type = 'control';
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size/2, 0, Math.PI * 2);
+                
+                // Cores Anaglifo
+                if(this.type === 'red') ctx.fillStyle = '#FF0000'; 
+                else if(this.type === 'cyan') ctx.fillStyle = '#00FFFF';
+                else ctx.fillStyle = settings.bg === 'white' ? '#000000' : '#888888';
+                
+                ctx.fill();
+                
+                // Olhos
+                ctx.fillStyle = settings.bg === 'white' ? 'white' : 'black';
+                ctx.beginPath(); ctx.arc(this.x-10, this.y-5, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x+10, this.y-5, 5, 0, Math.PI*2); ctx.fill();
+            }
+
+            update() {
+                if(this.x + this.size/2 > canvas.width || this.x - this.size/2 < 0) this.dx = -this.dx;
+                if(this.y + this.size/2 > canvas.height || this.y - this.size/2 < 0) this.dy = -this.dy;
+                this.x += this.dx; this.y += this.dy;
+                this.draw();
+            }
+        }
+
+        function spawnGhosts() {
+            state.ghosts = [];
+            const count = Math.floor(Math.random() * (settings.maxQty - 3)) + 3; // Min 3
+            for(let i=0; i<count; i++) state.ghosts.push(new Ghost());
+            
+            // HUD
+            let r=0, c=0, k=0;
+            state.ghosts.forEach(g => { if(g.type==='red') r++; else if(g.type==='cyan') c++; else k++; });
+            document.getElementById('hud-total').innerText = `${state.ghosts.length} (🔴${r} 🔵${c} ⚫${k})`;
+        }
+
+        function animate() {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            state.ghosts.forEach(g => g.update());
+            state.animationId = requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!document.getElementById('screen-game').classList.contains('active')) return;
+
+            if(e.code === 'Space') { // Acerto
+                state.totalRounds++; state.successes++;
+                alert("Correto! Próxima rodada.");
+                spawnGhosts();
+            }
+            if(e.code === 'KeyE') { // Erro
+                state.totalRounds++;
+                alert("Erro registrado (Supressão). Próxima rodada.");
+                spawnGhosts();
+            }
+            if(e.code === 'Escape') endGame();
+        });
+
+        function endGame() {
+            cancelAnimationFrame(state.animationId);
+            const perc = state.totalRounds ? ((state.successes/state.totalRounds)*100).toFixed(0) : 0;
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_fantasma_history') || '[]');
+            h.unshift({
+                date: new Date().toLocaleString('pt-BR'),
+                patient: state.patient,
+                rounds: state.totalRounds,
+                score: perc + '%'
+            });
+            localStorage.setItem('neuro_opt_fantasma_history', JSON.stringify(h));
+            
+            alert(`Fim!\nEstabilidade Binocular: ${perc}%`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_fantasma_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Rodadas</th><th>Binocularidade</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.rounds}</td><td>${i.score}</td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

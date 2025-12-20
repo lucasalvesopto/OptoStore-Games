@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinela Periférica</title>
+    <style>
+        :root { --bg-color: #000; --fg-color: #FFF; --highlight: #00E676; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--fg-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; background: var(--bg-color); z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
+        
+        h1 { font-size: 3rem; color: var(--highlight); margin-bottom: 0.5rem; }
+        .instructions-box { background: #222; padding: 20px; border-left: 4px solid var(--highlight); max-width: 800px; color: #ccc; margin-bottom: 20px; }
+        
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--highlight); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO */
+        #game-area { position: relative; width: 100%; height: 100%; cursor: none; }
+        
+        /* Central Target */
+        #center-target {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 5rem; font-weight: bold; color: var(--highlight);
+        }
+
+        /* Peripheral Dot */
+        .dot {
+            position: absolute; width: 20px; height: 20px; border-radius: 50%;
+            background: white; display: none;
+        }
+
+        /* Feedback Visual */
+        #feedback-msg {
+            position: absolute; top: 60%; left: 50%; transform: translate(-50%, 0);
+            font-size: 1.5rem; opacity: 0; transition: opacity 0.5s;
+        }
+
+        /* HUD */
+        #hud-stats { position: absolute; bottom: 10px; right: 10px; color: #555; }
+
+        .settings-group { margin-bottom: 20px; width: 100%; max-width: 500px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 1.2rem; }
+        select, input { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
+        <h1>im👀 Sentinela</h1>
+        <div id="patient-display" style="color:var(--highlight); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>Paciente:</strong> Olhe FIXAMENTE para a letra no centro. Quando ver uma luz piscando nos cantos, me avise (sem mover o olho do centro!).</p>
+            <p><strong>Terapeuta:</strong> Quando o paciente avisar o lado correto, pressione a <strong>SETA (Esq/Dir/Cima/Baixo)</strong>.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showScreen('screen-settings')">⚙ Configurações</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+        <h2>Configurações</h2>
+        <div class="settings-group">
+            <label>Estímulo Central:</label>
+            <select id="cfg-center">
+                <option value="letters">Letras Aleatórias</option>
+                <option value="numbers">Números Aleatórios</option>
+                <option value="static">Ponto de Fixação (+)</option>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label>Tamanho do Periférico:</label>
+            <input type="range" id="cfg-size" min="10" max="60" value="20" oninput="document.getElementById('val-size').innerText=this.value+'px'">
+            <span id="val-size" style="float:right; color:var(--highlight)">20px</span>
+        </div>
+        <div class="settings-group">
+            <label>Contraste:</label>
+            <select id="cfg-contrast">
+                <option value="bw">Fundo Preto / Luz Branca</option>
+                <option value="wb">Fundo Branco / Luz Preta</option>
+            </select>
+        </div>
+        <button onclick="showScreen('screen-home')">Salvar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="game-area">
+            <div id="center-target">+</div>
+            <div id="peri-dot" class="dot"></div>
+            <div id="feedback-msg">👍</div>
+        </div>
+        <div id="hud-stats">Acertos: 0 | Omissões: 0</div>
+        <div style="position:fixed; bottom:10px; left:10px; color:#555;">ESC: Sair</div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
+    </div>
+
+    <script>
+        const state = { 
+            patient: "Visitante", 
+            isRunning: false,
+            centerInterval: null,
+            periTimeout: null,
+            lastStimulus: { side: null, time: 0 }, // Onde e quando apareceu o último
+            stats: { total: 0, hits: 0, errors: 0, sideHits: {left:0, right:0, up:0, down:0} }
+        };
+        const settings = { center: 'letters', size: 20, contrast: 'bw' };
+        
+        const DIRECTIONS = ['left', 'right', 'up', 'down'];
+
+        window.onload = function() {
+            const p = new URLSearchParams(window.location.search).get('paciente');
+            if(p) { state.patient = p; document.getElementById('patient-display').innerText = "Paciente: " + p; }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
+        }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            settings.center = document.getElementById('cfg-center').value;
+            settings.size = parseInt(document.getElementById('cfg-size').value);
+            settings.contrast = document.getElementById('cfg-contrast').value;
+            
+            // Apply Settings
+            const game = document.getElementById('screen-game');
+            const dot = document.getElementById('peri-dot');
+            dot.style.width = settings.size + 'px';
+            dot.style.height = settings.size + 'px';
+            
+            if(settings.contrast === 'bw') {
+                game.style.background = '#000';
+                game.style.color = '#FFF';
+                dot.style.background = '#FFF';
+            } else {
+                game.style.background = '#FFF';
+                game.style.color = '#000';
+                dot.style.background = '#000';
+            }
+
+            // Reset Stats
+            state.stats = { total: 0, hits: 0, errors: 0, sideHits: {left:0, right:0, up:0, down:0} };
+            state.lastStimulus = { side: null, time: 0 };
+            updateHUD();
+
+            state.isRunning = true;
+            showScreen('screen-game');
+            
+            // Loop Central (Muda a cada 1.5s)
+            changeCenter();
+            state.centerInterval = setInterval(changeCenter, 1500);
+            
+            // Loop Periférico (Aleatório)
+            schedulePeripheral();
+        }
+
+        function changeCenter() {
+            const el = document.getElementById('center-target');
+            if(settings.center === 'static') {
+                el.innerText = "+";
+            } else if (settings.center === 'letters') {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                el.innerText = chars[Math.floor(Math.random()*chars.length)];
+            } else {
+                el.innerText = Math.floor(Math.random()*9)+1;
+            }
+        }
+
+        function schedulePeripheral() {
+            if(!state.isRunning) return;
+            // Intervalo aleatório entre 2s e 5s
+            const delay = Math.random() * 3000 + 2000;
+            state.periTimeout = setTimeout(showPeripheral, delay);
+        }
+
+        function showPeripheral() {
+            if(!state.isRunning) return;
+            
+            state.stats.total++;
+            const side = DIRECTIONS[Math.floor(Math.random()*DIRECTIONS.length)];
+            const dot = document.getElementById('peri-dot');
+            
+            // Posições (10% de margem)
+            dot.style.top = 'auto'; dot.style.bottom = 'auto'; dot.style.left = 'auto'; dot.style.right = 'auto';
+            
+            if(side === 'left') { dot.style.left = '5%'; dot.style.top = '50%'; }
+            if(side === 'right') { dot.style.right = '5%'; dot.style.top = '50%'; }
+            if(side === 'up') { dot.style.top = '5%'; dot.style.left = '50%'; }
+            if(side === 'down') { dot.style.bottom = '5%'; dot.style.left = '50%'; }
+            
+            dot.style.display = 'block';
+            
+            // Registra que um estímulo apareceu agora
+            state.lastStimulus = { side: side, time: Date.now() };
+
+            // Pisca por 300ms
+            setTimeout(() => {
+                dot.style.display = 'none';
+                schedulePeripheral(); // Agenda próximo
+            }, 300);
+        }
+
+        // --- INPUT DO TERAPEUTA ---
+        window.addEventListener('keydown', (e) => {
+            if(!state.isRunning) return;
+            
+            let inputSide = null;
+            if(e.key === 'ArrowLeft') inputSide = 'left';
+            if(e.key === 'ArrowRight') inputSide = 'right';
+            if(e.key === 'ArrowUp') inputSide = 'up';
+            if(e.key === 'ArrowDown') inputSide = 'down';
+            
+            if(inputSide) {
+                checkHit(inputSide);
+            }
+            if(e.key === 'Escape') endGame();
+        });
+
+        function checkHit(inputSide) {
+            const now = Date.now();
+            // Janela de resposta: Paciente deve avisar dentro de 2 segundos após o estímulo
+            const gracePeriod = 2000; 
+            
+            if (state.lastStimulus.side === inputSide && (now - state.lastStimulus.time) < gracePeriod) {
+                // ACERTO
+                state.stats.hits++;
+                state.stats.sideHits[inputSide]++;
+                showFeedback("✔");
+                state.lastStimulus = { side: null, time: 0 }; // Consome o estímulo para não contar duplo
+            } else {
+                // ERRO (Falso positivo ou atrasado)
+                // Opcional: penalizar
+                showFeedback("?");
+            }
+            updateHUD();
+        }
+
+        function showFeedback(txt) {
+            const fb = document.getElementById('feedback-msg');
+            fb.innerText = txt;
+            fb.style.opacity = 1;
+            setTimeout(() => fb.style.opacity = 0, 1000);
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-stats').innerText = `Estímulos: ${state.stats.total} | Acertos: ${state.stats.hits}`;
+        }
+
+        function endGame() {
+            state.isRunning = false;
+            clearInterval(state.centerInterval);
+            clearTimeout(state.periTimeout);
+            
+            const perc = state.stats.total ? ((state.stats.hits / state.stats.total)*100).toFixed(0) : 0;
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_sentinela_history') || '[]');
+            h.unshift({
+                date: new Date().toLocaleString('pt-BR'),
+                patient: state.patient,
+                total: state.stats.total,
+                score: perc + '%',
+                details: `Esq:${state.stats.sideHits.left} Dir:${state.stats.sideHits.right}`
+            });
+            localStorage.setItem('neuro_opt_sentinela_history', JSON.stringify(h));
+            
+            alert(`Sessão Finalizada!\nTaxa de Detecção: ${perc}%`);
+            showScreen('screen-home');
+        }
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_sentinela_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Total</th><th>Detecção</th><th>Detalhes</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.total}</td><td>${i.score}</td><td><small>${i.details}</small></td></tr>`).join('')}</table>`;
+        }
+    </script>
+</body>
+</html>

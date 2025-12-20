@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Hiperespaço</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; color: white; font-family: sans-serif; }
+        #hud { position: absolute; top: 10px; left: 10px; font-size: 1.2rem; }
+        #target { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: red; font-size: 3rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="hud">Velocidade: <span id="val-speed">10</span> | Espaço: Inverter | ESC: Sair</div>
+    <div id="target">X</div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let speed = 10;
+        const stars = [];
+        
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() {
+                this.x = (Math.random() - 0.5) * width * 2;
+                this.y = (Math.random() - 0.5) * height * 2;
+                this.z = Math.random() * width;
+                this.pz = this.z;
+            }
+            update() {
+                this.z = this.z - speed;
+                
+                // Reset se passar da tela ou for pra trás demais
+                if (this.z < 1) {
+                    this.z = width;
+                    this.x = (Math.random() - 0.5) * width * 2;
+                    this.y = (Math.random() - 0.5) * height * 2;
+                    this.pz = this.z;
+                }
+                if (this.z > width) {
+                    this.z = 1;
+                    this.x = (Math.random() - 0.5) * width * 2;
+                    this.y = (Math.random() - 0.5) * height * 2;
+                    this.pz = this.z;
+                }
+            }
+            show() {
+                let sx = (this.x / this.z) * (width/2) + (width/2);
+                let sy = (this.y / this.z) * (height/2) + (height/2);
+                let r = (1 - this.z / width) * 4;
+                
+                ctx.beginPath();
+                ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+        }
+
+        for(let i=0; i<800; i++) stars.push(new Star());
+
+        function loop() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, width, height);
+            for(let s of stars) { s.update(); s.show(); }
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowUp') speed += 2;
+            if(e.key === 'ArrowDown') speed -= 2;
+            if(e.code === 'Space') speed = -speed;
+            if(e.code === 'Escape') window.location.href='../index.html';
+            document.getElementById('val-speed').innerText = speed;
+        });
+    </script>
+</body>
+</html>

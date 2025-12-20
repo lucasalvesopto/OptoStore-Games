@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>A Matriz - Hart Chart</title>
+    <style>
+        body { background: #FFF; color: #000; font-family: monospace; text-align: center; margin: 0; overflow: hidden; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        #chart { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; width: 90vmin; height: 90vmin; border: 2px solid #333; padding: 10px; }
+        .cell { display: flex; justify-content: center; align-items: center; font-size: 2rem; border: 1px solid transparent; }
+        .cell.highlight { background: yellow; border-color: red; }
+        
+        .btn { padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #2196F3; color: white; border: none; border-radius: 5px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>🔠 A Matriz</h1>
+        <p>Paciente: <span id="p-name">---</span></p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" style="background:#555" onclick="window.location.href='../index.html'">Sair</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="chart"></div>
+        <p style="position:fixed; bottom:0; width:100%; background:#eee;">Espaço: Próximo Alvo | ESC: Sair</p>
+    </div>
+
+    <script>
+        const state = { patient: "", currentIdx: 0, sequence: [] };
+        const LETTERS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
+
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('p-name').innerText = state.patient; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            
+            // Gera Grade
+            const chart = document.getElementById('chart');
+            chart.innerHTML = '';
+            for(let i=0; i<100; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = 'c-'+i;
+                cell.innerText = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+                chart.appendChild(cell);
+            }
+            
+            // Define Sequência de Saccades (Extremidades)
+            // 0 (TL), 9 (TR), 90 (BL), 99 (BR), 0, 99, 9, 90...
+            state.sequence = [0, 9, 90, 99, 0, 99, 9, 90, 44, 55, 45, 54]; 
+            state.currentIdx = -1;
+            nextTarget();
+        }
+
+        function nextTarget() {
+            state.currentIdx++;
+            if(state.currentIdx >= state.sequence.length) state.currentIdx = 0; // Loop
+            
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('highlight'));
+            const id = state.sequence[state.currentIdx];
+            document.getElementById('c-'+id).classList.add('highlight');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') nextTarget();
+            if(e.code === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

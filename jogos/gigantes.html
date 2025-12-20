@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ilusão de Gigantes</title>
+    <style>
+        body { margin: 0; background: #87CEEB; overflow: hidden; font-family: sans-serif; text-align: center; }
+        
+        /* O Cenario (Estrada) */
+        #scene {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 600px; height: 100vh;
+            background: linear-gradient(to bottom, #222, #555);
+            clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%); /* Triângulo/Estrada */
+        }
+        
+        .obj {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 100px; background: yellow; border-radius: 50%;
+            border: 2px solid black; display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
+        
+        #far-obj { top: 20%; } /* Longe */
+        #near-obj { bottom: 10%; } /* Perto */
+
+        #ui { position: absolute; top: 10px; width: 100%; }
+        .btn { padding: 10px 20px; font-size: 1.2rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="scene"></div>
+    
+    <div id="far-obj" class="obj">A</div>
+    <div id="near-obj" class="obj">B</div>
+
+    <div id="ui">
+        <h1>G Ilusão de Gigantes</h1>
+        <p>Eles têm o mesmo tamanho real na tela?</p>
+        <button class="btn" onclick="check(true)">Sim (Iguais)</button>
+        <button class="btn" onclick="check(false)">Não (Diferentes)</button>
+        <br><br>
+        <button class="btn" onclick="nextRound()">Próximo</button>
+        <button class="btn" style="background:#333; color:white;" onclick="window.location.href='../index.html'">Sair</button>
+    </div>
+
+    <script>
+        function nextRound() {
+            // Randomiza: 50% chance de serem iguais pixels, 50% diferentes
+            const same = Math.random() < 0.5;
+            
+            const size = 80;
+            const far = document.getElementById('far-obj');
+            const near = document.getElementById('near-obj');
+            
+            near.style.width = size + 'px';
+            near.style.height = size + 'px';
+            
+            if(same) {
+                far.style.width = size + 'px';
+                far.style.height = size + 'px';
+                far.dataset.ans = "true";
+            } else {
+                // Far é menor ou maior
+                const diff = size * 1.2; 
+                far.style.width = diff + 'px';
+                far.style.height = diff + 'px';
+                far.dataset.ans = "false";
+            }
+        }
+
+        function check(userAns) {
+            const far = document.getElementById('far-obj');
+            const realAns = far.dataset.ans === "true";
+            
+            if(userAns === realAns) alert("ACERTOU!");
+            else alert("ERROU! A perspectiva te enganou.");
+        }
+        
+        nextRound();
+    </script>
+</body>
+</html>

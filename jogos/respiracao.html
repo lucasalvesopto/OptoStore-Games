@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Respiração Visual</title>
+    <style>
+        body { background: #002b36; color: #839496; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        
+        #circle {
+            width: 100px; height: 100px;
+            background: rgba(42, 161, 152, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(42, 161, 152, 0.8);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; color: white; text-shadow: 0 0 10px black;
+            transition: all 4s ease-in-out; /* Padrão de 4s */
+        }
+        
+        #instruction { font-size: 2rem; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        .inhale { width: 300px; height: 300px; background: rgba(133, 153, 0, 0.6); }
+        .exhale { width: 100px; height: 100px; background: rgba(42, 161, 152, 0.5); }
+    </style>
+</head>
+<body>
+    <div id="instruction">Inspire...</div>
+    <div id="circle"></div>
+    <div style="position:fixed; bottom:20px; font-size:0.9rem;">Relaxe o foco... (ESC para sair)</div>
+
+    <script>
+        const circle = document.getElementById('circle');
+        const text = document.getElementById('instruction');
+        
+        function breathe() {
+            // INSPIRE (4s)
+            text.innerText = "INSPIRE...";
+            circle.className = "inhale";
+            
+            setTimeout(() => {
+                // SEGURE (2s)
+                text.innerText = "SEGURE...";
+                
+                setTimeout(() => {
+                    // EXPIRE (6s)
+                    text.innerText = "EXPIRE...";
+                    circle.style.transition = "all 6s ease-in-out"; // Muda tempo pra expirar
+                    circle.className = "exhale";
+                    
+                    setTimeout(() => {
+                        // Reset para Inspire
+                        circle.style.transition = "all 4s ease-in-out"; 
+                        breathe();
+                    }, 6000);
+                }, 2000);
+            }, 4000);
+        }
+        
+        // Start delay
+        setTimeout(breathe, 1000);
+
+        window.addEventListener('keydown', (e) => { if(e.key === 'Escape') window.location.href='../index.html'; });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadeado Binocular</title>
+    <style>
+        body { background: #FFF; overflow: hidden; margin: 0; display: flex; justify-content: center; align-items: center; }
+        
+        /* ALVO DE FUSÃO */
+        #lock-target {
+            position: absolute; z-index: 10;
+            font-size: 8rem; mix-blend-mode: multiply;
+        }
+        .layer-r { color: red; position: absolute; top:0; left:0; }
+        .layer-c { color: cyan; position: absolute; top:0; left:0; }
+
+        /* PERIFERIA */
+        .distractor { position: absolute; font-size: 3rem; opacity: 0.5; transition: all 0.5s; }
+        
+        #hud { position: fixed; top: 10px; font-family: sans-serif; background: #eee; padding: 5px; z-index: 20; }
+    </style>
+</head>
+<body>
+    <div id="hud">Mantenha o X dentro da Bola. Espaço: Quebrou | ESC: Sair</div>
+    
+    <div id="lock-target">
+        <div class="layer-r">⭕</div>
+        <div class="layer-c">✖</div>
+    </div>
+
+    <div id="periphery"></div>
+
+    <script>
+        const symbols = ["★", "●", "■", "▲"];
+        
+        function loop() {
+            const p = document.getElementById('periphery');
+            const el = document.createElement('div');
+            el.className = 'distractor';
+            el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+            
+            // Random position away from center
+            let x, y;
+            do {
+                x = Math.random() * window.innerWidth;
+                y = Math.random() * window.innerHeight;
+            } while (Math.abs(x - window.innerWidth/2) < 200 && Math.abs(y - window.innerHeight/2) < 200);
+            
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            el.style.color = Math.random() < 0.5 ? 'red' : 'blue'; // Cores fortes
+            
+            p.appendChild(el);
+            
+            setTimeout(() => el.remove(), 1000);
+            setTimeout(loop, 500);
+        }
+        loop();
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') {
+                alert("Quebra registrada! Tente fundir novamente.");
+                // Save logic
+            }
+            if(e.key === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

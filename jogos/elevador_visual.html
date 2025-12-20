@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Elevador Visual</title>
+    <style>
+        body { background: #121212; color: #FFF; font-family: sans-serif; overflow: hidden; margin: 0; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        .target { font-size: 5rem; font-weight: bold; position: absolute; left: 50%; transform: translateX(-50%); display: none; }
+        #top-target { top: 5%; color: #00E5FF; }
+        #bot-target { bottom: 5%; color: #FFEA00; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>uarr Elevador Visual</h1>
+        <p>Olhe para cima e para baixo alternadamente.</p>
+        <button style="padding:15px; font-size:1.2rem; cursor:pointer;" onclick="startGame()">Iniciar</button>
+        <br><br>
+        <button style="padding:10px; cursor:pointer;" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="top-target" class="target">A</div>
+        <div id="bot-target" class="target">B</div>
+        <div style="position:fixed; top:50%; color:#555;">ESPAÇO: Alternar | ESC: Sair</div>
+    </div>
+
+    <script>
+        let isTop = true;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            updateTargets();
+        }
+
+        function updateTargets() {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const top = document.getElementById('top-target');
+            const bot = document.getElementById('bot-target');
+            
+            if(isTop) {
+                top.innerText = char;
+                top.style.display = 'block';
+                bot.style.display = 'none';
+            } else {
+                bot.innerText = char;
+                bot.style.display = 'block';
+                top.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Space') {
+                isTop = !isTop;
+                updateTargets();
+            }
+            if(e.code === 'Escape') window.location.href='../index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Memória Dupla</title>
+    <style>
+        body { background: #121212; color: #FFF; font-family: sans-serif; text-align: center; }
+        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.active { display: flex; }
+        
+        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 300px; height: 300px; margin-top:20px; }
+        .cell { border: 2px solid #444; border-radius: 10px; background: #222; cursor: pointer; }
+        .cell.selected { border-color: white; transform: scale(1.1); }
+        
+        #prompt { font-size: 2rem; font-weight: bold; color: #00E5FF; min-height: 50px; }
+        .btn { padding: 10px 20px; margin: 10px; cursor: pointer; background: #9C27B0; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active">
+        <h1>🧠 Memória Dupla</h1>
+        <p>Memorize ONDE estava cada COR.</p>
+        <button class="btn" onclick="startGame()">Iniciar</button>
+        <button class="btn" style="background:#333" onclick="window.location.href='../index.html'">Voltar</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div id="prompt">...</div>
+        <div id="grid"></div>
+        <p style="color:#888; margin-top:20px;">Setas: Escolher | Enter: Confirmar</p>
+    </div>
+
+    <script>
+        const state = { patient: "", phase: 'idle', items: [], targetColor: null, cursor: 0, hits: 0 };
+        const COLORS = ["#F44336", "#2196F3", "#4CAF50", "#FFEB3B"];
+        const COLOR_NAMES = {"#F44336":"VERMELHO", "#2196F3":"AZUL", "#4CAF50":"VERDE", "#FFEB3B":"AMARELO"};
+
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; };
+
+        function startGame() {
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            nextRound();
+        }
+
+        function nextRound() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            state.items = [];
+            state.cursor = 4; // Center
+            
+            // Cria 9 slots (3x3)
+            for(let i=0; i<9; i++) {
+                const d = document.createElement('div');
+                d.className = 'cell';
+                d.id = 'c-'+i;
+                grid.appendChild(d);
+                state.items.push({ id: i, color: null });
+            }
+
+            // Escolhe 3 posições aleatórias para por cores
+            const indices = [0,1,2,3,4,5,6,7,8].sort(() => 0.5 - Math.random()).slice(0, 3);
+            const roundColors = [...COLORS].sort(() => 0.5 - Math.random()).slice(0, 3);
+
+            // Fase 1: Mostrar
+            document.getElementById('prompt').innerText = "MEMORIZE!";
+            indices.forEach((idx, i) => {
+                const el = document.getElementById('c-'+idx);
+                el.style.backgroundColor = roundColors[i];
+                state.items[idx].color = roundColors[i];
+            });
+
+            setTimeout(() => {
+                // Fase 2: Esconder e Perguntar
+                indices.forEach(idx => document.getElementById('c-'+idx).style.backgroundColor = "#222");
+                
+                // Pergunta sobre uma das cores usadas
+                const targetIdx = indices[Math.floor(Math.random()*indices.length)];
+                state.targetColor = state.items[targetIdx].color;
+                
+                document.getElementById('prompt').innerText = `Onde estava o ${COLOR_NAMES[state.targetColor]}?`;
+                document.getElementById('prompt').style.color = state.targetColor;
+                state.phase = 'input';
+                updateCursor();
+            }, 3000);
+        }
+
+        function updateCursor() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+            document.getElementById('c-'+state.cursor).classList.add('selected');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(state.phase !== 'input') return;
+            
+            if(e.key === 'ArrowRight') state.cursor = (state.cursor + 1) % 9;
+            if(e.key === 'ArrowLeft') state.cursor = (state.cursor - 1 + 9) % 9;
+            if(e.key === 'ArrowDown') state.cursor = (state.cursor + 3) % 9;
+            if(e.key === 'ArrowUp') state.cursor = (state.cursor - 3 + 9) % 9;
+            
+            if(e.key === 'Enter') {
+                const chosenItem = state.items[state.cursor];
+                if(chosenItem.color === state.targetColor) {
+                    alert("ACERTOU!");
+                    state.hits++;
+                    nextRound();
+                } else {
+                    alert("ERROU!");
+                    // Revela onde estava
+                    const correctIdx = state.items.findIndex(x => x.color === state.targetColor);
+                    document.getElementById('c-'+correctIdx).style.border = "4px solid white";
+                    setTimeout(nextRound, 1000);
+                }
+                saveResult(state.hits);
+            }
+            updateCursor();
+            if(e.key === 'Escape') window.location.href='../index.html';
+        });
+
+        function saveResult(hits) {
+            let h = JSON.parse(localStorage.getItem('neuro_opt_memoria2_history') || '[]');
+            // Apenas atualiza o ultimo ou cria novo
+            // Simplificado: Salva a cada rodada
+            localStorage.setItem('neuro_opt_memoria2_history', JSON.stringify([{ date: new Date().toLocaleString(), patient: state.patient, hits: hits }]));
+        }
+    </script>
+</body>
+</html>
