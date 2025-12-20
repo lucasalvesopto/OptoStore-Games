@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados Clínicos - NeuroHub</title>
+    <style>
+        :root { 
+            --bg-color: #121212; 
+            --surface-color: #1E1E1E; 
+            --primary-color: #00E5FF; 
+            --text-color: #E0E0E0; 
+            --border-color: #333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; padding: 20px; 
+        }
+
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: var(--surface-color); 
+            padding: 40px; 
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+            border: 1px solid var(--border-color);
+        }
+        
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 2px solid var(--primary-color); 
+            padding-bottom: 20px; margin-bottom: 30px; 
+        }
+        
+        h1 { margin: 0; color: var(--primary-color); letter-spacing: 1px; }
+        p { color: #888; margin-top: 5px; }
+        
+        /* Controles */
+        .controls { display: flex; gap: 10px; align-items: center; }
+
+        .patient-select { 
+            padding: 10px; font-size: 1rem; 
+            background: #222; color: white; border: 1px solid #444; 
+            border-radius: 5px; width: 300px; 
+        }
+        
+        .btn { 
+            padding: 10px 20px; cursor: pointer; border-radius: 5px; 
+            font-weight: bold; text-decoration: none; font-size: 0.9rem; border: none;
+        }
+        .btn-print { background: var(--primary-color); color: #000; }
+        .btn-back { background: transparent; border: 1px solid #555; color: #aaa; }
+        .btn-back:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        /* Relatórios */
+        .report-section { margin-bottom: 30px; page-break-inside: avoid; }
+        
+        .section-title { 
+            font-size: 1.2rem; font-weight: bold; 
+            background: #252525; padding: 10px; 
+            border-left: 4px solid var(--primary-color); 
+            margin-bottom: 10px; color: white;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+        th { background-color: #2a2a2a; color: var(--primary-color); }
+        tr:nth-child(even) { background-color: #222; }
+        
+        .no-data { color: #666; font-style: italic; padding: 20px; text-align: center; border: 1px dashed #333; }
+        
+        /* CONFIGURAÇÃO DE IMPRESSÃO (ECONOMIA DE TINTA) */
+        @media print {
+            body { background: white; color: black; -webkit-print-color-adjust: exact; }
+            .container { box-shadow: none; padding: 0; border: none; background: white; }
+            .no-print { display: none; }
+            h1 { color: #000 !important; }
+            .section-title { background: #eee !important; color: #000 !important; border-left-color: #000 !important; }
+            th { background-color: #ddd !important; color: #000 !important; }
+            td, th { border: 1px solid #000 !important; color: #000 !important; }
+            tr:nth-child(even) { background-color: #f9f9f9 !important; }
+            p { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>📄 Prontuário de Resultados</h1>
+                <p>NeuroHub - Relatório Clínico Digital</p>
+            </div>
+            <div class="controls no-print">
+                <select id="patient-selector" class="patient-select" onchange="loadReport()"></select>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir</button>
+                <a href="index.html" class="btn btn-back">Voltar</a>
+            </div>
+        </header>
+
+        <div id="report-content">
+            <p style="text-align:center; color:#666; margin-top:50px;">Selecione um paciente na lista acima para visualizar o histórico.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mapeamento Completo (Jogos 1 a 35)
+        const GAME_MAP = [
+            // --- BLOCO 1 ---
+            { title: "Salto Quântico", key: "neuro_opt_history_v2", cols: ["Data", "Duração", "Detalhes"], mapFn: i => [i.date, i.duration + 's', i.settings || '-'] },
+            { title: "O Espião", key: "neuro_opt_espiao_history", cols: ["Data", "Dificuldade", "Tempo Médio"], mapFn: i => [i.date, i.difficulty, i.avgTime] },
+            { title: "Eco Luminoso", key: "neuro_opt_eco_history", cols: ["Data", "Modo", "Sequência Máx"], mapFn: i => [i.date, i.type, i.maxSeq] },
+            { title: "Salto de Foco", key: "neuro_opt_foco_history", cols: ["Data", "Duração", "CPM (Ciclos/min)"], mapFn: i => [i.date, i.duration, i.cpm] },
+            { title: "O Maestro", key: "neuro_opt_maestro_history", cols: ["Data", "Modo", "Acurácia", "Tempo Reação"], mapFn: i => [i.date, i.mode, i.accuracy, i.time] },
+            
+            // --- BLOCO 2 ---
+            { title: "Caçador de Fantasmas", key: "neuro_opt_fantasma_history", cols: ["Data", "Rodadas", "Estabilidade Binocular"], mapFn: i => [i.date, i.rounds, i.score] },
+            { title: "O Detetive", key: "neuro_opt_detetive_history", cols: ["Data", "Imagem", "Clareza Necessária"], mapFn: i => [i.date, i.image, i.clarityNeeded] },
+            { title: "Sentinela", key: "neuro_opt_sentinela_history", cols: ["Data", "Estímulos", "Detecção", "Detalhes"], mapFn: i => [i.date, i.total, i.score, i.details] },
+            { title: "O Rastro", key: "neuro_opt_rastro_history", cols: ["Data", "Padrão", "Duração", "Perdas Fixação"], mapFn: i => [i.date, i.pattern, i.duration, i.fixationLosses] },
+            { title: "Mundo Espelhado", key: "neuro_opt_mirror_history", cols: ["Data", "Tipo", "Acurácia", "Tempo"], mapFn: i => [i.date, i.type, i.accuracy, i.time] },
+            
+            // --- BLOCO 3 ---
+            { title: "O Nevoeiro", key: "neuro_opt_nevoeiro_history", cols: ["Data", "Fundo", "Menor Contraste"], mapFn: i => [i.date, i.bg, i.bestContrast] },
+            { title: "Mestre 3D", key: "neuro_opt_3d_history", cols: ["Data", "Menor Disparidade"], mapFn: i => [i.date, i.minDisp] },
+            { title: "Fusão Dinâmica", key: "neuro_opt_fusao_history", cols: ["Data", "Quebra", "Recobro"], mapFn: i => [i.date, i.break + 'px', i.recovery + 'px'] },
+            { title: "Pássaro na Gaiola", key: "neuro_opt_passaro_history", cols: ["Data", "Resultado"], mapFn: i => [i.date, i.status] },
+            { title: "Arqueiro Zen", key: "neuro_opt_arqueiro_history", cols: ["Data", "Tempo Hold"], mapFn: i => [i.date, i.time] },
+            
+            // --- BLOCO 4 ---
+            { title: "Palavras Fantasmas", key: "neuro_opt_leitura3d_history", cols: ["Data", "Supressões Registradas"], mapFn: i => [i.date, i.errors] },
+            { title: "Calculadora Ocular", key: "neuro_opt_calc_history", cols: ["Data", "Soma Real", "Resultado"], mapFn: i => [i.date, i.sum, i.result] },
+            { title: "Metrônomo", key: "neuro_opt_metronomo_history", cols: ["Data", "BPM", "Desempenho"], mapFn: i => [i.date, i.bpm, i.stats] },
+            { title: "Janela Mágica", key: "neuro_opt_janela_history", cols: ["Data", "PPM"], mapFn: i => [i.date, i.ppm || '-'] }, /* Nota: Adicione logica de save no jogo Janela se nao tiver */
+            { title: "Stroop", key: "neuro_opt_stroop_history", cols: ["Data", "Acertos"], mapFn: i => [i.date, i.score || '-'] }, /* Nota: Adicione logica de save no jogo Stroop se nao tiver */
+            
+            // --- BLOCO 5 (NOVOS) ---
+            { title: "Olho do Furacão", key: "neuro_opt_furacao_history", cols: ["Data", "Perdas de Fixação"], mapFn: i => [i.date, i.errors] },
+            { title: "Duelo de Cores", key: "neuro_opt_rivalidade_history", cols: ["Data", "Percepção Predominante"], mapFn: i => [i.date, i.result] },
+            { title: "Elevador Visual", key: "neuro_opt_elevador_visual_history", cols: ["Data", "Ciclos"], mapFn: i => [i.date, i.cycles] },
+            { title: "Laser Guiado", key: "neuro_opt_laser_history", cols: ["Data", "Duração"], mapFn: i => [i.date, i.duration] },
+            { title: "Ilusão de Gigantes", key: "neuro_opt_gigantes_history", cols: ["Data", "Acertos"], mapFn: i => [i.date, i.score] }
+        ];
+
+        window.onload = function() {
+            // 1. Carrega lista de pacientes no select
+            const patients = JSON.parse(localStorage.getItem('neuro_opt_patients') || '[]');
+            const selector = document.getElementById('patient-selector');
+            
+            if(patients.length === 0) {
+                selector.innerHTML = "<option>Nenhum paciente cadastrado</option>";
+                return;
+            }
+
+            patients.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.nome;
+                opt.innerText = p.nome;
+                selector.appendChild(opt);
+            });
+
+            // 2. Seleciona o último paciente ativo
+            const last = localStorage.getItem('neuro_opt_last_patient');
+            if(last) {
+                selector.value = last;
+                loadReport(); // Carrega automaticamente se já tiver paciente
+            }
+        };
+
+        function loadReport() {
+            const patientName = document.getElementById('patient-selector').value;
+            const container = document.getElementById('report-content');
+            container.innerHTML = "";
+
+            if(!patientName) return;
+
+            // Cabeçalho do Paciente (Para Impressão)
+            const headerInfo = document.createElement('div');
+            headerInfo.innerHTML = `<h2 style="color:var(--primary-color)">Histórico Clínico: ${patientName}</h2><p>Gerado em: ${new Date().toLocaleString()}</p><hr style="border:0; border-bottom:1px solid #444; margin-bottom:20px;">`;
+            container.appendChild(headerInfo);
+
+            let hasAnyData = false;
+
+            // Loop por cada jogo para buscar dados
+            GAME_MAP.forEach(game => {
+                // Tenta pegar do localStorage, se não existir retorna array vazio
+                const rawData = JSON.parse(localStorage.getItem(game.key) || '[]');
+                
+                // Filtra dados deste paciente específico
+                const patientData = rawData.filter(item => item.patient === patientName);
+
+                if(patientData.length > 0) {
+                    hasAnyData = true;
+                    
+                    const section = document.createElement('div');
+                    section.className = 'report-section';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'section-title';
+                    title.innerText = game.title;
+                    section.appendChild(title);
+
+                    const table = document.createElement('table');
+                    
+                    // Cabeçalho da Tabela
+                    const thead = document.createElement('thead');
+                    const trHead = document.createElement('tr');
+                    game.cols.forEach(col => {
+                        const th = document.createElement('th');
+                        th.innerText = col;
+                        trHead.appendChild(th);
+                    });
+                    thead.appendChild(trHead);
+                    table.appendChild(thead);
+
+                    // Corpo da Tabela
+                    const tbody = document.createElement('tbody');
+                    // Pega os últimos 10 registros para não lotar a página
+                    patientData.slice(0, 10).forEach(item => { 
+                        const tr = document.createElement('tr');
+                        // Mapeia os dados brutos para as colunas definidas
+                        try {
+                            const values = game.mapFn(item);
+                            values.forEach(val => {
+                                const td = document.createElement('td');
+                                td.innerText = val !== undefined ? val : '-';
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        } catch(e) {
+                            console.error("Erro ao formatar linha para " + game.title, e);
+                        }
+                    });
+                    table.appendChild(tbody);
+                    
+                    section.appendChild(table);
+                    container.appendChild(section);
+                }
+            });
+
+            if(!hasAnyData) {
+                container.innerHTML += "<div class='no-data'>Nenhum dado de jogo encontrado para este paciente. Inicie uma sessão de jogos para gerar registros.</div>";
+            }
+        }
+    </script>
+</body>
+</html>

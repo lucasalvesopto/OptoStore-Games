@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Paciente - NeuroHub</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #00E5FF;
+            --text-color: #E0E0E0;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-card {
+            background-color: var(--surface-color);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h2 { color: var(--primary-color); text-align: center; margin-top: 0; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #aaa; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus { border-color: var(--primary-color); outline: none; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 30px; }
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .btn-save { background-color: var(--primary-color); color: #000; }
+        .btn-cancel { background-color: transparent; border: 1px solid #555; color: #aaa; }
+        .btn-save:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2>📂 Ficha de Cadastro</h2>
+        
+        <div class="form-group">
+            <label>Nome Completo:</label>
+            <input type="text" id="inp-name" placeholder="Ex: Arthur Miguel">
+        </div>
+
+        <div class="form-group">
+            <label>Idade:</label>
+            <input type="number" id="inp-age" placeholder="Ex: 8">
+        </div>
+
+        <div class="form-group">
+            <label>Queixa / Diagnóstico / Obs:</label>
+            <textarea id="inp-obs" rows="4" placeholder="Ex: Dificuldade em movimentos sacádicos; Ambliopia OD..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-cancel" onclick="window.location.href='index.html'">Cancelar</button>
+            <button class="btn-save" onclick="savePatient()">Salvar Paciente</button>
+        </div>
+    </div>
+
+    <script>
+        function savePatient() {
+            const nome = document.getElementById('inp-name').value.trim();
+            const idade = document.getElementById('inp-age').value.trim();
+            const obs = document.getElementById('inp-obs').value.trim();
+
+            if (!nome) {
+                alert("O nome é obrigatório!");
+                return;
+            }
+
+            const novoPaciente = {
+                id: Date.now(), // ID único
+                nome: nome,
+                idade: idade,
+                obs: obs,
+                dataCadastro: new Date().toLocaleDateString('pt-BR')
+            };
+
+            // Pega a lista existente ou cria uma nova
+            let listaPacientes = JSON.parse(localStorage.getItem('neuro_opt_patients') || '[]');
+            
+            // Adiciona o novo
+            listaPacientes.push(novoPaciente);
+            
+            // Salva de volta
+            localStorage.setItem('neuro_opt_patients', JSON.stringify(listaPacientes));
+
+            alert("Paciente cadastrado com sucesso!");
+            window.location.href = 'index.html'; // Volta para o Hub
+        }
+    </script>
+</body>
+</html>

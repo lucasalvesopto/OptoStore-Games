@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroHub - Lucas Alves</title>
+    <style>
+        :root { 
+            --bg-color: #121212; 
+            --surface-color: #1E1E1E; 
+            --primary-color: #00E5FF; 
+            --text-color: #E0E0E0; 
+            --card-hover: #252525; 
+            --btn-bg: #333;
+            --warning-bg: #FFC107;
+            --warning-text: #000;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; padding: 0 0 40px 0; /* Padding bottom para scroll */
+            display: flex; flex-direction: column; align-items: center; 
+        }
+        
+        /* AVISO DE DADOS E CONSTRUÇÃO */
+        .system-notice {
+            width: 100%;
+            background-color: #333;
+            color: #aaa;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 5px;
+            border-bottom: 1px solid #444;
+        }
+        .system-notice strong { color: var(--primary-color); }
+
+        header { 
+            width: 90%; max-width: 1200px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin: 20px 0; border-bottom: 1px solid #333; padding-bottom: 20px; 
+        }
+        
+        .logo-section h1 { margin: 0; color: var(--primary-color); letter-spacing: 1px; font-size: 2.2rem; }
+        .logo-section p { margin: 0; font-size: 1rem; color: #888; font-weight: 500; }
+        
+        .action-group { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; font-size: 0.9rem; transition: 0.2s; }
+        .btn-new { background-color: var(--primary-color); color: #000; }
+        .btn-new:hover { opacity: 0.9; }
+        .btn-results { background-color: #2e7d32; color: white; }
+        .btn-results:hover { background-color: #1b5e20; }
+
+        /* SELEÇÃO DE PACIENTE */
+        #active-patient-bar {
+            width: 90%; max-width: 1200px; background: #222; padding: 15px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        .patient-name { color: var(--primary-color); font-weight: bold; font-size: 1.2rem; }
+        .change-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .change-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        /* BUSCA E FILTROS */
+        .controls-container { width: 90%; max-width: 1200px; margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        
+        #search-input { 
+            flex: 1; min-width: 250px; padding: 15px; font-size: 1.1rem; 
+            border-radius: 8px; border: 1px solid #444; 
+            background: #222; color: white; box-sizing: border-box; 
+        }
+        #search-input:focus { border-color: var(--primary-color); outline: none; }
+        
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 10px; flex: 2; align-items: center; justify-content: flex-end; }
+        .filter-btn {
+            background: var(--btn-bg); color: #ccc; border: 1px solid #444;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
+        }
+        .filter-btn:hover { background: #444; }
+        .filter-btn.active { background: var(--primary-color); color: #000; border-color: var(--primary-color); font-weight: bold; }
+
+        /* GRID DE JOGOS */
+        .games-section { width: 90%; max-width: 1200px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s; }
+        .games-section.unlocked { opacity: 1; pointer-events: all; }
+        
+        .games-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+        
+        .game-card { 
+            background: #1a1a1a; border: 1px solid #333; border-radius: 8px; 
+            padding: 20px; text-decoration: none; color: white; 
+            display: flex; flex-direction: column; align-items: center; 
+            text-align: center; transition: transform 0.2s; position: relative; 
+            min-height: 180px; overflow: hidden;
+        }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--primary-color); }
+        
+        /* Número do Jogo */
+        .game-number {
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(255,255,255,0.1); color: #888;
+            font-size: 0.8rem; padding: 2px 8px; border-radius: 10px;
+            font-weight: bold; border: 1px solid #444;
+        }
+
+        .game-icon { font-size: 2.5rem; margin-top: 15px; margin-bottom: 10px; }
+        .game-title { font-weight: bold; font-size: 1.1rem; color: var(--primary-color); margin-bottom: 5px; }
+        .game-desc { font-size: 0.85rem; color: #888; flex-grow: 1; line-height: 1.4; }
+        .age-tag { 
+            background: #333; color: #aaa; font-size: 0.7rem; 
+            padding: 3px 8px; border-radius: 4px; margin-top: 10px; border: 1px solid #444;
+        }
+
+        /* MODAL PACIENTE */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        .modal-box { background: #222; padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; text-align: center; border: 1px solid #444; }
+        .p-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+        .p-btn { background: #444; padding: 10px 20px; border-radius: 5px; cursor: pointer; color: white; border: 1px solid #555; }
+        .p-btn:hover { background: var(--primary-color); color: black; }
+
+        /* Rodapé de aviso */
+        footer { margin-top: 50px; color: #555; font-size: 0.8rem; text-align: center; width: 100%; }
+
+    </style>
+</head>
+<body>
+
+    <div class="system-notice">
+        🚧 <strong>Sistema em Construção</strong> | ⚠️ Aviso: Os dados são armazenados localmente neste computador. Não há backup em nuvem.
+    </div>
+
+    <header>
+        <div class="logo-section">
+            <h1>🧠 NeuroHub</h1>
+            <p>Lucas Alves - Neuro-Optometrista</p>
+        </div>
+        <div class="action-group">
+            <a href="resultados.html" class="btn btn-results">📊 Ver Resultados</a>
+            <a href="cadastro.html" class="btn btn-new">+ Novo Paciente</a>
+        </div>
+    </header>
+
+    <div id="active-patient-bar">
+        <span>Paciente Selecionado: <span id="current-patient-name" class="patient-name">Nenhum</span></span>
+        <button class="change-btn" onclick="openPatientModal()">Trocar</button>
+    </div>
+
+    <div class="controls-container">
+        <input type="text" id="search-input" placeholder="🔍 Buscar jogo por nome, habilidade..." onkeyup="filterGames()">
+        
+        <div class="filter-tags">
+            <button class="filter-btn active" onclick="filterByTag('all', this)">Todos</button>
+            <button class="filter-btn" onclick="filterByTag('oculomotricidade', this)">Oculomotricidade</button>
+            <button class="filter-btn" onclick="filterByTag('binocular', this)">Binocularidade</button>
+            <button class="filter-btn" onclick="filterByTag('foco', this)">Foco & Percepção</button>
+            <button class="filter-btn" onclick="filterByTag('cognitivo', this)">Cognitivo</button>
+            <button class="filter-btn" onclick="filterByTag('motor', this)">Motor & Espacial</button>
+            <button class="filter-btn" onclick="filterByTag('leitura', this)">Leitura</button>
+        </div>
+    </div>
+
+    <div id="games-area" class="games-section">
+        <div class="games-grid">
+            
+            <a href="#" onclick="launch('jogos/salto_quantico.html')" class="game-card" data-cat="oculomotricidade" data-tags="sacadico">
+                <div class="game-number">1</div><span class="game-icon">🎯</span><span class="game-title">Salto Quântico</span>
+                <span class="game-desc">Sacádicos e Fixação.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/rastro.html')" class="game-card" data-cat="oculomotricidade" data-tags="seguimento">
+                <div class="game-number">2</div><span class="game-icon">🐞</span><span class="game-title">O Rastro</span>
+                <span class="game-desc">Seguimentos Suaves.</span><span class="age-tag">3 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/okn.html')" class="game-card" data-cat="oculomotricidade" data-tags="optocinetico">
+                <div class="game-number">3</div><span class="game-icon">🦓</span><span class="game-title">Listras OKN</span>
+                <span class="game-desc">Nistagmo Optocinético.</span><span class="age-tag">Todos</span>
+            </a>
+            <a href="#" onclick="launch('jogos/arqueiro.html')" class="game-card" data-cat="oculomotricidade" data-tags="alongamento">
+                <div class="game-number">4</div><span class="game-icon">🏹</span><span class="game-title">Arqueiro Zen</span>
+                <span class="game-desc">Motilidade e Alongamento.</span><span class="age-tag">Todos</span>
+            </a>
+            <a href="#" onclick="launch('jogos/furacao.html')" class="game-card" data-cat="oculomotricidade" data-tags="ruido">
+                <div class="game-number">5</div><span class="game-icon">🌪️</span><span class="game-title">Olho Furacão</span>
+                <span class="game-desc">Fixação com Ruído.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/elevador_visual.html')" class="game-card" data-cat="oculomotricidade" data-tags="vertical">
+                <div class="game-number">6</div><span class="game-icon">uarr</span><span class="game-title">Elevador Visual</span>
+                <span class="game-desc">Sacádicos Verticais.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/laser.html')" class="game-card" data-cat="oculomotricidade" data-tags="fino">
+                <div class="game-number">7</div><span class="game-icon">im🖊️</span><span class="game-title">Laser Guiado</span>
+                <span class="game-desc">Seguimento Fino.</span><span class="age-tag">4 anos+</span>
+            </a>
+
+            <a href="#" onclick="launch('jogos/fantasmas.html')" class="game-card" data-cat="binocular" data-tags="supressao">
+                <div class="game-number">8</div><span class="game-icon">🕶️</span><span class="game-title">Fantasmas</span>
+                <span class="game-desc">Antissupressão Anaglifo.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/mestre_3d.html')" class="game-card" data-cat="binocular" data-tags="3d">
+                <div class="game-number">9</div><span class="game-icon">🔴🔵</span><span class="game-title">Mestre 3D</span>
+                <span class="game-desc">Estereopsia Fina.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/passaro.html')" class="game-card" data-cat="binocular" data-tags="percepcao">
+                <div class="game-number">10</div><span class="game-icon">🐦</span><span class="game-title">Pássaro</span>
+                <span class="game-desc">Percepção Simultânea.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/fusao.html')" class="game-card" data-cat="binocular" data-tags="vergencia">
+                <div class="game-number">11</div><span class="game-icon">🏋️</span><span class="game-title">Fusão Dinâmica</span>
+                <span class="game-desc">Reservas Fusionais.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/elevador.html')" class="game-card" data-cat="binocular" data-tags="jump">
+                <div class="game-number">12</div><span class="game-icon">↕️</span><span class="game-title">Elevador Jump</span>
+                <span class="game-desc">Facilidade Vergencial.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/leitura_3d.html')" class="game-card" data-cat="binocular" data-tags="leitura anaglifo">
+                <div class="game-number">13</div><span class="game-icon">👓</span><span class="game-title">Palavras 3D</span>
+                <span class="game-desc">Leitura Anaglifo.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/rivalidade.html')" class="game-card" data-cat="binocular" data-tags="rivalidade">
+                <div class="game-number">14</div><span class="game-icon">⚔️</span><span class="game-title">Duelo Cores</span>
+                <span class="game-desc">Rivalidade Binocular.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/cadeado.html')" class="game-card" data-cat="binocular" data-tags="periferico">
+                <div class="game-number">15</div><span class="game-icon">🔒</span><span class="game-title">Cadeado</span>
+                <span class="game-desc">Fusão Periférica.</span><span class="age-tag">7 anos+</span>
+            </a>
+
+            <a href="#" onclick="launch('jogos/salto_foco.html')" class="game-card" data-cat="foco" data-tags="acomodacao">
+                <div class="game-number">16</div><span class="game-icon">👀</span><span class="game-title">Salto de Foco</span>
+                <span class="game-desc">Flexibilidade Acomodativa.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/espiao.html')" class="game-card" data-cat="foco" data-tags="figura fundo">
+                <div class="game-number">17</div><span class="game-icon">🔍</span><span class="game-title">O Espião</span>
+                <span class="game-desc">Figura-Fundo.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/detetive.html')" class="game-card" data-cat="foco" data-tags="fechamento">
+                <div class="game-number">18</div><span class="game-icon">🧩</span><span class="game-title">O Detetive</span>
+                <span class="game-desc">Fechamento Visual.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/nevoeiro.html')" class="game-card" data-cat="foco" data-tags="contraste">
+                <div class="game-number">19</div><span class="game-icon">🌫️</span><span class="game-title">O Nevoeiro</span>
+                <span class="game-desc">Sensibilidade Contraste.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/camaleao.html')" class="game-card" data-cat="foco" data-tags="cores">
+                <div class="game-number">20</div><span class="game-icon">🎨</span><span class="game-title">O Camaleão</span>
+                <span class="game-desc">Discriminação de Cores.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/intruso.html')" class="game-card" data-cat="foco" data-tags="discriminacao">
+                <div class="game-number">21</div><span class="game-icon">🔎</span><span class="game-title">O Intruso</span>
+                <span class="game-desc">Discriminação Fina.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/silo.html')" class="game-card" data-cat="foco" data-tags="silo">
+                <div class="game-number">22</div><span class="game-icon">🎈</span><span class="game-title">Zoom SILO</span>
+                <span class="game-desc">Efeito Looming.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/gigantes.html')" class="game-card" data-cat="foco" data-tags="constancia">
+                <div class="game-number">23</div><span class="game-icon">G</span><span class="game-title">Gigantes</span>
+                <span class="game-desc">Constância de Tamanho.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/cacador.html')" class="game-card" data-cat="foco" data-tags="busca">
+                <div class="game-number">24</div><span class="game-icon">🐕</span><span class="game-title">Caçador</span>
+                <span class="game-desc">Busca Visual Ativa.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/respiracao.html')" class="game-card" data-cat="foco" data-tags="relaxamento">
+                <div class="game-number">25</div><span class="game-icon">🧘</span><span class="game-title">Relaxamento</span>
+                <span class="game-desc">Respiração Visual.</span><span class="age-tag">Todos</span>
+            </a>
+
+            <a href="#" onclick="launch('jogos/eco_luminoso.html')" class="game-card" data-cat="cognitivo" data-tags="memoria">
+                <div class="game-number">26</div><span class="game-icon">🧠</span><span class="game-title">Eco Luminoso</span>
+                <span class="game-desc">Memória Sequencial.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/grade_memoria.html')" class="game-card" data-cat="cognitivo" data-tags="memoria espacial">
+                <div class="game-number">27</div><span class="game-icon">#️⃣</span><span class="game-title">Grade Memória</span>
+                <span class="game-desc">Memória Espacial.</span><span class="age-tag">5 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/flash.html')" class="game-card" data-cat="cognitivo" data-tags="taquistoscopio">
+                <div class="game-number">28</div><span class="game-icon">⚡</span><span class="game-title">Flash</span>
+                <span class="game-desc">Taquistoscópio.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/stroop.html')" class="game-card" data-cat="cognitivo" data-tags="stroop">
+                <div class="game-number">29</div><span class="game-icon">🤯</span><span class="game-title">Stroop</span>
+                <span class="game-desc">Flexibilidade Mental.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/calculadora.html')" class="game-card" data-cat="cognitivo" data-tags="soma">
+                <div class="game-number">30</div><span class="game-icon">➕</span><span class="game-title">Calculadora</span>
+                <span class="game-desc">Soma Sacádica.</span><span class="age-tag">7 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/memoria_dupla.html')" class="game-card" data-cat="cognitivo" data-tags="binding">
+                <div class="game-number">31</div><span class="game-icon">🧩</span><span class="game-title">Memória Dupla</span>
+                <span class="game-desc">Binding (Cor + Local).</span><span class="age-tag">8 anos+</span>
+            </a>
+
+            <a href="#" onclick="launch('jogos/maestro.html')" class="game-card" data-cat="motor" data-tags="motor">
+                <div class="game-number">32</div><span class="game-icon">🕺</span><span class="game-title">O Maestro</span>
+                <span class="game-desc">Coordenação Visuomotora.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/mundo_espelhado.html')" class="game-card" data-cat="motor" data-tags="lateralidade">
+                <div class="game-number">33</div><span class="game-icon">mirror</span><span class="game-title">Espelhado</span>
+                <span class="game-desc">Rotação Mental.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/farol.html')" class="game-card" data-cat="motor" data-tags="localizacao">
+                <div class="game-number">34</div><span class="game-icon">🔦</span><span class="game-title">O Farol</span>
+                <span class="game-desc">Localização Espacial.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/metronomo.html')" class="game-card" data-cat="motor" data-tags="ritmo">
+                <div class="game-number">35</div><span class="game-icon">🥁</span><span class="game-title">Metrônomo</span>
+                <span class="game-desc">Ritmo Visual.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/hiperespaco.html')" class="game-card" data-cat="motor" data-tags="fluxo">
+                <div class="game-number">36</div><span class="game-icon">🌌</span><span class="game-title">Hiperespaço</span>
+                <span class="game-desc">Fluxo Óptico.</span><span class="age-tag">4 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/tiro_alvo.html')" class="game-card" data-cat="motor" data-tags="tiro">
+                <div class="game-number">37</div><span class="game-icon">👉</span><span class="game-title">Tiro ao Alvo</span>
+                <span class="game-desc">Reação Motora.</span><span class="age-tag">4 anos+</span>
+            </a>
+
+            <a href="#" onclick="launch('jogos/leitura.html')" class="game-card" data-cat="leitura" data-tags="tracking">
+                <div class="game-number">38</div><span class="game-icon">📖</span><span class="game-title">Janela Mágica</span>
+                <span class="game-desc">Tracking e Leitura.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/matriz.html')" class="game-card" data-cat="leitura" data-tags="hart">
+                <div class="game-number">39</div><span class="game-icon">🔠</span><span class="game-title">A Matriz</span>
+                <span class="game-desc">Hart Chart Digital.</span><span class="age-tag">6 anos+</span>
+            </a>
+            <a href="#" onclick="launch('jogos/sentinela.html')" class="game-card" data-cat="leitura" data-tags="campo">
+                <div class="game-number">40</div><span class="game-icon">im👀</span><span class="game-title">Sentinela</span>
+                <span class="game-desc">Campo Visual.</span><span class="age-tag">7 anos+</span>
+            </a>
+
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <h2 style="color:var(--primary-color)">Selecione o Paciente</h2>
+            <div id="modal-list" class="p-list"></div>
+            <button onclick="document.getElementById('modal-overlay').style.display='none'" style="margin-top:20px; padding:10px; background:transparent; border:1px solid #555; color:white; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 NeuroHub - Lucas Alves. Uso profissional.</p>
+    </footer>
+
+    <script>
+        let selectedPatient = null;
+        let currentTag = 'all';
+
+        window.onload = function() {
+            checkLastPatient();
+        };
+
+        function checkLastPatient() {
+            const last = localStorage.getItem('neuro_opt_last_patient');
+            if(last) {
+                selectPatient(last);
+            } else {
+                openPatientModal();
+            }
+        }
+
+        function openPatientModal() {
+            const modal = document.getElementById('modal-overlay');
+            const list = document.getElementById('modal-list');
+            modal.style.display = 'flex';
+            
+            const patients = JSON.parse(localStorage.getItem('neuro_opt_patients') || '[]');
+            list.innerHTML = "";
+
+            if(patients.length === 0) {
+                list.innerHTML = "<p style='color:#999'>Nenhum paciente. Cadastre um novo.</p>";
+            }
+
+            patients.forEach(p => {
+                const btn = document.createElement('div');
+                btn.className = 'p-btn';
+                btn.innerText = p.nome;
+                btn.onclick = () => selectPatient(p.nome);
+                list.appendChild(btn);
+            });
+        }
+
+        function selectPatient(name) {
+            selectedPatient = name;
+            localStorage.setItem('neuro_opt_last_patient', name);
+            document.getElementById('current-patient-name').innerText = name;
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('games-area').classList.add('unlocked');
+        }
+
+        function launch(url) {
+            if(!selectedPatient) {
+                alert("Selecione um paciente!");
+                openPatientModal();
+                return;
+            }
+            window.location.href = url + "?paciente=" + encodeURIComponent(selectedPatient);
+        }
+
+        // --- FILTROS ---
+        function filterGames() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.game-card');
+            
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                const tags = card.getAttribute('data-tags');
+                const cat = card.getAttribute('data-cat');
+                
+                const matchesText = text.includes(term) || (tags && tags.includes(term));
+                const matchesCat = currentTag === 'all' || cat === currentTag;
+
+                if (matchesText && matchesCat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterByTag(tag, btnElement) {
+            currentTag = tag;
+            document.getElementById('search-input').value = ""; // Limpa busca
+            
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            filterGames();
+        }
+    </script>
+</body>
+</html>
