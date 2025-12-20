@@ -4,62 +4,113 @@
     <meta charset="UTF-8">
     <title>Duelo de Cores</title>
     <style>
-        body { background: #FFF; color: #333; font-family: sans-serif; text-align: center; overflow: hidden; margin: 0; }
-        .screen { display: none; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
-        .screen.active { display: flex; }
+        :root { --bg-color: #121212; --surface-color: #1E1E1E; --primary-color: #00E5FF; --text-color: #E0E0E0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; z-index: 1; }
+        .screen.active { display: flex; z-index: 2; }
         
-        /* CAIXA DE RIVALIDADE */
+        h1 { font-size: 3rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .instructions-box { background: #2c2c2c; padding: 20px; border-left: 4px solid var(--primary-color); max-width: 800px; margin-bottom: 20px; }
+        .btn-container { display: flex; gap: 20px; margin-top: 20px; }
+        button { background-color: var(--primary-color); color: #000; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: transparent; border: 2px solid #555; color: #fff; }
+        .back-to-hub { position: absolute; top: 20px; left: 20px; background: transparent; border: 1px solid #555; padding: 10px 20px; color: #aaa; cursor: pointer; }
+
+        /* JOGO - ÁREA BRANCA PARA ANAGLIFO */
+        #game-area { width: 100%; height: 100%; background: #FFF; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
         #rivalry-box {
-            position: relative; width: 300px; height: 300px; border: 2px solid #000;
+            position: relative; width: 300px; height: 300px; border: 5px solid #000;
         }
         .layer {
             position: absolute; top:0; left:0; width:100%; height:100%;
-            mix-blend-mode: multiply; /* Segredo do Anaglifo na Web */
+            mix-blend-mode: multiply; 
         }
-        /* Vermelho (Visto pelo olho Ciano): Listras para direita */
-        .layer-red {
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, #FF0000 10px, #FF0000 20px);
-        }
-        /* Ciano (Visto pelo olho Vermelho): Listras para esquerda */
-        .layer-cyan {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #00FFFF 10px, #00FFFF 20px);
-        }
+        .layer-red { background: repeating-linear-gradient(45deg, transparent, transparent 10px, #FF0000 10px, #FF0000 20px); }
+        .layer-cyan { background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #00FFFF 10px, #00FFFF 20px); }
 
-        .btn-opt { padding: 10px 20px; margin: 5px; font-size: 1rem; cursor: pointer; border: 1px solid #333; background: #eee; }
+        .btn-opt { padding: 15px 25px; margin: 10px; font-size: 1rem; cursor: pointer; border: 2px solid #333; background: #eee; border-radius: 5px; color: black; font-weight: bold; }
         .btn-opt:hover { background: #ccc; }
+        
+        table { width: 100%; max-width: 800px; margin-top: 20px; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; text-align: left; }
     </style>
 </head>
 <body>
+
     <div id="screen-home" class="screen active">
+        <button class="back-to-hub" onclick="window.location.href='../index.html'">⬅ Voltar</button>
         <h1>⚔️ Duelo de Cores</h1>
-        <p>⚠️ Use Óculos Red/Cyan.</p>
-        <p>O que você vê? Xadrez? Só Vermelho? Só Azul?</p>
-        <button class="btn-opt" onclick="startGame()">Iniciar</button>
-        <button class="btn-opt" onclick="window.location.href='../index.html'">Voltar</button>
+        <div id="patient-display" style="color:var(--primary-color); font-weight: bold; margin-bottom: 20px;">Paciente: ---</div>
+        
+        <div class="instructions-box">
+            <p><strong>⚠️ Requer Óculos Anaglifo.</strong></p>
+            <p><strong>Paciente:</strong> Olhe para o quadrado. As cores misturam (Xadrez) ou piscam (Alternam)?</p>
+            <p><strong>Terapeuta:</strong> Registre o que o paciente relata clicando nos botões durante o jogo.</p>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="startGame()">▶ INICIAR</button>
+            <button class="secondary" onclick="showHistory()">📅 Resultados</button>
+        </div>
     </div>
 
     <div id="screen-game" class="screen">
-        <div id="rivalry-box">
-            <div class="layer layer-red"></div>
-            <div class="layer layer-cyan"></div>
+        <div id="game-area">
+            <div id="rivalry-box">
+                <div class="layer layer-red"></div>
+                <div class="layer layer-cyan"></div>
+            </div>
+            <div style="margin-top:30px;">
+                <p style="color:black; font-weight:bold; margin-bottom:10px;">REGISTRAR PERCEPÇÃO:</p>
+                <button class="btn-opt" onclick="logResult('Fusão (Xadrez)')">1. Fusão (Xadrez)</button>
+                <button class="btn-opt" onclick="logResult('Rivalidade (Alterna)')">2. Rivalidade (Pisca)</button>
+                <button class="btn-opt" onclick="logResult('Supressão')">3. Supressão (Cor Única)</button>
+            </div>
+            <div id="log" style="margin-top:10px; color:blue; font-weight:bold; height:20px;"></div>
+            <div style="position:fixed; bottom:10px; color:#555;">ESC: Sair</div>
         </div>
-        <div style="margin-top:20px;">
-            <p>O que o paciente relata?</p>
-            <button class="btn-opt" onclick="logResult('Fusão (Xadrez)')">1. Fusão (Xadrez)</button>
-            <button class="btn-opt" onclick="logResult('Rivalidade (Alterna)')">2. Rivalidade (Pisca)</button>
-            <button class="btn-opt" onclick="logResult('Supressão')">3. Supressão (Cor Única)</button>
-        </div>
-        <div id="log" style="margin-top:10px; color:blue;"></div>
+    </div>
+
+    <div id="screen-history" class="screen">
+        <h2>Resultados</h2>
+        <div id="history-content"></div>
+        <button class="secondary" style="margin-top:20px" onclick="showScreen('screen-home')">Voltar</button>
     </div>
 
     <script>
-        function startGame() {
-            document.getElementById('screen-home').classList.remove('active');
-            document.getElementById('screen-game').classList.add('active');
+        const state = { patient: "Visitante" };
+        window.onload = () => { state.patient = new URLSearchParams(window.location.search).get('paciente') || "Visitante"; document.getElementById('patient-display').innerText = "Paciente: " + state.patient; };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-history') loadHistory();
         }
+        function showHistory() { showScreen('screen-history'); }
+
+        function startGame() {
+            document.getElementById('log').innerText = "";
+            showScreen('screen-game');
+        }
+
         function logResult(res) {
             document.getElementById('log').innerText = "Registrado: " + res;
-            // Salvar no localStorage aqui
+            
+            let h = JSON.parse(localStorage.getItem('neuro_opt_rivalidade_history') || '[]');
+            h.unshift({ date: new Date().toLocaleString('pt-BR'), patient: state.patient, result: res });
+            localStorage.setItem('neuro_opt_rivalidade_history', JSON.stringify(h));
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.code === 'Escape') showScreen('screen-home');
+        });
+
+        function loadHistory() {
+            const h = JSON.parse(localStorage.getItem('neuro_opt_rivalidade_history') || '[]').filter(x => x.patient === state.patient);
+            const div = document.getElementById('history-content');
+            if(!h.length) { div.innerHTML = "Sem registros."; return; }
+            div.innerHTML = `<table><tr><th>Data</th><th>Percepção</th></tr>${h.map(i => `<tr><td>${i.date}</td><td>${i.result}</td></tr>`).join('')}</table>`;
         }
     </script>
 </body>
