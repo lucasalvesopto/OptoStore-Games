@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptoSystem Pro - Gestão Clínica Integrada</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #005f73;
+            --secondary: #0a9396;
+            --accent: #94d2bd;
+            --light: #e9d8a6;
+            --dark: #001219;
+            --white: #ffffff;
+            --danger: #ae2012;
+            --success: #2a9d8f;
+            --warning: #ee9b00;
+            --gray: #f1f1f1;
+            --border: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { display: flex; height: 100vh; background-color: #f0f4f8; overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 260px;
+            background: linear-gradient(180deg, var(--dark) 0%, var(--primary) 100%);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .brand { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .brand h2 { font-size: 1.4rem; letter-spacing: 1px; }
+        .brand span { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; }
+
+        nav button {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            padding: 18px 25px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            width: 100%;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        nav button:hover, nav button.active { background-color: rgba(255,255,255,0.1); color: var(--white); border-left: 5px solid var(--accent); }
+        nav button i { width: 20px; text-align: center; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 20px; overflow-y: auto; position: relative; }
+
+        section { display: none; animation: slideIn 0.3s ease-out; }
+        section.active { display: block; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { color: var(--dark); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        
+        /* --- CARDS & DASHBOARD --- */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: var(--secondary); }
+        .card h4 { color: #666; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
+        .card .number { font-size: 2.2rem; font-weight: 700; color: var(--dark); }
+        .card.alert::before { background: var(--danger); }
+
+        /* --- FORMULÁRIOS & ABAS DA FICHA --- */
+        .ficha-tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #ddd; overflow-x: auto; }
+        .ficha-tab {
+            padding: 10px 20px;
+            background: #eee;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            color: #555;
+            transition: 0.3s;
+        }
+        .ficha-tab.active { background: var(--primary); color: white; }
+
+        .ficha-section { display: none; background: white; padding: 25px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .ficha-section.active { display: block; }
+
+        .form-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.85rem; color: #444; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; 
+            font-size: 14px; transition: 0.3s; background: #fafafa;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--secondary); outline: none; background: white; box-shadow: 0 0 0 3px rgba(10, 147, 150, 0.1); }
+        
+        .section-title { 
+            font-size: 1.1rem; color: var(--primary); margin: 25px 0 15px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; font-weight: bold;
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        /* Checkbox groups customizados */
+        .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+        .check-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+        .check-item input { width: auto; margin: 0; cursor: pointer; }
+
+        /* --- BOTÕES --- */
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--secondary); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+
+        /* --- TABELAS --- */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #555; font-weight: 600; font-size: 0.9rem; }
+        tr:hover { background-color: #f1f1f1; }
+
+        /* --- MODAL DE SELEÇÃO DE TIPO --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: white; padding: 30px; border-radius: 12px; width: 500px; max-width: 90%; text-align: center; }
+        .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .type-card { 
+            border: 2px solid #eee; border-radius: 10px; padding: 20px 10px; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .type-card:hover { border-color: var(--secondary); background: #f0fbfa; transform: translateY(-5px); }
+        .type-card i { font-size: 2rem; color: var(--secondary); }
+        
+        /* --- PAINEL TV --- */
+        #tv-view {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--dark); color: white;
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .tv-chamada { font-size: 3rem; margin-bottom: 20px; color: var(--accent); }
+        .tv-nome { font-size: 6rem; font-weight: bold; text-align: center; margin: 20px; animation: blink 2s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* --- IMPRESSÃO --- */
+        @media print {
+            aside, .ficha-tabs, .btn, .no-print { display: none !important; }
+            main { padding: 0; overflow: visible; }
+            body { background: white; height: auto; }
+            section { display: block !important; }
+            .ficha-section { display: block !important; border: none; shadow: none; padding: 0; margin-bottom: 30px; }
+            .break-page { page-break-before: always; }
+        }
+
+        /* Helpers */
+        .hidden { display: none; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .badge-ped { background: #ffd6ff; color: #5a189a; }
+        .badge-neuro { background: #caffbf; color: #006400; }
+        .badge-func { background: #caf0f8; color: #0077b6; }
+
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="brand">
+        <h2>OPTO<span>SYSTEM</span></h2>
+        <small>v2.0 Ultimate</small>
+    </div>
+    <nav>
+        <button onclick="nav('dashboard')" class="active"><i class="fas fa-chart-line"></i> Dashboard</button>
+        <button onclick="nav('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</button>
+        <button onclick="abrirModalNovaConsulta()"><i class="fas fa-plus-circle"></i> Nova Consulta</button>
+        <button onclick="nav('pacientes')"><i class="fas fa-users"></i> Pacientes</button>
+        <button onclick="nav('financeiro')"><i class="fas fa-wallet"></i> Financeiro</button>
+        <button onclick="nav('tv-panel-ctrl')"><i class="fas fa-tv"></i> Painel TV</button>
+    </nav>
+</aside>
+
+<main>
+    
+    <section id="dashboard" class="active">
+        <h1><i class="fas fa-chart-pie"></i> Visão Geral</h1>
+        <div class="cards-grid">
+            <div class="card">
+                <h4>Atendimentos (Mês)</h4>
+                <div class="number" id="dash-atendimentos">0</div>
+            </div>
+            <div class="card alert">
+                <h4>Retornos Pendentes</h4>
+                <div class="number" id="dash-retornos">0</div>
+                <small>Pacientes > 1 ano</small>
+            </div>
+            <div class="card">
+                <h4>Faturamento</h4>
+                <div class="number" id="dash-faturamento">R$ 0,00</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="agenda">
+        <h1><i class="fas fa-calendar-check"></i> Agenda e Recepção</h1>
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <div class="form-row">
+                <div class="form-group"><label>Data</label><input type="date" id="ag-data"></div>
+                <div class="form-group"><label>Hora</label><input type="time" id="ag-hora"></div>
+                <div class="form-group"><label>Paciente</label><input type="text" id="ag-nome"></div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button class="btn btn-primary" onclick="agendar()">Agendar</button>
+                </div>
+            </div>
+        </div>
+        <table>
+            <thead><tr><th>Horário</th><th>Paciente</th><th>Status</th><th>Ação</th></tr></thead>
+            <tbody id="lista-agenda"></tbody>
+        </table>
+    </section>
+
+    <section id="consulta">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1><i class="fas fa-user-md"></i> Ficha Clínica <span id="tipo-ficha-badge" class="badge">PADRÃO</span></h1>
+            <button class="btn btn-outline no-print" onclick="nav('dashboard')">Cancelar / Voltar</button>
+        </div>
+
+        <div class="ficha-tabs no-print">
+            <button class="ficha-tab active" onclick="tabConsulta('anamnese')">1. Anamnese</button>
+            <button class="ficha-tab" onclick="tabConsulta('triagem')">2. Triagem</button>
+            <button class="ficha-tab" onclick="tabConsulta('refracao')">3. Refração</button>
+            <button class="ficha-tab" onclick="tabConsulta('saude')">4. Saúde Ocular</button>
+            <button class="ficha-tab" onclick="tabConsulta('conduta')">5. Conduta</button>
+        </div>
+
+        <form id="form-ficha" onsubmit="salvarConsulta(event)">
+            
+            <div id="tab-anamnese" class="ficha-section active">
+                <div class="section-title"><i class="fas fa-id-card"></i> Identificação</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Nome Completo</label><input type="text" id="p-nome" required></div>
+                    <div class="form-group"><label>Data Nasc.</label><input type="date" id="p-nasc"></div>
+                    <div class="form-group"><label>Ocupação/Escolaridade</label><input type="text" id="p-ocupacao"></div>
+                </div>
+                
+                <div class="section-title"><i class="fas fa-comment-medical"></i> Queixa Principal</div>
+                <div class="form-group"><textarea id="p-queixa" rows="3" placeholder="Relato do paciente..."></textarea></div>
+
+                <div id="box-pediatria" class="hidden" style="background: #fff0f5; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <div class="section-title" style="color: #9d4edd;">👶 Histórico Pré e Perinatal (Pediatria)</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Gestação (Semanas)</label><input type="number" id="ped-gestacao"></div>
+                        <div class="form-group"><label>Tipo de Parto</label><select id="ped-parto"><option value="">Selecione</option><option>Normal</option><option>Cesárea</option><option>Fórceps</option></select></div>
+                        <div class="form-group"><label>APGAR (5 min)</label><select id="ped-apgar"><option>8-10 (Normal)</option><option>5-7 (Regular)</option><option>< 5 (Risco)</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Desenvolvimento Motor (Engatinhou?)</label>
+                            <select id="ped-engatinhou"><option>Sim</option><option>Não</option><option>Pulou etapa</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="box-neuro" class="hidden" style="background: #f0fff4; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <div class="section-title" style="color: #2d6a4f;">🧠 Anamnese Comportamental</div>
+                    <div class="check-grid">
+                        <label class="check-item"><input type="checkbox" id="n-leitura"> Usa dedo na leitura</label>
+                        <label class="check-item"><input type="checkbox" id="n-pula"> Pula linhas/palavras</label>
+                        <label class="check-item"><input type="checkbox" id="n-cabeca"> Move a cabeça ao ler</label>
+                        <label class="check-item"><input type="checkbox" id="n-quadro"> Dificuldade copiar quadro</label>
+                        <label class="check-item"><input type="checkbox" id="n-memoria"> Baixa memória visual</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-triagem" class="ficha-section">
+                <div class="section-title">Acuidade Visual (Entrada)</div>
+                <table style="margin-bottom: 20px;">
+                    <thead><tr><th>Olho</th><th>VL (S/C)</th><th>VP (S/C)</th><th>Furo Estenopeico</th></tr></thead>
+                    <tbody>
+                        <tr><td>OD</td><td><input type="text" id="av-od"></td><td><input type="text" id="av-vp-od"></td><td><input type="text" id="ph-od"></td></tr>
+                        <tr><td>OE</td><td><input type="text" id="av-oe"></td><td><input type="text" id="av-vp-oe"></td><td><input type="text" id="ph-oe"></td></tr>
+                    </tbody>
+                </table>
+
+                <div class="section-title">Motilidade e Binocularidade</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Cover Test (Longe)</label><input type="text" id="ct-longe" placeholder="Ex: 2^ Exo"></div>
+                    <div class="form-group"><label>Cover Test (Perto)</label><input type="text" id="ct-perto"></div>
+                    <div class="form-group"><label>PPC (Ponto Próx. Convergência)</label><input type="text" id="ppc" placeholder="Ex: 5cm / 8cm"></div>
+                </div>
+
+                <div id="box-reflexos" class="hidden">
+                    <div class="section-title">Reflexos Primitivos (I=Integrado / R=Retido)</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Moro</label><select id="ref-moro"><option>Integrado</option><option>Retido</option></select></div>
+                        <div class="form-group"><label>RTCA (Esgrimista)</label><select id="ref-rtca"><option>Integrado</option><option>Retido</option></select></div>
+                        <div class="form-group"><label>RTCS</label><select id="ref-rtcs"><option>Integrado</option><option>Retido</option></select></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-refracao" class="ficha-section">
+                <div class="section-title">Retinoscopia</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Estática OD</label><input type="text" id="ret-est-od"></div>
+                    <div class="form-group"><label>Estática OE</label><input type="text" id="ret-est-oe"></div>
+                    <div class="form-group hidden" id="field-mohindra"><label>Dinâmica (Mohindra -1.25)</label><input type="text" id="ret-mohindra"></div>
+                </div>
+
+                <div class="section-title">Subjetivo Final (Prescrição)</div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                    <div class="form-row">
+                        <div style="width: 50px; padding-top: 30px; font-weight: bold;">OD</div>
+                        <div class="form-group"><label>Esférico</label><input type="text" id="rx-esf-od"></div>
+                        <div class="form-group"><label>Cilíndrico</label><input type="text" id="rx-cil-od"></div>
+                        <div class="form-group"><label>Eixo</label><input type="text" id="rx-eixo-od"></div>
+                        <div class="form-group"><label>AV Final</label><input type="text" id="rx-av-od"></div>
+                    </div>
+                    <div class="form-row">
+                        <div style="width: 50px; padding-top: 30px; font-weight: bold;">OE</div>
+                        <div class="form-group"><label>Esférico</label><input type="text" id="rx-esf-oe"></div>
+                        <div class="form-group"><label>Cilíndrico</label><input type="text" id="rx-cil-oe"></div>
+                        <div class="form-group"><label>Eixo</label><input type="text" id="rx-eixo-oe"></div>
+                        <div class="form-group"><label>AV Final</label><input type="text" id="rx-av-oe"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Adição (Perto)</label><input type="text" id="rx-add"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-saude" class="ficha-section">
+                <div class="section-title">Biomicroscopia e Fundo de Olho</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Córnea/Cristalino</label><textarea id="bio-cornea" rows="2"></textarea></div>
+                    <div class="form-group"><label>Escavação (Papila)</label><input type="text" id="fo-escav" placeholder="Ex: 0.3 x 0.3"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Bruckner (Reflexo Vermelho)</label><select id="fo-bruckner"><option>Simétrico (Normal)</option><option>Assimétrico (Investigar)</option></select></div>
+                </div>
+            </div>
+
+            <div id="tab-conduta" class="ficha-section">
+                <div class="form-row">
+                    <div class="form-group"><label>Diagnóstico Visual</label><input type="text" id="diag-main" list="diag-list">
+                        <datalist id="diag-list"><option>Miopia</option><option>Hipermetropia</option><option>Astigmatismo</option><option>Presbiopia</option><option>Estrabismo</option><option>Insuficiência de Convergência</option></datalist>
+                    </div>
+                    <div class="form-group"><label>Conduta</label><select id="conduta-main"><option>Óculos</option><option>Terapia Visual</option><option>Encaminhamento</option><option>Alta</option></select></div>
+                </div>
+                
+                <div class="form-row financeiro-box" style="background: #e6fffa; padding: 15px; border: 1px solid #b2f5ea; border-radius: 8px;">
+                    <div class="form-group"><label>Valor da Consulta (R$)</label><input type="number" id="fin-valor" value="0.00"></div>
+                    <div class="form-group" style="display:flex; align-items:flex-end;"><label><input type="checkbox" id="fin-lancar" checked> Lançar no Caixa</label></div>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salvar Ficha</button>
+                    <button type="button" class="btn btn-primary" onclick="imprimirReceita()"><i class="fas fa-print"></i> Imprimir Receita</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section id="tv-panel-ctrl">
+        <h1>Painel de Chamada (TV)</h1>
+        <div class="card" style="text-align: center;">
+            <h3>Como usar:</h3>
+            <p>1. Abra este sistema no computador ligado à TV.</p>
+            <p>2. Clique no botão "MODO TV" abaixo.</p>
+            <p>3. Use este computador aqui para chamar os pacientes na Agenda.</p>
+            <br>
+            <button class="btn btn-primary" onclick="ativarModoTV()" style="font-size: 1.5rem; padding: 20px;">📺 ATIVAR MODO TV (Tela Cheia)</button>
+        </div>
+    </section>
+
+    <div id="modal-tipo" class="modal-overlay">
+        <div class="modal">
+            <h2>Nova Consulta</h2>
+            <p>Selecione o protocolo de atendimento:</p>
+            <div class="type-grid">
+                <div class="type-card" onclick="iniciarConsulta('funcional')">
+                    <i class="fas fa-eye"></i>
+                    <strong>Funcional</strong>
+                    <small>Padrão, Refrativo, Saúde Ocular</small>
+                </div>
+                <div class="type-card" onclick="iniciarConsulta('pediatrico')">
+                    <i class="fas fa-baby"></i>
+                    <strong>Pediátrico</strong>
+                    <small>Bebês, Reflexos, Desenvolvimento</small>
+                </div>
+                <div class="type-card" onclick="iniciarConsulta('comportamental')">
+                    <i class="fas fa-brain"></i>
+                    <strong>Neuro (Comp.)</strong>
+                    <small>Processamento, Estrabismo, V.T.</small>
+                </div>
+            </div>
+            <br>
+            <button class="btn btn-danger" onclick="fecharModal()">Cancelar</button>
+        </div>
+    </div>
+
+</main>
+
+<div id="tv-view">
+    <div class="tv-chamada">Chamada para Exame</div>
+    <div class="tv-nome" id="tv-nome-display">AGUARDANDO...</div>
+    <div style="margin-top: 50px; font-size: 1.5rem;">Por favor, dirija-se ao consultório 01</div>
+    <button onclick="sairModoTV()" style="position: absolute; bottom: 20px; right: 20px; opacity: 0.3;">Sair</button>
+</div>
+
+<audio id="som-chamada" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+    // --- LÓGICA DO SISTEMA --- //
+
+    // 1. Navegação
+    function nav(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('aside button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        // Marca botão ativo (aproximado)
+        dashboardUpdate();
+    }
+
+    // 2. Abas da Ficha
+    function tabConsulta(tabId) {
+        document.querySelectorAll('.ficha-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ficha-section').forEach(s => s.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // 3. Controle da Ficha Mutante
+    function abrirModalNovaConsulta() {
+        document.getElementById('modal-tipo').style.display = 'flex';
+    }
+    function fecharModal() {
+        document.getElementById('modal-tipo').style.display = 'none';
+    }
+
+    let tipoAtual = 'funcional';
+
+    function iniciarConsulta(tipo) {
+        tipoAtual = tipo;
+        fecharModal();
+        nav('consulta');
+        document.getElementById('form-ficha').reset();
+
+        // UI Updates
+        const badge = document.getElementById('tipo-ficha-badge');
+        badge.className = 'badge';
+        document.getElementById('box-pediatria').classList.add('hidden');
+        document.getElementById('box-neuro').classList.add('hidden');
+        document.getElementById('box-reflexos').classList.add('hidden');
+        document.getElementById('field-mohindra').classList.add('hidden');
+
+        if(tipo === 'funcional') {
+            badge.innerText = 'FUNCIONAL';
+            badge.classList.add('badge-func');
+        } else if (tipo === 'pediatrico') {
+            badge.innerText = 'PEDIÁTRICO';
+            badge.classList.add('badge-ped');
+            document.getElementById('box-pediatria').classList.remove('hidden');
+            document.getElementById('box-reflexos').classList.remove('hidden');
+            document.getElementById('field-mohindra').classList.remove('hidden');
+        } else if (tipo === 'comportamental') {
+            badge.innerText = 'NEURO-OPTOMETRIA';
+            badge.classList.add('badge-neuro');
+            document.getElementById('box-neuro').classList.remove('hidden');
+            document.getElementById('box-reflexos').classList.remove('hidden');
+        }
+    }
+
+    // 4. Banco de Dados (IndexedDB)
+    let db;
+    const dbReq = indexedDB.open("OptoSystemPro", 1);
+    
+    dbReq.onupgradeneeded = (e) => {
+        db = e.target.result;
+        db.createObjectStore("pacientes", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("agenda", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("financeiro", { keyPath: "id", autoIncrement: true });
+    };
+    dbReq.onsuccess = (e) => {
+        db = e.target.result;
+        carregarAgenda();
+        dashboardUpdate();
+    };
+
+    // 5. Salvar Consulta
+    function salvarConsulta(e) {
+        e.preventDefault();
+        const nome = document.getElementById('p-nome').value;
+        const tx = db.transaction(["pacientes", "financeiro"], "readwrite");
+        
+        // Salva paciente (simplificado)
+        tx.objectStore("pacientes").add({
+            nome: nome,
+            data: new Date(),
+            tipo: tipoAtual,
+            diagnostico: document.getElementById('diag-main').value
+        });
+
+        // Lança financeiro
+        if(document.getElementById('fin-lancar').checked) {
+            const val = parseFloat(document.getElementById('fin-valor').value);
+            if(val > 0) {
+                tx.objectStore("financeiro").add({
+                    desc: `Consulta (${tipoAtual}): ${nome}`,
+                    valor: val,
+                    tipo: 'entrada',
+                    data: new Date()
+                });
+            }
+        }
+
+        tx.oncomplete = () => {
+            alert('Ficha salva com sucesso!');
+            nav('dashboard');
+        };
+    }
+
+    // 6. Agenda & TV Panel Logic
+    // Canal de comunicação entre abas
+    const tvChannel = new BroadcastChannel('tv_channel');
+
+    function agendar() {
+        const p = {
+            data: document.getElementById('ag-data').value,
+            hora: document.getElementById('ag-hora').value,
+            nome: document.getElementById('ag-nome').value,
+            status: 'Aguardando'
+        };
+        const tx = db.transaction("agenda", "readwrite");
+        tx.objectStore("agenda").add(p);
+        tx.oncomplete = () => {
+            carregarAgenda();
+            document.getElementById('ag-nome').value = '';
+        };
+    }
+
+    function carregarAgenda() {
+        const tbody = document.getElementById('lista-agenda');
+        tbody.innerHTML = '';
+        const store = db.transaction("agenda").objectStore("agenda");
+        store.openCursor().onsuccess = (e) => {
+            const c = e.target.result;
+            if(c) {
+                const item = c.value;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.hora}</td>
+                        <td>${item.nome}</td>
+                        <td>${item.status}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="chamarPaciente('${item.nome}')"><i class="fas fa-bullhorn"></i> Chamar</button>
+                        </td>
+                    </tr>
+                `;
+                c.continue();
+            }
+        };
+    }
+
+    // Função que envia o sinal para a TV
+    function chamarPaciente(nome) {
+        // Envia via BroadcastChannel
+        tvChannel.postMessage({ nome: nome });
+        alert(`Chamando: ${nome}`);
+    }
+
+    // Lógica do Painel TV (Recebimento)
+    tvChannel.onmessage = (event) => {
+        if(document.getElementById('tv-view').style.display === 'flex') {
+            const nome = event.data.nome;
+            const display = document.getElementById('tv-nome-display');
+            display.innerText = nome;
+            
+            // Tocar som
+            document.getElementById('som-chamada').play().catch(e => console.log("Interaja com a página primeiro"));
+            
+            // Piscar cor
+            const view = document.getElementById('tv-view');
+            view.style.background = "#2a9d8f"; // Verde momentâneo
+            setTimeout(() => view.style.background = "#001219", 1000);
+        }
+    };
+
+    function ativarModoTV() {
+        document.getElementById('tv-view').style.display = 'flex';
+        // Entrar em Fullscreen
+        document.documentElement.requestFullscreen().catch(e => console.log(e));
+    }
+
+    function sairModoTV() {
+        document.getElementById('tv-view').style.display = 'none';
+        document.exitFullscreen();
+    }
+
+    // 7. Impressão de Receita
+    function imprimirReceita() {
+        window.print();
+    }
+
+    // 8. Dashboard Simples
+    function dashboardUpdate() {
+        if(!db) return;
+        const tx = db.transaction(["pacientes", "financeiro"], "readonly");
+        
+        let countP = 0;
+        let countRet = 0;
+        let fat = 0;
+        
+        // Pacientes
+        tx.objectStore("pacientes").openCursor().onsuccess = (e) => {
+            const c = e.target.result;
+            if(c) {
+                countP++;
+                // Lógica de retorno 1 ano
+                const dataConsulta = c.value.data;
+                const umAnoAtras = new Date();
+                umAnoAtras.setFullYear(new Date().getFullYear() - 1);
+                if(dataConsulta < umAnoAtras) countRet++;
+                c.continue();
+            } else {
+                document.getElementById('dash-atendimentos').innerText = countP;
+                document.getElementById('dash-retornos').innerText = countRet;
+            }
+        }
+        
+        // Financeiro
+        tx.objectStore("financeiro").openCursor().onsuccess = (e) => {
+            const c = e.target.result;
+            if(c) {
+                if(c.value.tipo === 'entrada') fat += c.value.valor;
+                c.continue();
+            } else {
+                document.getElementById('dash-faturamento').innerText = "R$ " + fat.toFixed(2);
+            }
+        }
+    }
+
+    // Init Data
+    document.getElementById('ag-data').valueAsDate = new Date();
+</script>
+
+</body>
+</html>
