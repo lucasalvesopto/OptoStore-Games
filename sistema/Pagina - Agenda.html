@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agenda de Pacientes - Pagina do Optometrista</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ecec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#102222",
+                        "card-light": "#ffffff",
+                        "card-dark": "#162e2e",
+                        "text-main": "#0d1b1b",
+                        "text-muted": "#4c9a9a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-main transition-colors duration-200 overflow-hidden h-screen flex">
+    <!-- Sidebar -->
+    <aside
+        class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="bg-primary/20 p-2 rounded-lg">
+                    <span
+                        class="material-symbols-outlined text-primary-dark dark:text-primary text-3xl">visibility</span>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do Optometrista
+                    </h1>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+                </div>
+            </div>
+            <div
+                class="flex flex-col gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-6 border border-slate-100 dark:border-slate-700">
+                <div class="flex gap-3 items-center">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+                        id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <h2 id="sidebar-clinic-name"
+                            class="text-sm font-semibold truncate text-slate-900 dark:text-white min-h-[20px]"></h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate min-h-[16px]"
+                            id="sidebar-clinic-social"></p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Dashboard.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium">Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Pacientes.html">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium">Pacientes</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
+                    href="Pagina - Agenda.html">
+                    <span
+                        class="material-symbols-outlined text-primary-dark dark:text-primary fill-1">calendar_month</span>
+                    <span class="text-sm font-semibold">Agenda</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Financeiro.html">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium">Financeiro</span>
+                </a>
+            </nav>
+        </div>
+        <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                href="Pagina - Configuracoes.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="text-sm font-medium">Configurações</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors mt-1"
+                href="Login - Pagina Inicial.html">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-medium">Sair</span>
+            </a>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 h-full overflow-hidden relative">
+        <!-- Top Navbar -->
+        <header
+            class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
+            <div class="flex items-center gap-4 lg:hidden">
+                <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-3 ml-auto">
+                <button onclick="window.location.href='Agenda - Cadastro.html'"
+                    class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
+                    <div class="text-right hidden sm:block">
+                        <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...
+                        </p>
+                        <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
+                    </div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
+                        data-alt="Profile picture of Dr. Ricardo"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Scrollable Page Content -->
+        <div class="flex-1 overflow-y-auto px-6 py-8">
+            <div class="max-w-[1400px] mx-auto flex flex-col gap-6 h-full">
+                <!-- Actions & Heading -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <h3 id="current-date-title"
+                                class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Agenda</h3>
+                        </div>
+                        <p id="current-summary" class="text-text-muted">Visualização de Agendamentos</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="window.location.href='Agenda - Cadastro.html'"
+                            class="bg-primary hover:bg-[#0fd6d6] text-slate-900 font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined">add</span>
+                            <span>Novo Agendamento</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Appointments List -->
+                <div class="flex flex-col gap-4" id="appointments-container">
+                    <div class="p-12 text-center text-slate-500">
+                        <span class="material-symbols-outlined text-4xl mb-2">calendar_month</span>
+                        <p>Carregando contatos...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { setupAgendaPage, openAppointmentModal } from './js/agenda-manager.js';
+
+        setupAgendaPage();
+
+        // Expose to window for inline HTML onclicks if needed (though we bound them inside setupAgendaPage or via window assignment in module)
+        // But better safe:
+        window.openAppointmentModal = openAppointmentModal;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+
+<html class="light" lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Pagina do Optometrista - Login</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ecec",
+            "background-light": "#f6f8f8",
+            "background-dark": "#102222",
+            "text-main": "#0d1b1b",
+            "text-muted": "#647777",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined,
+    .material-symbols-rounded,
+    .material-symbols-sharp {
+      font-display: block;
+    }
+  </style>
+</head>
+
+<body
+  class="font-display bg-background-light dark:bg-background-dark text-text-main dark:text-white antialiased h-screen overflow-hidden selection:bg-primary selection:text-background-dark">
+  <div class="flex min-h-screen w-full flex-row">
+    <!-- Left Side (Brand/Context) -->
+    <div class="relative hidden w-0 flex-1 lg:flex lg:flex-col bg-background-dark border-r border-white/5">
+      <!-- Background Image -->
+      <div class="absolute inset-0 h-full w-full bg-cover bg-center"
+        data-alt="Close up of a phoropter eye exam machine in a modern clinic"
+        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDkP1014-JQOTCeoPTjfWQGF29bsg9vL6xukZY53vzCKEXcWVLlhhmK42Yk1zuE0G0HbR5Uod-CGTzKC7xJjpewFw1N1zOO1ZtmF5tY03ZVpeMi_414s8D8NjuLHl7ItEKTUSfHIMOM90OPzAIMzbfJT-cwUfl9qjV9w7YLJA3Gs07L1tTD3R6gNO29lHn1druRo5l6Q02k2w2OzcQBP5hpUPQXVPF4v47YefJrLJoM3AZT4QXc_-C2tXM1nR80qJeutjX8Sf6_zIWw');">
+      </div>
+      <!-- Gradient Overlay -->
+      <!-- Dark overlay for text readability + Brand tint -->
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-[#102222]/90 via-[#102222]/70 to-[#102222]/95 mix-blend-multiply">
+      </div>
+      <div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+      <!-- Content Container -->
+      <div class="relative z-10 flex h-full flex-col justify-between p-16 text-white">
+        <!-- Logo Area -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-background-dark shadow-[0_0_15px_rgba(19,236,236,0.4)]">
+            <span class="material-symbols-outlined" style="font-size: 24px;">visibility</span>
+          </div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Pagina do Optometrista</h1>
+        </div>
+        <!-- Hero Text Area -->
+        <div class="max-w-xl">
+          <h2 class="mb-6 text-4xl font-bold leading-tight tracking-tight text-white lg:text-5xl">
+            Gestáo Inteligente para Optometria Especializada.
+          </h2>
+          <p class="mb-10 text-lg text-gray-300 font-normal leading-relaxed">
+            A plataforma completa para gerenciar clá­nicas com foco em Neuro, Pediá¡trico e Comportamental. Simplifique o
+            fluxo clá­nico e foque no paciente.
+          </p>
+          <!-- Feature Tags -->
+          <div class="flex flex-wrap gap-3">
+            <div
+              class="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors cursor-default">
+              <span class="material-symbols-outlined text-primary text-[20px]">neurology</span>
+              <span class="text-sm font-medium tracking-wide">Neuro</span>
+            </div>
+            <div
+              class="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors cursor-default">
+              <span class="material-symbols-outlined text-primary text-[20px]">face_3</span>
+              <span class="text-sm font-medium tracking-wide">Pediá¡trico</span>
+            </div>
+            <div
+              class="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors cursor-default">
+              <span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+              <span class="text-sm font-medium tracking-wide">Comportamental</span>
+            </div>
+          </div>
+        </div>
+        <!-- Footer on Image -->
+        <div class="flex justify-between items-end border-t border-white/10 pt-8">
+          <div class="text-sm text-gray-400">
+            <p>Â© 2024 Pagina do Optometrista.</p>
+            <p>Tecnologia avançada para Visão.</p>
+          </div>
+          <!-- Testimonial Quote (Optional Polish) -->
+          <div class="hidden xl:block max-w-xs text-right">
+            <p class="text-sm italic text-gray-300">"Revolucionou nosso atendimento pediá¡trico."</p>
+            <p class="text-xs text-primary mt-1 font-semibold">- Clá­nica Visual Care</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Side (Login Form) -->
+    <div class="flex flex-1 flex-col justify-center bg-background-light dark:bg-background-dark overflow-y-auto">
+      <div class="flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-28">
+        <div class="mx-auto w-full max-w-md space-y-10">
+          <!-- Mobile Header (Logo) -->
+          <div class="flex lg:hidden items-center justify-center gap-2 text-text-main dark:text-white">
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-background-dark shadow-md">
+              <span class="material-symbols-outlined" style="font-size: 24px;">visibility</span>
+            </div>
+            <span class="text-2xl font-bold">Pagina do Optometrista</span>
+          </div>
+          <!-- Form Header -->
+          <div class="text-center lg:text-left">
+            <h2 class="text-3xl font-bold tracking-tight text-text-main dark:text-white lg:text-4xl">
+              Bem-vindo de volta
+            </h2>
+            <p class="mt-3 text-base text-text-muted dark:text-gray-400">
+              Acesse o portal clá­nico unificado para especialistas e equipe.
+            </p>
+          </div>
+
+          <!-- Error Alert (Hidden by default) -->
+          <div id="auth-error"
+            class="hidden rounded-lg bg-red-50 dark:bg-red-900/10 p-4 border border-red-100 dark:border-red-900/50">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <span class="material-symbols-outlined text-red-500 text-[20px]">error</span>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Erro de Autenticaçáo</h3>
+                <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                  <p id="error-message">Usuá¡rio ou senha incorretos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Login Form -->
+          <form action="#" class="space-y-6" method="POST">
+            <!-- Email Field -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-text-main dark:text-gray-200" for="email">
+                E-mail Corporativo
+              </label>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-gray-400 text-[20px]">mail</span>
+                </div>
+                <input autocomplete="email"
+                  class="block w-full rounded-lg border-0 py-3.5 pl-10 text-text-main bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm sm:leading-6 transition-shadow"
+                  id="email" name="email" placeholder="seu.nome@clinica.com" required type="email" />
+              </div>
+            </div>
+
+            <!-- Extra Fields for Signup (Hidden by default) -->
+            <div id="signup-fields" class="hidden space-y-4">
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-text-main dark:text-gray-200" for="fullName">Nome
+                  Completo</label>
+                <input
+                  class="block w-full rounded-lg border-0 py-3.5 px-4 text-text-main bg-white ring-1 ring-inset ring-gray-200 focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm"
+                  id="fullName" type="text" placeholder="Ex: Dr. Lucas" />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-text-main dark:text-gray-200" for="clinicName">Nome da
+                  Clá­nica</label>
+                <input
+                  class="block w-full rounded-lg border-0 py-3.5 px-4 text-text-main bg-white ring-1 ring-inset ring-gray-200 focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm"
+                  id="clinicName" type="text" placeholder="Ex: Clá­nica Visão" />
+              </div>
+            </div>
+            <!-- Password Field -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="block text-sm font-semibold text-text-main dark:text-gray-200" for="password">
+                  Senha
+                </label>
+              </div>
+              <div class="relative rounded-lg shadow-sm">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-gray-400 text-[20px]">lock</span>
+                </div>
+                <input autocomplete="current-password"
+                  class="block w-full rounded-lg border-0 py-3.5 pl-10 pr-10 text-text-main bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm sm:leading-6 transition-shadow"
+                  id="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required="" type="password" />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer group">
+                  <span
+                    class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-[20px]">visibility_off</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <!-- Remember Me -->
+              <div class="flex items-center">
+                <input
+                  class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary bg-white dark:bg-gray-800 dark:border-gray-600"
+                  id="remember-me" name="remember-me" type="checkbox" />
+                <label class="ml-2 block text-sm text-text-muted dark:text-gray-400" for="remember-me">Lembrar
+                  acesso</label>
+              </div>
+              <!-- Forgot Password Link -->
+              <div class="text-sm">
+                <a class="font-medium text-text-muted hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors underline decoration-transparent hover:decoration-current underline-offset-4"
+                  Esqueceu a senha? </a>
+              </div>
+            </div>
+
+            <div class="text-sm text-center">
+              <a href="Cadastro - Page1 - doutor.html"
+                class="font-medium text-primary hover:text-primary/80 transition-colors">
+                Náo tem conta? Cadastre sua clá­nica
+              </a>
+            </div>
+            <!-- Submit Button -->
+            <div>
+              <button id="submit-btn"
+                class="group flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3.5 text-sm font-bold text-background-dark shadow-sm hover:bg-[#0fd6d6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200 transform active:scale-[0.99]"
+                type="submit">
+                <span id="btn-text">Acessar Plataforma</span>
+                <span
+                  class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+          <!-- Footer Utilities -->
+          <div class="mt-10">
+            <div class="relative">
+              <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-200 dark:border-gray-800"></div>
+              </div>
+              <div class="relative flex justify-center text-sm font-medium leading-6">
+                <span class="bg-background-light dark:bg-background-dark px-4 text-text-muted dark:text-gray-500">
+                  Precisa de ajuda?
+                </span>
+              </div>
+            </div>
+            <div class="mt-6 grid grid-cols-2 gap-4">
+              <a class="flex items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#152a2a] px-3 py-2.5 text-sm font-semibold text-text-main dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                href="Login - Central de Ajuda.html">
+                <span class="material-symbols-outlined text-primary text-[20px]">support_agent</span>
+                <span>Suporte</span>
+              </a>
+              <a class="flex items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#152a2a] px-3 py-2.5 text-sm font-semibold text-text-main dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                href="Login - Manual do Usuario.html">
+                <span class="material-symbols-outlined text-primary text-[20px]">menu_book</span>
+                <span>Manual</span>
+              </a>
+            </div>
+          </div>
+          <!-- Security Badge -->
+          <div class="flex justify-center pt-6">
+            <div
+              class="flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 border border-emerald-100 dark:border-emerald-900/50">
+              <span
+                class="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">lock_open</span>
+              <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">LGPD &amp; HIPAA Compliant</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { handleLogin, handleSignUp } from './js/auth.js';
+
+    let isSignUpMode = false;
+    const form = document.querySelector('form');
+    const toggleBtn = document.getElementById('toggle-auth-mode');
+    const signupFields = document.getElementById('signup-fields');
+    const submitBtnText = document.getElementById('btn-text');
+    const pageTitle = document.querySelector('h2');
+    const pageSubtitle = document.querySelector('p.text-base');
+    const errorAlert = document.getElementById('auth-error');
+    const errorMessage = document.getElementById('error-message');
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        isSignUpMode = !isSignUpMode;
+
+        // Hide error on toggle
+        if (errorAlert) errorAlert.classList.add('hidden');
+
+        if (isSignUpMode) {
+          signupFields.classList.remove('hidden');
+          document.getElementById('fullName').required = true;
+          document.getElementById('clinicName').required = true;
+          submitBtnText.textContent = "Criar Conta e Clá­nica";
+          toggleBtn.textContent = "Já¡ tem conta? Fazer Login";
+          pageTitle.textContent = "Comece Agora";
+          pageSubtitle.textContent = "Crie sua conta para gerenciar sua clá­nica.";
+        } else {
+          signupFields.classList.add('hidden');
+          document.getElementById('fullName').required = false;
+          document.getElementById('clinicName').required = false;
+          submitBtnText.textContent = "Acessar Plataforma";
+          toggleBtn.textContent = "Náo tem conta? Cadastre sua clá­nica";
+          pageTitle.textContent = "Bem-vindo de volta";
+          pageSubtitle.textContent = "Acesse o portal clá­nico unificado para especialistas e equipe.";
+        }
+      });
+    }
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Hide error on new submit
+        if (errorAlert) errorAlert.classList.add('hidden');
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('submit-btn');
+        const originalText = submitBtnText.textContent;
+
+        submitBtnText.textContent = "Processando...";
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+        try {
+          if (isSignUpMode) {
+            const fullName = document.getElementById('fullName').value;
+            const clinicName = document.getElementById('clinicName').value;
+            await handleSignUp(email, password, clinicName, fullName);
+            alert("Conta criada com sucesso! Vocáª já¡ pode fazer login.");
+            toggleBtn.click();
+          } else {
+            await handleLogin(email, password);
+            window.location.href = 'Pagina - Dashboard.html';
+          }
+        } catch (error) {
+          console.error(error);
+          let msg = error.message || "Ocorreu um erro inesperado.";
+          if (msg.includes("Invalid login") || msg.includes("invalid_grant")) msg = "Usuá¡rio ou senha incorretos. Verifique suas credenciais.";
+
+          if (errorMessage) errorMessage.textContent = msg;
+          if (errorAlert) errorAlert.classList.remove('hidden');
+          if (!errorAlert) alert(msg);
+        } finally {
+          submitBtnText.textContent = originalText;
+          btn.disabled = false;
+          btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
+
+
+

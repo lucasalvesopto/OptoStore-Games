@@ -1,0 +1,819 @@
+﻿<!DOCTYPE html>
+
+<html class="light" lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Configurações da Clínica - OptoManager</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Material Icons -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ecec",
+            "background-light": "#f6f8f8",
+            "background-dark": "#102222",
+            "card-light": "#ffffff",
+            "text-main": "#0d1b1b",
+            "text-secondary": "#4c9a9a",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "body": ["Noto Sans", "sans-serif"],
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-text-main antialiased overflow-hidden">
+  <div class="flex h-screen w-full">
+    <!-- Sidebar -->
+    <aside
+      class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="bg-primary/20 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-primary-dark dark:text-primary text-3xl">visibility</span>
+          </div>
+          <div class="flex flex-col">
+            <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do Optometrista</h1>
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-6 border border-slate-100 dark:border-slate-700">
+          <div class="flex gap-3 items-center">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+              id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol">
+            </div>
+            <div class="flex flex-col overflow-hidden">
+              <h2 id="sidebar-clinic-name" class="text-sm font-semibold truncate text-slate-900 dark:text-white">Clínica
+                Visão Total</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 truncate" id="sidebar-clinic-social">Unidade Centro
+              </p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex flex-col gap-1">
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Dashboard.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="text-sm font-medium">Dashboard</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Pacientes.html">
+            <span class="material-symbols-outlined">groups</span>
+            <span class="text-sm font-medium">Pacientes</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Agenda.html">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span class="text-sm font-medium">Agenda</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Financeiro.html">
+            <span class="material-symbols-outlined">payments</span>
+            <span class="text-sm font-medium">Financeiro</span>
+          </a>
+        </nav>
+      </div>
+      <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
+          href="Pagina - Configuracoes.html">
+          <span class="material-symbols-outlined text-primary-dark dark:text-primary fill-1">settings</span>
+          <span class="text-sm font-semibold">Configurações</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors mt-1"
+          href="Login - Pagina Inicial.html">
+          <span class="material-symbols-outlined">logout</span>
+          <span class="text-sm font-medium">Sair</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full relative overflow-hidden">
+      <!-- Top Navbar -->
+      <header
+        class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
+        <div class="flex items-center gap-4 lg:hidden">
+          <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+        </div>
+        <!-- Search -->
+        <div class="hidden md:flex flex-1 max-w-xl">
+          <div class="relative w-full group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-slate-400">search</span>
+            </div>
+            <input
+              class="block w-full pl-10 pr-3 py-2 border-none rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
+              placeholder="Buscar paciente, prontuário ou exame..." type="text" />
+          </div>
+        </div>
+        <!-- Right Actions -->
+        <div class="flex items-center gap-3 ml-auto">
+          <button onclick="window.location.href='Cadastro Novo Paciente.html'"
+            class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+          <button
+            class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+            <span class="material-symbols-outlined filled">notifications</span>
+            <span
+              class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
+          </button>
+          <button
+            class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+            <span class="material-symbols-outlined">chat</span>
+          </button>
+          <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
+            <div class="text-right hidden sm:block">
+              <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...</p>
+              <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
+            </div>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
+              data-alt="Profile picture of Dr. Ricardo"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- Scrollable Page Content -->
+      <div class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark scroll-smooth">
+        <div class="max-w-[1000px] mx-auto p-6 lg:p-10 flex flex-col gap-8">
+          <!-- Page Heading -->
+          <div class="flex flex-col gap-2">
+            <h1 class="text-[#0d1b1b] text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Configurações
+              da Clínica</h1>
+            <p class="text-[#4c9a9a] text-base font-normal max-w-2xl">Gerencie os dados da sua empresa, branding e
+              membros da equipe com acesso á plataforma.</p>
+          </div>
+          <!-- Card 1: Company Data -->
+          <section
+            class="rounded-xl bg-card-light shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#e7f3f3] overflow-hidden">
+            <div class="border-b border-[#e7f3f3] px-6 py-4 flex items-center justify-between bg-white">
+              <h3 class="text-lg font-bold text-[#0d1b1b]">Dados da Empresa</h3>
+            </div>
+            <div class="p-6 lg:p-8">
+              <form id="clinic-form" class="flex flex-col gap-8">
+                <!-- Top Section: Logo & Basic Info -->
+                <div class="flex flex-col md:flex-row gap-8 items-start">
+                  <!-- Logo Upload -->
+                  <div class="flex flex-col items-center gap-3 shrink-0 mx-auto md:mx-0">
+                    <div
+                      class="group relative size-32 rounded-full bg-[#f0f7f7] border-2 border-dashed border-[#4c9a9a]/40 flex items-center justify-center cursor-pointer overflow-hidden hover:border-primary transition-colors">
+                      <!-- Current Logo Placeholder -->
+                      <div id="setting-page-logo" class="absolute inset-0 bg-center bg-contain bg-no-repeat opacity-50"
+                        data-alt="Generic eye clinic logo icon">
+                      </div>
+                      <!-- Hover Overlay -->
+                      <div
+                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        onclick="document.getElementById('logo-input').click()">
+                        <span class="material-symbols-outlined text-white">photo_camera</span>
+                      </div>
+                      <input type="file" id="logo-input" accept="image/*" class="hidden" />
+                    </div>
+                    <button type="button" class="text-sm font-bold text-primary hover:text-primary/80"
+                      onclick="document.getElementById('logo-input').click()">Alterar
+                      Logo</button>
+                  </div>
+                  <!-- Basic Info Inputs -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                    <div class="flex flex-col gap-1.5 col-span-1 md:col-span-2">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Nome Fantasia</label>
+                      <input id="clinic-name"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        placeholder="Ex: Clínica Olhar" type="text" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Razão Social</label>
+                      <input id="clinic-social"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">CNPJ</label>
+                      <input id="clinic-cnpj"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Telefone
+                        Comercial</label>
+                      <input id="clinic-phone"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Email de
+                        Contato</label>
+                      <input id="clinic-email"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="email" />
+                    </div>
+                  </div>
+                </div>
+                <div class="h-px bg-[#e7f3f3] w-full"></div>
+                <!-- Address Section -->
+                <div class="flex flex-col gap-4">
+                  <h4 class="text-sm font-bold text-[#0d1b1b] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                    Endereço da Clínica
+                  </h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-6 gap-5">
+                    <div class="sm:col-span-2 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">CEP</label>
+                      <input id="clinic-zip"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-4 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Rua</label>
+                      <input id="clinic-street"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-1 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Número</label>
+                      <input id="clinic-number"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-2 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Complemento</label>
+                      <input id="clinic-complement"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-3 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Bairro</label>
+                      <input id="clinic-neighborhood"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-4 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Cidade</label>
+                      <input id="clinic-city"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                    <div class="sm:col-span-2 flex flex-col gap-1.5">
+                      <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Estado</label>
+                      <input id="clinic-state"
+                        class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] px-4 py-2.5 text-[#0d1b1b] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+                        type="text" />
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-4">
+                  <button type="submit"
+                    class="bg-primary hover:bg-primary/90 text-[#0d1b1b] font-bold py-2.5 px-6 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">save</span>
+                    Salvar Alterações
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+          <!-- Card 2: Team Management -->
+          <section
+            class="rounded-xl bg-card-light shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#e7f3f3] overflow-hidden mb-10">
+            <div
+              class="border-b border-[#e7f3f3] px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
+              <div>
+                <h3 class="text-lg font-bold text-[#0d1b1b]">Gerenciar Equipe</h3>
+                <p class="text-sm text-[#4c9a9a]">Adicione ou remova acesso de funcionários.</p>
+              </div>
+              <button onclick="openAddMemberModal()"
+                class="bg-primary hover:bg-primary/90 text-[#0d1b1b] font-bold py-2.5 px-4 rounded-xl text-sm shadow-sm transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">person_add</span>
+                Adicionar Novo Membro
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-[#f8fcfc] border-b border-[#e7f3f3]">
+                    <th class="px-6 py-4 text-xs font-bold text-[#4c9a9a] uppercase tracking-wider">Membro</th>
+                    <th class="px-6 py-4 text-xs font-bold text-[#4c9a9a] uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-4 text-xs font-bold text-[#4c9a9a] uppercase tracking-wider">Função</th>
+                    <th class="px-6 py-4 text-xs font-bold text-[#4c9a9a] uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-4 text-xs font-bold text-[#4c9a9a] uppercase tracking-wider text-right">Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="team-list" class="divide-y divide-[#e7f3f3]">
+                  <!-- Dynamic Members -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import { supabase, supabaseUrl, supabaseKey } from './js/supabase-client.js';
+    import { loadSidebar } from './js/sidebar-loader.js';
+
+    // Member Modal Logic
+    const addMemberModal = document.getElementById('add-member-modal');
+    const addMemberForm = document.getElementById('add-member-form');
+
+    window.openAddMemberModal = () => {
+      addMemberModal.classList.remove('hidden');
+    }
+
+    window.closeAddMemberModal = () => {
+      addMemberModal.classList.add('hidden');
+      addMemberForm.reset();
+    }
+
+    addMemberForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('new-member-name').value;
+      const email = document.getElementById('new-member-email').value;
+      const password = document.getElementById('new-member-password').value;
+      const role = document.getElementById('new-member-role').value;
+
+      if (!currentClinicId) {
+        alert("Erro: ID da clínica não encontrado.");
+        return;
+      }
+
+      try {
+        const btn = addMemberForm.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Criando...';
+        btn.disabled = true;
+
+        // 1. Create temporary client
+        const tempClient = createClient(supabaseUrl, supabaseKey);
+
+        // 2. Sign Up new user (Auto-login in tempClient)
+        const { data: { user }, error: authError } = await tempClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: name }
+          }
+        });
+
+        if (authError) throw authError;
+        if (!user) throw new Error("Usuário não criado.");
+
+        // 3. Create Profile (Authenticated as new user)
+        // Note: RLS 'Authenticated users can create a clinic' ?? No, 'Profiles: insert own profile'.
+        // ensure 'insert own profile' works. 
+        // We insert: id=user.id, clinic_id=currentClinicId, full_name=name, role=role.
+        const { error: profileError } = await tempClient
+          .from('profiles')
+          .insert({
+            id: user.id,
+            clinic_id: currentClinicId,
+            full_name: name,
+            role: role,
+            email: email
+          });
+
+        if (profileError) {
+          // Determine if we should delete auth user cleanup? 
+          // For now just throw.
+          throw profileError;
+        }
+
+        alert("Membro adicionado com sucesso!");
+        closeAddMemberModal();
+        loadTeam(currentClinicId); // Refresh list
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
+      } catch (err) {
+        console.error("Erro criando membro:", err);
+        alert("Erro ao criar membro: " + err.message);
+        const btn = addMemberForm.querySelector('button[type="submit"]');
+        btn.innerHTML = '<span class="material-symbols-outlined">person_add</span> Criar Membro';
+        btn.disabled = false;
+      }
+    });
+
+    // Edit Member Modal
+    const editMemberModal = document.getElementById('edit-member-modal');
+    const editMemberForm = document.getElementById('edit-member-form');
+
+    window.openEditMemberModal = (id, currentRole) => {
+      document.getElementById('edit-member-id').value = id;
+      document.getElementById('edit-member-role').value = currentRole || 'optometrist';
+      editMemberModal.classList.remove('hidden');
+    }
+
+    window.closeEditMemberModal = () => {
+      editMemberModal.classList.add('hidden');
+    }
+
+    // Edit Member Save
+    if (editMemberForm) {
+      editMemberForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-member-id').value;
+        const role = document.getElementById('edit-member-role').value;
+
+        try {
+          const btn = editMemberForm.querySelector('button[type="submit"]');
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Salvando...';
+          btn.disabled = true;
+
+          const { error } = await supabase
+            .from('profiles')
+            .update({ role: role })
+            .eq('id', id);
+
+          if (error) throw error;
+
+          alert('Função atualizada com sucesso!');
+          closeEditMemberModal();
+          loadTeam(currentClinicId);
+
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+
+        } catch (err) {
+          console.error(err);
+          alert('Erro ao atualizar: ' + err.message);
+          const btn = editMemberForm.querySelector('button[type="submit"]');
+          btn.innerHTML = '<span class="material-symbols-outlined">save</span> Salvar';
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Elements
+    const form = document.getElementById('clinic-form');
+    const teamList = document.getElementById('team-list');
+
+    // Header
+    const userNameDisplay = document.getElementById('header-user-name');
+    const userRoleDisplay = document.getElementById('header-user-role');
+
+    // Inputs
+    const inName = document.getElementById('clinic-name');
+    const inSocial = document.getElementById('clinic-social');
+    const inCnpj = document.getElementById('clinic-cnpj');
+    const inPhone = document.getElementById('clinic-phone');
+    const inEmail = document.getElementById('clinic-email');
+    const inZip = document.getElementById('clinic-zip');
+    const inStreet = document.getElementById('clinic-street');
+    const inNumber = document.getElementById('clinic-number');
+    const inComplement = document.getElementById('clinic-complement');
+    const inNeighborhood = document.getElementById('clinic-neighborhood');
+    const inCity = document.getElementById('clinic-city');
+    const inState = document.getElementById('clinic-state');
+
+    let currentClinicId = null;
+    let currentUserRole = null;
+
+    async function loadConfig() {
+      loadSidebar();
+      try {
+        // 1. Auth
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          window.location.href = 'Login - Pagina Inicial.html';
+          return;
+        }
+
+        // 2. Profile & Clinic linked
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*, clinics(*)')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          currentUserRole = profile.role;
+          loadSidebar();
+
+          if (profile.clinics) {
+            currentClinicId = profile.clinics.id;
+
+            // Fill Form
+            const c = profile.clinics;
+            inName.value = c.name || '';
+            inSocial.value = c.social_name || '';
+            inCnpj.value = c.cnpj || '';
+            inPhone.value = c.phone_primary || '';
+            inEmail.value = c.email_primary || '';
+            inZip.value = c.address_zip || '';
+            inStreet.value = c.address_street || '';
+            inNumber.value = c.address_number || '';
+            inComplement.value = c.address_complement || '';
+            inNeighborhood.value = c.address_neighborhood || '';
+            inCity.value = c.address_city || '';
+            inState.value = c.address_state || '';
+
+            // Load Team
+            loadTeam(currentClinicId);
+
+            // Update Setting Page Logo
+            const settingLogo = document.getElementById('setting-page-logo');
+            if (settingLogo && c.logo_url) {
+              settingLogo.style.backgroundImage = `url('${c.logo_url}')`;
+              settingLogo.style.opacity = '1'; // Ensure it's visible (remove default opacity-50 if needed, or keep it)
+              settingLogo.classList.remove('opacity-50'); // Remove default opacity class
+            }
+          }
+        }
+
+      } catch (err) {
+        console.error("Erro loading config", err);
+      }
+    }
+
+    async function loadTeam(clinicId) {
+      const { data: members, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('clinic_id', clinicId);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const roleLabels = {
+        'admin': 'Administrador',
+        'optometrist': 'Optometrista',
+        'receptionist': 'Recepcionista',
+        'member': 'Membro'
+      };
+
+      const roleColors = {
+        'admin': 'bg-purple-50 text-purple-700 ring-purple-700/10',
+        'optometrist': 'bg-blue-50 text-blue-700 ring-blue-700/10',
+        'receptionist': 'bg-green-50 text-green-700 ring-green-700/10',
+        'member': 'bg-gray-50 text-gray-700 ring-gray-700/10'
+      };
+
+      teamList.innerHTML = members.map(m => {
+        const roleLabel = roleLabels[m.role] || 'Membro';
+        const roleColor = roleColors[m.role] || roleColors['member'];
+
+        return `
+                  <tr class="group hover:bg-[#fcfdfd] transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center gap-3">
+                        <div class="size-9 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary text-sm">
+                            ${m.full_name ? m.full_name.substring(0, 2).toUpperCase() : '??'}
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="text-sm font-bold text-[#0d1b1b]">${m.full_name || 'Sem Nome'}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[#0d1b1b]">${m.email || '...'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${roleColor}">${roleLabel}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <div class="size-2 rounded-full bg-green-500"></div>
+                        <span class="text-sm text-[#0d1b1b]">Ativo</span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                      ${currentUserRole === 'admin' ? `
+                      <button onclick="openEditMemberModal('${m.id}', '${m.role}')"
+                        class="text-[#4c9a9a] hover:text-primary p-1 rounded-full hover:bg-gray-100 transition-colors" title="Editar Função">
+                        <span class="material-symbols-outlined text-xl">edit</span>
+                      </button>
+                      ` : ''}
+                    </td>
+                  </tr>
+            `}).join('');
+    }
+
+    // Save
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentClinicId) return;
+
+      const updates = {
+        name: inName.value,
+        social_name: inSocial.value,
+        cnpj: inCnpj.value,
+        phone_primary: inPhone.value,
+        email_primary: inEmail.value,
+        address_zip: inZip.value,
+        address_street: inStreet.value,
+        address_number: inNumber.value,
+        address_complement: inComplement.value,
+        address_neighborhood: inNeighborhood.value,
+        address_city: inCity.value,
+        address_state: inState.value
+      };
+
+      const { error } = await supabase
+        .from('clinics')
+        .update(updates)
+        .eq('id', currentClinicId);
+
+      if (error) {
+        alert("Erro ao salvar: " + error.message);
+      } else {
+        alert("Dados da clínica atualizados com sucesso!");
+
+        // Update Sidebar Immediately
+        const sbName = document.getElementById('sidebar-clinic-name');
+        const sbSocial = document.getElementById('sidebar-clinic-social');
+        if (sbName && updates.name) sbName.textContent = updates.name;
+        if (sbSocial) sbSocial.textContent = updates.social_name || 'Unidade Centro';
+        if (userRoleDisplay && updates.name) userRoleDisplay.textContent = updates.name;
+      }
+    });
+
+    // Logo Upload
+    const logoInput = document.getElementById('logo-input');
+    const displayLogo = document.getElementById('sidebar-clinic-logo');
+    // Also the big placeholder in the settings
+    const settingLogo = document.querySelector('.group.relative.size-32 .absolute.inset-0');
+
+    logoInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentClinicId) return;
+
+      try {
+        // Upload to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentClinicId}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { data, error: uploadError } = await supabase.storage
+          .from('clinic-logos')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Get Public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('clinic-logos')
+          .getPublicUrl(filePath);
+
+        // Update Clinic Record
+        const { error: updateError } = await supabase
+          .from('clinics')
+          .update({ logo_url: publicUrl })
+          .eq('id', currentClinicId);
+
+        if (updateError) throw updateError;
+
+        // Update visuals
+        if (displayLogo) displayLogo.style.backgroundImage = `url('${publicUrl}')`;
+        if (settingLogo) settingLogo.style.backgroundImage = `url('${publicUrl}')`;
+
+        alert('Logo atualizada com sucesso!');
+
+      } catch (error) {
+        console.error('Erro upload logo:', error);
+        alert('Erro ao atualizar logo: ' + error.message);
+      }
+    });
+
+    loadConfig();
+  </script>
+
+  <!-- Add Member Modal -->
+  <div id="add-member-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeAddMemberModal()"></div>
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 bg-white dark:bg-[#162b2b] rounded-2xl shadow-xl transform transition-all">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-[#0d1b1b] dark:text-white">Adicionar Novo Membro</h3>
+        <button onclick="closeAddMemberModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="add-member-form" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Nome Completo</label>
+          <input id="new-member-name" required
+            class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-[#0d1b1b] dark:text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            type="text" placeholder="Ex: João Silva" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Email</label>
+          <input id="new-member-email" required
+            class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-[#0d1b1b] dark:text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            type="email" placeholder="email@exemplo.com" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Senha Inicial</label>
+          <input id="new-member-password" required minlength="6"
+            class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-[#0d1b1b] dark:text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            type="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Função</label>
+          <select id="new-member-role"
+            class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-[#0d1b1b] dark:text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <option value="optometrist">Optometrista</option>
+            <option value="receptionist">Recepcionista</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+          <p class="font-bold mb-1">Nota Importante:</p>
+          Isso criará uma conta de acesso imediato. Forneça o email e a senha para o funcionário.
+        </div>
+
+        <div class="flex justify-end gap-3 mt-2">
+          <button type="button" onclick="closeAddMemberModal()"
+            class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800">Cancelar</button>
+          <button type="submit"
+            class="bg-primary hover:bg-primary/90 text-[#0d1b1b] font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined">person_add</span>
+            Criar Membro
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Member Modal -->
+  <div id="edit-member-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeEditMemberModal()">
+    </div>
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 bg-white dark:bg-[#162b2b] rounded-2xl shadow-xl transform transition-all">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-[#0d1b1b] dark:text-white">Editar Função</h3>
+        <button onclick="closeEditMemberModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="edit-member-form" class="flex flex-col gap-4">
+        <input type="hidden" id="edit-member-id">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#4c9a9a] uppercase tracking-wider">Nova Função</label>
+          <select id="edit-member-role"
+            class="w-full rounded-lg border border-[#e7f3f3] bg-[#fcfdfd] dark:bg-slate-800 dark:border-slate-700 px-4 py-2.5 text-[#0d1b1b] dark:text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <option value="optometrist">Optometrista</option>
+            <option value="receptionist">Recepcionista</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-2">
+          <button type="button" onclick="closeEditMemberModal()"
+            class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800">Cancelar</button>
+          <button type="submit"
+            class="bg-primary hover:bg-primary/90 text-[#0d1b1b] font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined">save</span>
+            Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>

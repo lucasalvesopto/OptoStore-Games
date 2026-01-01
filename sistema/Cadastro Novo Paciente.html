@@ -1,0 +1,579 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Cadastro de Paciente - Visão Total</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ecec",
+                        "primary-hover": "#0ebdbd",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#102222",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#162a2a",
+                        "text-main": "#0d1b1b",
+                        "text-muted": "#4c9a9a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden h-screen flex">
+    <!-- Sidebar -->
+    <aside
+        class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="bg-primary/20 p-2 rounded-lg">
+                    <span
+                        class="material-symbols-outlined text-primary-dark dark:text-primary text-3xl">visibility</span>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do Optometrista
+                    </h1>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+                </div>
+            </div>
+            <div
+                class="flex flex-col gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-6 border border-slate-100 dark:border-slate-700">
+                <div class="flex gap-3 items-center">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+                        id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlXXXjJsKNn1CovSRG8HGI7kH");'>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <h2 id="sidebar-clinic-name"
+                            class="text-sm font-semibold truncate text-slate-900 dark:text-white min-h-[20px]"></h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate min-h-[16px]"
+                            id="sidebar-clinic-social"></p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Dashboard.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-semibold">Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
+                    href="Pagina - Pacientes.html">
+                    <span class="material-symbols-outlined text-primary-dark dark:text-primary fill-1">groups</span>
+                    <span class="text-sm font-medium">Pacientes</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Agenda.html">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <span class="text-sm font-medium">Agenda</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Financeiro.html">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium">Financeiro</span>
+                </a>
+            </nav>
+        </div>
+        <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                href="Pagina - Configuracoes.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="text-sm font-medium">Configurações</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors mt-1"
+                href="Login - Pagina Inicial.html">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-medium">Sair</span>
+            </a>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 h-full overflow-hidden relative">
+        <!-- Top Navbar -->
+        <header
+            class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
+            <div class="flex items-center gap-4 lg:hidden">
+                <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+            <!-- Search -->
+            <div class="hidden md:flex flex-1 max-w-xl">
+                <div class="relative w-full group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-slate-400">search</span>
+                    </div>
+                    <input
+                        class="block w-full pl-10 pr-3 py-2 border-none rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
+                        placeholder="Buscar paciente, prontuário ou exame..." type="text" />
+                </div>
+            </div>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-3 ml-auto">
+                <button onclick="window.location.href='Cadastro Novo Paciente.html'"
+                    class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                <button
+                    class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined filled">notifications</span>
+                    <span
+                        class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
+                </button>
+                <button
+                    class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined">chat</span>
+                </button>
+                <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
+                    <div class="text-right hidden sm:block">
+                        <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...
+                        </p>
+                        <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
+                    </div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
+                        data-alt="Profile picture of Dr. Ricardo"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-6 lg:p-10">
+            <div class="max-w-4xl mx-auto flex flex-col gap-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-1">
+                        <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Cadastro de
+                            Paciente</h1>
+                        <p class="text-text-muted text-sm font-medium">Preencha os dados abaixo para registrar um novo
+                            paciente.</p>
+                    </div>
+                    <a class="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+                        href="Pagina - Pacientes.html">
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                        <span>Voltar para lista</span>
+                    </a>
+                </div>
+                <form id="new-patient-form"
+                    class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+                    <div class="p-8 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="bg-primary/10 p-2 rounded-lg text-teal-700 dark:text-primary">
+                                <span class="material-symbols-outlined">person</span>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Dados Pessoais</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+                            <div class="lg:col-span-6">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="fullName">Nome Completo</label>
+                                <input required
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="fullName" name="fullName" placeholder="Ex: João da Silva" type="text" />
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="cpf">CPF</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="cpf" name="cpf" placeholder="000.000.000-00" type="text" />
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="birthDate">Data de Nascimento</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent text-sm shadow-sm transition-all"
+                                    id="birthDate" name="birthDate" type="date" />
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="gender">Sexo</label>
+                                <select
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent text-sm shadow-sm transition-all appearance-none cursor-pointer"
+                                    id="gender" name="gender">
+                                    <option disabled="" selected="" value="">Selecione</option>
+                                    <option value="F">Feminino</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="O">Outro</option>
+                                </select>
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="maritalStatus">Estado Civil</label>
+                                <select
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent text-sm shadow-sm transition-all appearance-none cursor-pointer"
+                                    id="maritalStatus" name="maritalStatus">
+                                    <option disabled="" selected="" value="">Selecione</option>
+                                    <option value="solteiro">Solteiro(a)</option>
+                                    <option value="casado">Casado(a)</option>
+                                    <option value="divorciado">Divorciado(a)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="bg-primary/10 p-2 rounded-lg text-teal-700 dark:text-primary">
+                                <span class="material-symbols-outlined">contact_phone</span>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Contato</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="email">Email</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
+                                    </div>
+                                    <input
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                        id="email" name="email" placeholder="email@exemplo.com" type="email" />
+                                </div>
+                            </div>
+                            <div class="">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="phone">Telefone / Celular</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="material-symbols-outlined text-slate-400 text-[20px]">call</span>
+                                    </div>
+                                    <input
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                        id="phone" name="phone" placeholder="(00) 00000-0000" type="tel" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="bg-primary/10 p-2 rounded-lg text-teal-700 dark:text-primary">
+                                <span class="material-symbols-outlined">location_on</span>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Endereço Completo</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="zipcode">CEP</label>
+                                <div class="relative">
+                                    <input
+                                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                        id="zipcode" name="zipcode" placeholder="00000-000" type="text" />
+                                    <button
+                                        class="absolute right-2 top-1.5 p-1 text-slate-400 hover:text-primary transition-colors cursor-pointer"
+                                        title="Buscar CEP" type="button" id="btn-search-cep">
+                                        <span class="material-symbols-outlined text-[18px]">search</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="lg:col-span-7">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="street">Logradouro (Rua, Av, etc)</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="street" name="street" type="text" />
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="number">Número</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="number" name="number" type="text" />
+                            </div>
+                            <div class="lg:col-span-4">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="complement">Complemento</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="complement" name="complement" type="text" />
+                            </div>
+                            <div class="lg:col-span-4">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="neighborhood">Bairro</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="neighborhood" name="neighborhood" type="text" />
+                            </div>
+                            <div class="lg:col-span-3">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="city">Cidade</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="city" name="city" type="text" />
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                                    for="state">UF</label>
+                                <input
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent placeholder-slate-400 text-sm shadow-sm transition-all"
+                                    id="state" name="state" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="px-8 py-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 rounded-b-2xl flex justify-end gap-3">
+                        <button type="button" onclick="window.history.back()"
+                            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium text-sm hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 rounded-xl bg-primary text-slate-900 font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">save</span>
+                            Salvar Paciente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+        import { loadSidebar } from './js/sidebar-loader.js';
+
+        loadSidebar();
+
+        const form = document.getElementById('new-patient-form');
+        const userNameDisplay = document.getElementById('header-user-name');
+        const userRoleDisplay = document.getElementById('header-user-role');
+        const searchCepBtn = document.getElementById('btn-search-cep');
+        const zipcodeInput = document.getElementById('zipcode');
+
+        let clinicId = null;
+        let editingPatientId = null;
+
+        // --- 1. Load User ---
+        async function loadUser() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'Login - Pagina Inicial.html';
+                return;
+            }
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*, clinics(id, name, social_name)')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile) {
+                userNameDisplay.textContent = profile.full_name;
+                if (profile.clinics) {
+                    userRoleDisplay.textContent = profile.clinics.name;
+                    clinicId = profile.clinics.id;
+
+                    const sbName = document.getElementById('sidebar-clinic-name');
+                    const sbSocial = document.getElementById('sidebar-clinic-social');
+                    if (sbName) sbName.textContent = profile.clinics.name;
+                    if (sbSocial) sbSocial.textContent = profile.clinics.social_name || 'Unidade Centro';
+
+                    // After loading user/clinic, check for edit mode
+                    checkEditMode();
+                }
+            }
+        }
+
+        loadUser();
+
+        // --- 1.5 Check Edit Mode ---
+        async function checkEditMode() {
+            const params = new URLSearchParams(window.location.search);
+            const isEdit = params.get('edit') === 'true';
+            const id = params.get('id');
+
+            if (isEdit && id) {
+                editingPatientId = id;
+                document.querySelector('h1').textContent = "Editar Paciente"; // Update Title
+
+                // Fetch Data
+                const { data: patient, error } = await supabase
+                    .from('patients')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) {
+                    console.error("Error fetching patient", error);
+                    alert("Erro ao carregar dados do paciente.");
+                    return;
+                }
+
+                if (patient) {
+                    // Populate Form
+                    document.getElementById('fullName').value = patient.full_name || '';
+                    document.getElementById('cpf').value = patient.cpf || '';
+                    document.getElementById('birthDate').value = patient.birth_date || ''; // Assuming YYYY-MM-DD
+                    document.getElementById('gender').value = patient.gender || '';
+                    document.getElementById('maritalStatus').value = patient.marital_status || '';
+                    document.getElementById('email').value = patient.email || '';
+                    document.getElementById('phone').value = patient.phone || '';
+                    document.getElementById('zipcode').value = patient.zip_code || '';
+                    document.getElementById('street').value = patient.street || '';
+                    document.getElementById('number').value = patient.number || '';
+                    document.getElementById('complement').value = patient.complement || '';
+                    document.getElementById('neighborhood').value = patient.neighborhood || '';
+                    document.getElementById('city').value = patient.city || '';
+                    document.getElementById('state').value = patient.state || '';
+
+                    // Change Save Button Text
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = `
+                         <span class="material-symbols-outlined text-[20px]">save</span>
+                         Atualizar Paciente
+                    `;
+                }
+            }
+        }
+
+        // --- 2. CEP Logic (ViaCEP) ---
+        async function searchCep(cep) {
+            if (!cep) return;
+            cep = cep.replace(/\D/g, '');
+            if (cep.length !== 8) {
+                // Only alert if length is definitely wrong AND user triggered search explicitly. 
+                // For blur, maybe be less intrusive? But current logic alerts. Keep it.
+                alert("CEP inválido");
+                return;
+            }
+
+            try {
+                // Change cursor to loading or disable button
+                document.body.style.cursor = 'wait';
+
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (data.erro) {
+                    alert("CEP não encontrado.");
+                } else {
+                    document.getElementById('street').value = data.logradouro;
+                    document.getElementById('neighborhood').value = data.bairro;
+                    document.getElementById('city').value = data.localidade;
+                    document.getElementById('state').value = data.uf;
+                    document.getElementById('number').focus(); // Move focus to number
+                }
+            } catch (err) {
+                console.error("Erro ao buscar CEP", err);
+                alert("Erro ao conectar com serviço de CEP.");
+            } finally {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        // Event for button
+        searchCepBtn.addEventListener('click', () => {
+            searchCep(zipcodeInput.value);
+        });
+
+        // Event for blur (when leaving the field)
+        zipcodeInput.addEventListener('blur', () => {
+            searchCep(zipcodeInput.value);
+        });
+
+        // --- 3. Form Submission ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!clinicId) {
+                alert("Erro: Clínica não identificada para este usuário.");
+                return;
+            }
+
+            // Gather Data
+            const formData = {
+                clinic_id: clinicId,
+                full_name: document.getElementById('fullName').value,
+                cpf: document.getElementById('cpf').value,
+                birth_date: document.getElementById('birthDate').value || null, // DB expects date YYYY-MM-DD
+                gender: document.getElementById('gender').value,
+                marital_status: document.getElementById('maritalStatus').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                zip_code: document.getElementById('zipcode').value,
+                street: document.getElementById('street').value,
+                number: document.getElementById('number').value,
+                complement: document.getElementById('complement').value,
+                neighborhood: document.getElementById('neighborhood').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                // created_at automatically handled by Supabase on insert, not needed for update
+            };
+
+            try {
+                let error = null;
+                let data = null;
+
+                if (editingPatientId) {
+                    // UPDATE
+                    const { data: updateData, error: updateError } = await supabase
+                        .from('patients')
+                        .update(formData)
+                        .eq('id', editingPatientId)
+                        .select()
+                        .single();
+                    error = updateError;
+                    data = updateData;
+                } else {
+                    // INSERT
+                    const { data: insertData, error: insertError } = await supabase
+                        .from('patients')
+                        .insert([formData])
+                        .select()
+                        .single();
+                    error = insertError;
+                    data = insertData;
+                }
+
+                if (error) throw error;
+
+                alert(editingPatientId ? "Paciente atualizado com sucesso!" : "Paciente cadastrado com sucesso!");
+                // Redirect back to list or details
+                if (data) { // Ensure data is available for redirect
+                    if (editingPatientId) {
+                        window.location.href = `Pontuario Pacientes.html?id=${editingPatientId}`;
+                    } else {
+                        window.location.href = `Pontuario Pacientes.html?id=${data.id}`; // Redirect to new patient's details
+                    }
+                } else {
+                    // Fallback if data is unexpectedly null, though select().single() should return it
+                    window.location.href = 'Pagina - Pacientes.html';
+                }
+
+            } catch (err) {
+                console.error("Erro ao salvar paciente", err);
+                alert("Erro ao salvar: " + err.message);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

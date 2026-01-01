@@ -1,0 +1,1127 @@
+﻿<!DOCTYPE html>
+
+<html class="light" lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>OptoClinic - Detalhes do Paciente</title>
+  <!-- Fonts and Icons -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ecec",
+            "background-light": "#f8fcfc",
+            "background-dark": "#102222",
+            "surface-light": "#ffffff",
+            "surface-dark": "#1a3333",
+            "text-main": "#0d1b1b",
+            "text-secondary": "#4c9a9a",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "body": ["Noto Sans", "sans-serif"],
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .icon-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-gray-100 overflow-hidden">
+  <div class="flex h-screen w-full">
+    <!-- SideNavBar -->
+    <!-- Sidebar -->
+    <aside
+      class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="bg-primary/20 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-primary-dark dark:text-primary text-3xl">visibility</span>
+          </div>
+          <div class="flex flex-col">
+            <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do Optometrista</h1>
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-6 border border-slate-100 dark:border-slate-700">
+          <div class="flex gap-3 items-center">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+              id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
+            </div>
+            <div class="flex flex-col overflow-hidden">
+              <h2 id="sidebar-clinic-name"
+                class="text-sm font-semibold truncate text-slate-900 dark:text-white min-h-[20px]"></h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 truncate min-h-[16px]" id="sidebar-clinic-social">
+              </p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex flex-col gap-1">
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Dashboard.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="text-sm font-semibold">Dashboard</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
+            href="Pagina - Pacientes.html">
+            <span class="material-symbols-outlined text-primary-dark dark:text-primary">groups</span>
+            <span class="text-sm font-medium">Pacientes</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Agenda.html">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span class="text-sm font-medium">Agenda</span>
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            href="Pagina - Financeiro.html">
+            <span class="material-symbols-outlined">payments</span>
+            <span class="text-sm font-medium">Financeiro</span>
+          </a>
+        </nav>
+      </div>
+      <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          href="Pagina - Configuracoes.html">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-sm font-medium">Configurações</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors mt-1"
+          href="Login - Pagina Inicial.html">
+          <span class="material-symbols-outlined">logout</span>
+          <span class="text-sm font-medium">Sair</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 h-full overflow-hidden relative">
+      <!-- Top Navbar -->
+      <header
+        class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
+        <div class="flex items-center gap-4 lg:hidden">
+          <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+        </div>
+        <!-- Search -->
+        <div class="hidden md:flex flex-1 max-w-xl">
+          <div class="relative w-full group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-slate-400">search</span>
+            </div>
+            <input
+              class="block w-full pl-10 pr-3 py-2 border-none rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
+              placeholder="Buscar paciente, prontuário ou exame..." type="text" />
+          </div>
+        </div>
+        <!-- Right Actions -->
+        <div class="flex items-center gap-3 ml-auto">
+          <button onclick="window.location.href='Cadastro Novo Paciente.html'"
+            class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+          <button
+            class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+            <span class="material-symbols-outlined filled">notifications</span>
+            <span
+              class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
+          </button>
+          <button
+            class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+            <span class="material-symbols-outlined">chat</span>
+          </button>
+          <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
+            <div class="text-right hidden sm:block">
+              <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...</p>
+              <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
+            </div>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
+              data-alt="Profile picture of Dr. Ricardo"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- Scrollable Content -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
+        <div class="max-w-7xl mx-auto flex flex-col gap-6">
+          <!-- Breadcrumbs -->
+          <nav class="flex items-center gap-2 text-sm">
+            <a class="text-text-secondary hover:text-primary transition-colors"
+              href="Pagina - Pacientes.html">Pacientes</a>
+            <span class="text-gray-300 dark:text-gray-600">/</span>
+            <a class="text-text-secondary hover:text-primary transition-colors" href="#">Detalhes</a>
+            <span class="text-gray-300 dark:text-gray-600">/</span>
+            <span class="text-text-main dark:text-white font-medium" id="breadcrumb-name">...</span>
+          </nav>
+          <!-- Profile Header Card -->
+          <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+            <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+              <div class="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
+                <div class="relative">
+                  <div id="p-avatar-container"
+                    class="bg-center bg-no-repeat bg-cover rounded-full size-24 md:size-32 shadow-md bg-primary/20 flex items-center justify-center text-primary text-4xl font-bold">
+                    <!-- Avatar or Initials -->
+                  </div>
+                  <div
+                    class="absolute bottom-1 right-1 size-4 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"
+                    title="Paciente Ativo"></div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div>
+                    <h1 id="p-name"
+                      class="text-text-main dark:text-white text-2xl md:text-3xl font-bold tracking-tight">Carregando...
+                    </h1>
+                    <p id="p-details" class="text-text-secondary dark:text-gray-400 text-sm mt-1">...</p>
+                    <p id="p-since" class="text-text-secondary dark:text-gray-400 text-xs">Paciente desde: ...</p>
+                  </div>
+                  <!-- Chips Section -->
+                  <div id="p-tags" class="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
+                    <!-- Dynamic Tags -->
+                  </div>
+                </div>
+              </div>
+              <div class="flex w-full md:w-auto gap-3 flex-col sm:flex-row">
+                <button onclick="editPatientProfile()"
+                  class="flex-1 sm:flex-initial h-10 px-5 rounded-lg border border-gray-200 dark:border-gray-700 text-text-main dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-2 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">edit</span>
+                  Editar Perfil
+                </button>
+                </button>
+                <button onclick="handleNewConsultation()"
+                  class="flex-1 sm:flex-initial h-10 px-5 rounded-lg bg-primary text-text-main font-bold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">add_box</span>
+                  Nova Consulta
+                </button>
+              </div>
+            </div>
+            <!-- In-page Tabs -->
+            <div class="flex items-center gap-6 mt-8 border-b border-gray-200 dark:border-gray-800 overflow-x-auto">
+              <button onclick="switchTab('overview')" id="tab-btn-overview"
+                class="pb-3 border-b-2 border-primary text-primary font-semibold text-sm whitespace-nowrap transition-colors">Visão
+                Geral</button>
+              <button onclick="switchTab('history')" id="tab-btn-history"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Histórico
+                Clínico</button>
+              <button onclick="switchTab('prescriptions')" id="tab-btn-prescriptions"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Prescrições</button>
+              <button onclick="switchTab('finance')" id="tab-btn-finance"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Financeiro</button>
+              <button onclick="switchTab('files')" id="tab-btn-files"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Arquivos</button>
+              <button onclick="switchTab('agenda')" id="tab-btn-agenda"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Agenda</button>
+            </div>
+          </div>
+
+          <!-- Tab Contents -->
+          <div id="tab-content-overview" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Content from original grid -->
+
+              <!-- Left Column: Clinical Info & History -->
+              <div class="lg:col-span-2 flex flex-col gap-6">
+                <!-- Quick Stats Row (Static Mockup for now) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Next Appt Card -->
+                  <div
+                    class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <span class="material-symbols-outlined text-6xl text-primary">event</span>
+                    </div>
+                    <p class="text-text-secondary dark:text-gray-400 text-sm font-medium mb-1">Próxima Consulta</p>
+                    <div class="flex items-end gap-2">
+                      <h3 id="overview-next-appt-date" class="text-xl font-bold text-text-main dark:text-white">---</h3>
+                    </div>
+                    <p id="overview-next-appt-info" class="text-sm text-text-secondary mt-2">Sem agendamentos futuros
+                    </p>
+                  </div>
+                  <!-- Last Assessment Card -->
+                  <div
+                    class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <span class="material-symbols-outlined text-6xl text-purple-500">visibility</span>
+                    </div>
+                    <p class="text-text-secondary dark:text-gray-400 text-sm font-medium mb-1">Última Acuidade (OE/OD)
+                    </p>
+                    <div class="flex items-end gap-2">
+                      <h3 class="text-xl font-bold text-text-main dark:text-white">--- / ---</h3>
+                    </div>
+                    <p class="text-sm text-text-secondary mt-2">Sem registros recentes</p>
+                  </div>
+                </div>
+
+                <!-- Timeline / History (Static) -->
+                <div
+                  class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
+                  <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                    <h3 class="font-bold text-text-main dark:text-white flex items-center gap-2">
+                      <span class="material-symbols-outlined text-primary">history_edu</span>
+                      Histórico Recente
+                    </h3>
+                    <button class="text-sm text-text-secondary hover:text-primary font-medium">Ver tudo</button>
+                  </div>
+                  <div id="recent-history-list" class="flex flex-col">
+                    <div class="p-8 text-center text-slate-500">
+                      <p>Carregando...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Personal Info & widgets (Sticky) -->
+              <div class="flex flex-col gap-6 lg:h-fit lg:sticky lg:top-6">
+                <!-- Contact Info Card -->
+                <div
+                  class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+                  <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-text-main dark:text-white text-sm uppercase tracking-wide">Contato &amp;
+                      Info</h3>
+                  </div>
+                  <div class="flex flex-col gap-4">
+                    <div class="flex gap-3 items-start">
+                      <div
+                        class="size-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-gray-500 text-[18px]">phone</span>
+                      </div>
+                      <div>
+                        <p class="text-xs text-text-secondary">Telefone</p>
+                        <p id="p-phone"
+                          class="text-sm font-medium text-text-main dark:text-white hover:text-primary cursor-pointer transition-colors">
+                          ...</p>
+                      </div>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                      <div
+                        class="size-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-gray-500 text-[18px]">mail</span>
+                      </div>
+                      <div>
+                        <p class="text-xs text-text-secondary">Email</p>
+                        <p id="p-email"
+                          class="text-sm font-medium text-text-main dark:text-white hover:text-primary cursor-pointer transition-colors">
+                          ...</p>
+                      </div>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                      <div
+                        class="size-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-gray-500 text-[18px]">location_on</span>
+                      </div>
+                      <div>
+                        <p class="text-xs text-text-secondary">Endereço</p>
+                        <p id="p-address" class="text-sm font-medium text-text-main dark:text-white">...</p>
+                      </div>
+                    </div>
+                  </div>
+                  <hr class="my-4 border-gray-100 dark:border-gray-800" />
+                  <div>
+                    <h4 class="text-xs text-text-secondary uppercase mb-3">Observações</h4>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Sem observações cadastradas.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- End Overview Tab -->
+
+        <div id="tab-content-history" class="tab-content hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+            <h3 class="font-bold text-lg mb-4">Histórico Completo</h3>
+            <div id="full-history-list" class="flex flex-col gap-4">
+              <p class="text-slate-500">Carregando histórico...</p>
+            </div>
+          </div>
+        </div>
+        <div id="tab-content-prescriptions" class="tab-content hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="font-bold text-lg">Prescrições Emitidas</h3>
+              <p class="text-sm text-slate-500">Gere novas prescrições através das fichas de consulta.</p>
+            </div>
+            <div id="prescriptions-list" class="flex flex-col gap-4">
+              <p class="text-slate-500 p-8 text-center border border-dashed rounded-lg">Nenhuma prescrição encontrada.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="tab-content-agenda" class="tab-content hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="font-bold text-lg">Agendamentos do Paciente</h3>
+              <button onclick="openAppointmentModal(currentPatientId, document.getElementById('p-name').textContent)"
+                class="text-sm bg-primary/10 text-primary-dark px-3 py-1.5 rounded-lg hover:bg-primary/20 font-bold transition-colors">
+                + Novo Agendamento
+              </button>
+            </div>
+            <div id="patient-agenda-list" class="flex flex-col gap-3">
+              <p class="text-slate-500 text-center">Carregando...</p>
+            </div>
+          </div>
+        </div>
+        <div id="tab-content-finance" class="tab-content hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+            <h3 class="font-bold text-lg mb-6">Histórico Financeiro do Paciente</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-800/10 border-b border-slate-200 dark:border-slate-800">
+                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Data</th>
+                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Descrição</th>
+                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Valor</th>
+                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="patient-finance-list" class="divide-y divide-slate-200 dark:divide-slate-800">
+                  <tr>
+                    <td colspan="4" class="p-4 text-center text-slate-500">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-800/20 rounded-lg flex justify-between items-center">
+              <span class="text-sm text-slate-500 font-medium">Total Pago</span>
+              <span id="patient-finance-total" class="text-xl font-bold text-emerald-600">R$ 0,00</span>
+            </div>
+          </div>
+        </div>
+        <div id="tab-content-files" class="tab-content hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="font-bold text-lg">Exames Complementares</h3>
+              <button
+                class="flex items-center gap-2 px-4 py-2 bg-primary text-text-main font-bold rounded-lg text-sm hover:brightness-105 transition-all">
+                <span class="material-symbols-outlined text-[18px]">upload</span>
+                Enviar Arquivo
+              </button>
+            </div>
+            <!-- Dropzone Area -->
+            <div
+              class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer mb-6">
+              <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+              <p class="text-sm font-medium text-text-main dark:text-white">Clique para selecionar ou arraste arquivos
+                aqui</p>
+              <p class="text-xs text-slate-500 mt-1">PDF, JPG, PNG (Max 5MB)</p>
+              <input type="file" id="file-upload-input" class="hidden" multiple accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <h4 class="font-semibold text-sm mb-3">Arquivos Recentes</h4>
+            <div id="files-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- File Items will go here -->
+              <p class="text-slate-500 text-sm col-span-2">Nenhum exame anexado.</p>
+            </div>
+          </div>
+        </div>
+
+    </div>
+    </main>
+  </div>
+  </div>
+
+  <!-- New Consultation Modal -->
+  <div id="new-consultation-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeNewConsultationModal()">
+    </div>
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 bg-white dark:bg-[#162b2b] rounded-2xl shadow-xl transform transition-all">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-[#0d1b1b] dark:text-white">Nova Consulta</h3>
+        <button onclick="closeNewConsultationModal()"
+          class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <p class="text-sm text-slate-500 mb-2">Selecione o tipo de ficha:</p>
+
+        <button onclick="startConsultation('pediatric')"
+          class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group">
+          <div
+            class="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-lg text-pink-600 dark:text-pink-400 group-hover:bg-pink-600 group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined">child_care</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#0d1b1b] dark:text-white">Ficha Pediátrica</h4>
+            <p class="text-xs text-slate-500">Avaliação para crianças</p>
+          </div>
+        </button>
+
+        <button onclick="startConsultation('functional')"
+          class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group">
+          <div
+            class="bg-primary/10 p-2 rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined">wysiwyg</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#0d1b1b] dark:text-white">Ficha Funcional</h4>
+            <p class="text-xs text-slate-500">Avaliação optométrica completa</p>
+          </div>
+        </button>
+
+        <button onclick="startConsultation('neuro')"
+          class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group">
+          <div
+            class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined">psychology</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#0d1b1b] dark:text-white">Neuro/Comportamental</h4>
+            <p class="text-xs text-slate-500">Avaliação visual e comportamental</p>
+          </div>
+        </button>
+
+        <button onclick="startConsultation('trv')"
+          class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group">
+          <div
+            class="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined">fitness_center</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#0d1b1b] dark:text-white">Terapia Visual (TRV)</h4>
+            <p class="text-xs text-slate-500">Sessão de treinamento</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
+    import { loadSidebar } from './js/sidebar-loader.js';
+
+    loadSidebar();
+    import { setupExamsTab } from './js/exam-manager.js';
+    import { loadPrescriptionsList } from './js/prescription-manager.js';
+    import { loadPatientAgenda, openAppointmentModal, updateAppointmentStatus } from './js/agenda-manager.js';
+
+    // Global Vars
+    let currentPatientId = null;
+    let currentUserRole = null;
+
+    // UI References
+    const userNameDisplay = document.getElementById('header-user-name');
+    const userRoleDisplay = document.getElementById('header-user-role');
+
+    // Patient UI Refs
+    const elName = document.getElementById('p-name');
+    const elBreadcrumb = document.getElementById('breadcrumb-name');
+    const elDetails = document.getElementById('p-details');
+    const elSince = document.getElementById('p-since');
+    const elAvatar = document.getElementById('p-avatar-container');
+    const elTags = document.getElementById('p-tags');
+    const elPhone = document.getElementById('p-phone');
+    const elEmail = document.getElementById('p-email');
+    const elAddress = document.getElementById('p-address');
+
+    // ...
+
+    // Expose functions to window
+    window.switchTab = (tabName) => {
+      // ... (existing switchTab implementation, just reusing name)
+      // 1. Hide all contents
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+      // 2. Reset buttons style
+      const buttons = document.querySelectorAll('button[id^="tab-btn-"]');
+      buttons.forEach(btn => {
+        btn.classList.remove('border-primary', 'text-primary', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-text-secondary', 'font-medium');
+      });
+
+      // 3. Show selected content
+      const targetContent = document.getElementById(`tab-content-${tabName}`);
+      if (targetContent) targetContent.classList.remove('hidden');
+
+      // 4. Highlight button
+      const targetBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (targetBtn) {
+        targetBtn.classList.remove('border-transparent', 'text-text-secondary', 'font-medium');
+        targetBtn.classList.add('border-primary', 'text-primary', 'font-semibold');
+      }
+
+      // 5. Load data if needed
+      if (tabName === 'history') {
+        loadHistory();
+      } else if (tabName === 'files') {
+        setupExamsTab(currentPatientId);
+      } else if (tabName === 'files') {
+        setupExamsTab(currentPatientId);
+      } else if (tabName === 'prescriptions') {
+        loadPrescriptionsList(currentPatientId, 'prescriptions-list');
+      } else if (tabName === 'agenda') {
+        loadPatientAgenda(currentPatientId, 'patient-agenda-list');
+      } else if (tabName === 'finance') {
+        loadPatientFinance(currentPatientId);
+      }
+    };
+
+    window.openNewConsultationModal = () => {
+      document.getElementById('new-consultation-modal').classList.remove('hidden');
+    };
+
+    // NEW LOGIC FOR CONSULTATION / AGENDA LINK
+    window.handleNewConsultation = async () => {
+      if (!currentPatientId) {
+        alert('Paciente não carregado.');
+        return;
+      }
+
+      // Check for Pending "Scheduled" Appointments
+      const { data: appts } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('patient_id', currentPatientId)
+        .in('status', ['scheduled', 'in_progress'])
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: true });
+
+      if (appts && appts.length > 0) {
+        showStartConsultationModal(appts);
+      } else {
+        openNewConsultationModal();
+      }
+    };
+
+    function showStartConsultationModal(appts) {
+      if (document.getElementById('start-consult-modal')) document.getElementById('start-consult-modal').remove();
+
+      const overlayHtml = `
+            <div id="start-consult-modal" class="fixed inset-0 z-[70]">
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-surface-light p-6 rounded-xl shadow-xl w-full max-w-md">
+                    <h3 class="font-bold text-lg mb-4 text-slate-900 dark:text-white">Agendamentos Pendentes</h3>
+                    <p class="text-sm text-slate-500 mb-4">Deseja iniciar um agendamento existente?</p>
+                    
+                    <div class="flex flex-col gap-2 mb-6 max-h-60 overflow-y-auto">
+                        ${appts.map(a => {
+        const date = new Date(a.date).toLocaleDateString('pt-BR');
+        const typeLabel = { 'pediatric': 'Pediátrica', 'functional': 'Funcional', 'neuro': 'Neuro', 'trv': 'TRV' }[a.type] || a.type;
+        return `
+                                <button onclick="startSpecificConsult('${a.type}', '${a.id}')" class="text-left p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-primary/10 hover:border-primary transition-all group">
+                                    <span class="font-bold block text-slate-800 dark:text-white group-hover:text-primary transition-colors">${typeLabel}</span>
+                                    <span class="text-xs text-slate-500">${date} às ${a.start_time.substring(0, 5)}</span>
+                                </button>
+                            `;
+      }).join('')}
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                         <button onclick="document.getElementById('start-consult-modal').remove(); openNewConsultationModal()" class="text-slate-500 hover:text-slate-800 dark:hover:text-white text-sm font-medium">
+                            Nova Consulta Avulsa
+                         </button>
+                         <button onclick="document.getElementById('start-consult-modal').remove()" class="text-red-400 hover:text-red-500 text-sm">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+      document.body.insertAdjacentHTML('beforeend', overlayHtml);
+    }
+
+    window.startSpecificConsult = async (type, apptId) => {
+      // Update Status to In Progress
+      await updateAppointmentStatus(apptId, 'in_progress');
+
+      const map = {
+        'pediatric': 'Nova Ficha - Pediatrica.html',
+        'functional': 'Nova Ficha - Funcional.html',
+        'neuro': 'Nova Ficha - NeuroComportamental.html',
+        'trv': 'Nova Ficha - TRV.html',
+        'general': 'Nova Ficha - Funcional.html'
+      };
+      const url = map[type] || 'Nova Ficha - Funcional.html';
+      // Pass appointment_id to link later if needed
+      window.location.href = `${url}?patient_id=${currentPatientId}&appointment_id=${apptId}`;
+    };
+
+    window.closeNewConsultationModal = () => {
+      document.getElementById('new-consultation-modal').classList.add('hidden');
+    };
+
+    window.startConsultation = (type) => {
+      if (!currentPatientId) {
+        alert('Erro: Paciente não identificado.');
+        return;
+      }
+
+      let url = '';
+      switch (type) {
+        case 'pediatric': url = 'Nova Ficha - Pediatrica.html'; break;
+        case 'functional': url = 'Nova Ficha - Funcional.html'; break;
+        case 'neuro': url = 'Nova Ficha - NeuroComportamental.html'; break;
+        case 'trv': url = 'Nova Ficha - TRV.html'; break;
+      }
+
+      if (url) {
+        window.location.href = `${url}?patient_id=${currentPatientId}`;
+      }
+    };
+
+    window.editPatientProfile = () => {
+      if (currentPatientId) {
+        window.location.href = `Cadastro Novo Paciente.html?edit=true&id=${currentPatientId}`;
+      }
+    };
+
+    window.openExamFile = (filePath) => {
+      const { data } = supabase.storage.from('clinical-files').getPublicUrl(filePath);
+      if (data && data.publicUrl) {
+        window.open(data.publicUrl, '_blank');
+      } else {
+        alert('Não foi possível obter a URL do arquivo.');
+      }
+    };
+
+
+    async function loadPatientDetails() {
+      try {
+        // 1. Get ID
+        const params = new URLSearchParams(window.location.search);
+        const patientId = params.get('id');
+
+        if (!patientId) {
+          alert("Paciente não especificado.");
+          window.location.href = 'Pagina - Pacientes.html';
+          return;
+        }
+        currentPatientId = patientId;
+
+        // 2. Auth Check
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          window.location.href = 'Login - Pagina Inicial.html';
+          return;
+        }
+
+        // 3. Header User Info & Role
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*, clinics(name, social_name)')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          currentUserRole = profile.role; // Set Role
+          if (userNameDisplay) userNameDisplay.textContent = profile.full_name;
+          if (profile.clinics) {
+            if (userRoleDisplay) userRoleDisplay.textContent = profile.clinics.name;
+            // Sidebar
+            const sbName = document.getElementById('sidebar-clinic-name');
+            const sbSocial = document.getElementById('sidebar-clinic-social');
+            if (sbName) sbName.textContent = profile.clinics.name;
+            if (sbSocial) sbSocial.textContent = profile.clinics.social_name || 'Unidade Centro';
+          }
+        }
+
+        // 4. Fetch Patient
+        const { data: patient, error } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('id', patientId)
+          .single();
+
+        if (error) throw error;
+        if (!patient) throw new Error("Paciente não encontrado");
+
+        // 5. Render
+        const name = patient.full_name || 'Sem nome';
+        elName.textContent = name;
+        elBreadcrumb.textContent = name;
+
+        // Details (CPF • Age • Gender)
+        const cpf = patient.cpf || 'CPF n/a';
+
+        // Age Calculation Fix
+        let age = '?';
+        if (patient.birth_date) {
+          const today = new Date();
+          const birthDate = new Date(patient.birth_date);
+          age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+        }
+
+        // Gender Mapping
+        const genderMap = { 'M': 'Masculino', 'F': 'Feminino' };
+        const gender = genderMap[patient.gender] || patient.gender || 'Não informado';
+
+        elDetails.textContent = `CPF: ${cpf} • ${age} anos • ${gender}`;
+
+        // Since
+        const created = new Date(patient.created_at).toLocaleDateString();
+        elSince.textContent = `Paciente desde: ${created}`;
+
+        // Avatar
+        elAvatar.innerHTML = getInitials(name);
+        elAvatar.style.backgroundImage = 'none'; // Clear any url()
+
+        // Chips (Dummy for now, or based on future fields)
+        elTags.innerHTML = `
+                    <div class="flex h-7 items-center gap-x-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 px-3 border border-blue-100 dark:border-blue-800">
+                      <span class="text-blue-700 dark:text-blue-300 text-xs font-semibold">Geral</span>
+                    </div>
+                `;
+
+        // Contact
+        elPhone.textContent = patient.phone || 'Não informado';
+        elEmail.textContent = patient.email || 'Não informado';
+
+        const addr = [patient.street, patient.number, patient.neighborhood, patient.city, patient.state]
+          .filter(Boolean).join(', ');
+        elAddress.textContent = addr || 'Endereço não cadastrado';
+
+        // Load recent history preview
+        loadPatientOverview();
+        loadRecentHistory();
+
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao carregar paciente: " + err.message);
+        window.location.href = 'Pagina - Pacientes.html';
+      }
+    }
+
+    async function loadHistory() {
+      const listEl = document.getElementById('full-history-list');
+      listEl.innerHTML = '<p class="text-slate-500">Buscando registros...</p>';
+
+      const { data, error } = await supabase
+        .from('medical_records')
+        .select('*, profiles:professional_id(full_name, role)')
+        .eq('patient_id', currentPatientId)
+        .order('date', { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        listEl.innerHTML = '<p class="text-slate-500 p-4 border border-dashed rounded-lg text-center">Nenhum histórico clínico encontrado.</p>';
+        return;
+      }
+
+      listEl.innerHTML = data.map(record => {
+        const date = new Date(record.date).toLocaleDateString();
+        const proName = record.profiles ? record.profiles.full_name : 'Profissional';
+        let typeLabel = 'Ficha Desconhecida';
+        let pageUrl = '#';
+
+        // Correspondencia de tipos
+        if (record.record_type === 'pediatric') {
+          typeLabel = 'Ficha Pediátrica';
+          pageUrl = 'Nova Ficha - Pediatrica.html';
+        } else if (record.record_type === 'functional' || record.record_type === 'funcional') {
+          typeLabel = 'Ficha Funcional';
+          pageUrl = 'Nova Ficha - Funcional.html';
+        } else if (record.record_type === 'neuro') {
+          typeLabel = 'Ficha Neuro/Comportamental';
+          pageUrl = 'Nova Ficha - NeuroComportamental.html';
+        } else if (record.record_type === 'trv') {
+          typeLabel = 'Terapia Visual (TRV)';
+          pageUrl = 'Nova Ficha - TRV.html';
+        } else if (record.record_type === 'exam_file') {
+          typeLabel = 'Exame Complementar';
+          // For files, we might not have a pageUrl, but we can open the file link or show an alert/modal.
+          // Best to just link to the file if possible or show in the exam tab.
+          // Or better: Open the file URL.
+          // But record.data has .filePath. We need publicUrl.
+          // We can fetch it or construct it if bucket is public.
+          // But simpler: redirect to Exams tab or open file.
+          // Let's make it alert for now or implement a viewer in separate task if complex.
+          // User said: "consiga abrir o arquivo para ver o que é".
+          // Let's use a function to open it.
+          return `
+                <div onclick="openExamFile('${record.data.filePath}')" class="flex items-start gap-4 p-4 rounded-xl border border-border-color bg-white dark:bg-surface-dark dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group shadow-sm">
+                    <div class="bg-primary/10 p-3 rounded-lg text-primary-dark dark:text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+                        <span class="material-symbols-outlined">attach_file</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-[#0d1b1b] dark:text-white">${record.data.examName || record.data.fileName || 'Arquivo'}</h4>
+                            <span class="text-xs text-slate-400">${date}</span>
+                        </div>
+                        <p class="text-sm text-text-secondary mt-1">Médico/Local: ${record.data.doctorName || 'Não informado'}</p>
+                    </div>
+                    <div class="self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                         <span class="material-symbols-outlined text-slate-400">visibility</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const openUrl = `${pageUrl}?patient_id=${currentPatientId}&record_id=${record.id}`;
+
+        return `
+                <div onclick="window.location.href='${openUrl}'" class="flex items-start gap-4 p-4 rounded-xl border border-border-color bg-white dark:bg-surface-dark dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group shadow-sm">
+                    <div class="bg-primary/10 p-3 rounded-lg text-primary-dark dark:text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+                        <span class="material-symbols-outlined">description</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-[#0d1b1b] dark:text-white">${typeLabel}</h4>
+                            <span class="text-xs text-slate-400">${date}</span>
+                        </div>
+                        <p class="text-sm text-text-secondary mt-1">Realizado por: ${proName}</p>
+                    </div>
+                    <div class="self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                         <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                    </div>
+                </div>
+            `;
+      }).join('');
+    }
+
+    function getInitials(name) {
+      return name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??';
+    }
+
+    // Attach "Ver tudo" inside dashboard to switch to history tab
+    // Wait, the button "Ver tudo" in HTML (line 309 in previous views) didn't have onclick.
+    // I should attach it dynamically since I didn't replace that specific line in last edits.
+    const viewAllHistoryBtn = document.querySelector('#tab-content-overview .lg\\:col-span-2 button.text-sm.text-text-secondary');
+    if (viewAllHistoryBtn) {
+      viewAllHistoryBtn.onclick = () => switchTab('history');
+    }
+
+    // Initial Load
+    loadPatientDetails();
+
+    // Assign global Window functions just in case for onclicks in HTML
+    window.onload = () => {
+      // Any init logic
+      const viewAllHistoryBtn = document.querySelector('#tab-content-overview .lg\\:col-span-2 button.text-sm.text-text-secondary');
+      if (viewAllHistoryBtn) {
+        viewAllHistoryBtn.onclick = () => switchTab('history');
+      }
+    };
+
+    async function loadRecentHistory() {
+      const listEl = document.getElementById('recent-history-list');
+      if (!listEl) return;
+
+      listEl.innerHTML = '<p class="text-slate-500 p-4 text-center">Carregando...</p>';
+
+      const { data, error } = await supabase
+        .from('medical_records')
+        .select('*, profiles:professional_id(full_name, role)')
+        .eq('patient_id', currentPatientId)
+        .order('date', { ascending: false })
+        .limit(3);
+
+      if (error || !data || data.length === 0) {
+        listEl.innerHTML = '<div class="p-8 text-center text-slate-500"><p>Nenhum histórico recente.</p></div>';
+        return;
+      }
+
+      listEl.innerHTML = data.map(record => {
+        const date = new Date(record.date).toLocaleDateString();
+        const proName = record.profiles ? record.profiles.full_name : 'Profissional';
+        let typeLabel = 'Ficha Desconhecida';
+        let pageUrl = '#';
+
+        if (record.record_type === 'pediatric') {
+          typeLabel = 'Ficha Pediátrica';
+          pageUrl = 'Nova Ficha - Pediatrica.html';
+        } else if (record.record_type === 'functional' || record.record_type === 'funcional') {
+          typeLabel = 'Ficha Funcional';
+          pageUrl = 'Nova Ficha - Funcional.html';
+        } else if (record.record_type === 'neuro') {
+          typeLabel = 'Neuro/Comportamental';
+          pageUrl = 'Nova Ficha - NeuroComportamental.html';
+        } else if (record.record_type === 'trv') {
+          typeLabel = 'Terapia Visual (TRV)';
+          pageUrl = 'Nova Ficha - TRV.html';
+        }
+
+        const openUrl = `${pageUrl}?patient_id=${currentPatientId}&record_id=${record.id}`;
+
+        return `
+            <div onclick="window.location.href='${openUrl}'" class="flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group">
+                <div class="bg-primary/10 p-2 rounded-lg text-primary-dark dark:text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">description</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-sm text-[#0d1b1b] dark:text-white">${typeLabel}</h4>
+                    <p class="text-xs text-text-secondary mt-0.5">${date} • ${proName}</p>
+                </div>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                </div>
+            </div>
+        `;
+      }).join('');
+    }
+
+    async function loadPatientOverview() {
+      const dateEl = document.getElementById('overview-next-appt-date');
+      const infoEl = document.getElementById('overview-next-appt-info');
+      if (!dateEl) return;
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('patient_id', currentPatientId)
+        .in('status', ['scheduled', 'confirmed'])
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (data) {
+        const d = new Date(data.date).toLocaleDateString();
+        const time = data.start_time.substring(0, 5);
+        dateEl.textContent = `${d} às ${time}`;
+        infoEl.textContent = `${data.type} • ${data.status === 'confirmed' ? 'Confirmado' : 'Agendado'}`;
+        dateEl.classList.add('text-primary');
+      } else {
+        dateEl.textContent = '---';
+        infoEl.textContent = 'Sem agendamentos futuros';
+        dateEl.classList.remove('text-primary');
+      }
+    }
+
+    async function loadPatientFinance(patientId) {
+      const listEl = document.getElementById('patient-finance-list');
+      const totalEl = document.getElementById('patient-finance-total');
+      if (!listEl) return;
+
+      listEl.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Carregando...</td></tr>';
+
+      // 1. Fetch Appointments (Paid/Pending)
+      const { data: appts } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('patient_id', patientId)
+        .not('price', 'is', null)
+        .gt('price', 0);
+
+      // 2. Fetch Transactions (specific to patient if we link column later, but currently transactions table has patient_id?)
+      // Migration schema shows transactions has patient_id (line 91 of schema.sql).
+      const { data: trans } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('patient_id', patientId);
+
+      const allItems = [];
+
+      // Map Appts
+      if (appts) {
+        appts.forEach(a => {
+          let status = a.payment_status || 'pending';
+          if (a.status === 'cancelled') status = 'cancelled';
+
+          allItems.push({
+            date: a.date,
+            desc: `Consulta (${a.type})`,
+            value: a.price,
+            status: status,
+            type: 'income'
+          });
+        });
+      }
+
+      // Map Transactions
+      if (trans) {
+        trans.forEach(t => {
+          allItems.push({
+            date: t.date,
+            desc: t.description,
+            value: t.amount,
+            status: t.status,
+            type: t.type
+          });
+        });
+      }
+
+      allItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (allItems.length === 0) {
+        listEl.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Nenhum registro financeiro.</td></tr>';
+        totalEl.textContent = 'R$ 0,00';
+        return;
+      }
+
+      let totalPaid = 0;
+
+      listEl.innerHTML = allItems.map(item => {
+        const date = new Date(item.date).toLocaleDateString();
+        const val = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.value);
+        const isIncome = item.type === 'income';
+
+        if (item.status === 'paid' && isIncome) totalPaid += item.value;
+        if (item.status === 'paid' && !isIncome) totalPaid -= item.value;
+
+        let statusBadge = item.status;
+        if (item.status === 'paid') statusBadge = '<span class="text-emerald-600 font-bold text-xs uppercase">Pago</span>';
+        if (item.status === 'pending') statusBadge = '<span class="text-amber-600 font-bold text-xs uppercase">Pendente</span>';
+        if (item.status === 'cancelled') statusBadge = '<span class="text-slate-400 font-bold text-xs uppercase">Cancelado</span>';
+
+        return `
+                <tr class="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">${date}</td>
+                    <td class="px-4 py-3 text-sm font-medium text-slate-800 dark:text-white">${item.desc}</td>
+                    <td class="px-4 py-3 text-sm font-bold ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">${isIncome ? '+' : '-'} ${val}</td>
+                    <td class="px-4 py-3 text-sm">${statusBadge}</td>
+                </tr>
+            `;
+      }).join('');
+
+      totalEl.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalPaid);
+    }
+  </script>
+</body>
+
+</html>

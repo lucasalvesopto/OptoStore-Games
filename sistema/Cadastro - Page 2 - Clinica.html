@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Cadastro - Dados da Clá­nica | Pagina do Optometrista</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ecec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#102222",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-[#0d1b1b] dark:text-gray-100 font-display transition-colors duration-200">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#cfe7e7] dark:border-b-gray-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm px-6 py-4 lg:px-40">
+            <div class="flex items-center gap-4 text-[#0d1b1b] dark:text-white">
+                <div class="size-8 flex items-center justify-center text-primary">
+                    <svg class="size-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_6_319)">
+                            <path
+                                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                                fill="currentColor"></path>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_6_319">
+                                <rect fill="white" height="48" width="48"></rect>
+                            </clipPath>
+                        </defs>
+                    </svg>
+                </div>
+                <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Pagina do Optometrista</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8 items-center">
+                <!-- Help button removed -->
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
+                    data-alt="User profile avatar placeholder"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB6BkegEyAOHp5oNdeH9mb3slr0dcnv6YIC2XkPN-BLqwqfwurU9dnaxNlr3aks7UrnK2bes0yi1ddaJPXf2_6uDUxt83ngS8SIWzKHQOgSevGKTtIkBlpckHPaCmUkVzOsoRtDS7jpiUGRmQT7BfOX7nkbcFNvenSnMYtb4IHT2-vTA-LL5xwwHYydYQpr7yddgCcR7ZkN2ZqFuA5LhnI3J7OeYO0TLqqe2p38ibbhBeloChXdH7ByzLRAQaDmoDwH0H4fvQW38k-X");'>
+                </div>
+            </div>
+        </header>
+        <div class="layout-container flex h-full grow flex-col">
+            <div class="px-4 sm:px-10 lg:px-40 flex flex-1 justify-center py-8">
+                <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+                    <div class="flex flex-col gap-3 px-4 mb-8">
+                        <div class="flex gap-6 justify-between items-center">
+                            <p class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal">Passo 2 de 4
+                            </p>
+                            <span class="text-xs font-medium text-slate-400 dark:text-slate-500">50% completo</span>
+                        </div>
+                        <div class="rounded-full bg-[#cfe7e7] dark:bg-gray-700 overflow-hidden">
+                            <div class="h-2 rounded-full bg-primary" style="width: 50%;"></div>
+                        </div>
+                        <p class="text-[#4c9a9a] dark:text-primary text-sm font-normal leading-normal">Cadastro da
+                            Clá­nica</p>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-4">
+                        <div class="lg:col-span-2 flex flex-col gap-8">
+                            <div class="flex flex-col gap-3">
+                                <h1
+                                    class="text-[#0d1b1b] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
+                                    Dados da Clá­nica</h1>
+                                <p class="text-[#4c9a9a] dark:text-slate-400 text-base font-normal leading-normal">
+                                    Preencha as informações bá¡sicas para personalizar seu ambiente e garantir que seus
+                                    Relatórios saiam com a identidade correta.</p>
+                            </div>
+                            <form id="clinic-form" class="flex flex-col gap-6" onsubmit="event.preventDefault();">
+                                <div class="flex flex-col gap-2">
+                                    <span
+                                        class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal">Logotipo
+                                        da Clá­nica</span>
+                                    <div
+                                        class="group relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#cfe7e7] dark:border-gray-700 rounded-xl bg-[#f8fcfc] dark:bg-gray-800/50 hover:bg-[#f0fafa] dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <span
+                                                class="material-symbols-outlined text-4xl text-[#4c9a9a] dark:text-slate-500 mb-2 group-hover:text-primary transition-colors">cloud_upload</span>
+                                            <p class="mb-2 text-sm text-[#4c9a9a] dark:text-slate-400"><span
+                                                    class="font-semibold text-primary">Clique para enviar</span> ou
+                                                arraste e solte</p>
+                                            <p class="text-xs text-slate-400 dark:text-slate-600">SVG, PNG, JPG (MAX.
+                                                800x400px)</p>
+                                        </div>
+                                        <input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            type="file" />
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-6">
+                                    <label class="flex flex-col w-full">
+                                        <p
+                                            class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                            Nome Fantasia</p>
+                                        <input
+                                            class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                            placeholder="Ex: Visão Clara Optometria" id="fantasy-name" required />
+                                    </label>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Razáo Social <span
+                                                    class="text-slate-400 text-sm font-normal">(Opcional)</span></p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="Razáo Social Ltda" id="social-name" />
+                                        </label>
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                CNPJ</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="00.000.000/0001-00" id="cnpj" />
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="w-full h-px bg-[#e7f3f3] dark:bg-gray-800 my-2"></div>
+                                <div class="flex flex-col gap-6">
+                                    <h3 class="text-lg font-bold text-[#0d1b1b] dark:text-white">Endereço da Clá­nica
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                CEP</p>
+                                            <div class="relative">
+                                                <input
+                                                    class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all pr-12"
+                                                    placeholder="00000-000" id="zip-code" />
+                                                <button
+                                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-primary p-1 hover:bg-[#e7f3f3] dark:hover:bg-gray-700 rounded-lg"
+                                                    type="button">
+                                                    <span class="material-symbols-outlined text-xl">search</span>
+                                                </button>
+                                            </div>
+                                        </label>
+                                        <label class="flex flex-col w-full md:col-span-2">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Rua / Logradouro</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="Av. Paulista" id="street" />
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Náºmero</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="1000" id="number" />
+                                        </label>
+                                        <label class="flex flex-col w-full md:col-span-2">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Complemento</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="Sala 42, Bloco B" id="complement" />
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Bairro</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="Bela Vista" id="neighborhood" />
+                                        </label>
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                Cidade</p>
+                                            <input
+                                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 placeholder:text-[#4c9a9a] dark:placeholder:text-slate-500 p-[15px] text-base font-normal leading-normal transition-all"
+                                                placeholder="Sáo Paulo" id="city" />
+                                        </label>
+                                        <label class="flex flex-col w-full">
+                                            <p
+                                                class="text-[#0d1b1b] dark:text-white text-base font-medium leading-normal pb-2">
+                                                UF</p>
+                                            <div class="relative">
+                                                <select
+                                                    class="form-select flex w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#0d1b1b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#cfe7e7] dark:border-gray-700 bg-[#f8fcfc] dark:bg-[#1a2c2c] h-14 p-[15px] text-base font-normal leading-normal transition-all appearance-none cursor-pointer"
+                                                    id="state">
+                                                    <option disabled="" selected="" value="">UF</option>
+                                                    <option value="AC">AC</option>
+                                                    <option value="AL">AL</option>
+                                                    <option value="AP">AP</option>
+                                                    <option value="AM">AM</option>
+                                                    <option value="BA">BA</option>
+                                                    <option value="CE">CE</option>
+                                                    <option value="DF">DF</option>
+                                                    <option value="ES">ES</option>
+                                                    <option value="GO">GO</option>
+                                                    <option value="MA">MA</option>
+                                                    <option value="MT">MT</option>
+                                                    <option value="MS">MS</option>
+                                                    <option value="MG">MG</option>
+                                                    <option value="PA">PA</option>
+                                                    <option value="PB">PB</option>
+                                                    <option value="PR">PR</option>
+                                                    <option value="PE">PE</option>
+                                                    <option value="PI">PI</option>
+                                                    <option value="RJ">RJ</option>
+                                                    <option value="RN">RN</option>
+                                                    <option value="RS">RS</option>
+                                                    <option value="RO">RO</option>
+                                                    <option value="RR">RR</option>
+                                                    <option value="SC">SC</option>
+                                                    <option value="SP">SP</option>
+                                                    <option value="SE">SE</option>
+                                                    <option value="TO">TO</option>
+                                                </select>
+                                                <div
+                                                    class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4c9a9a]">
+                                                    <span class="material-symbols-outlined">expand_more</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <!-- Removed premature closing form tag -->
+                    <div id="error-msg" class="hidden p-3 bg-red-100 text-red-700 rounded-lg text-sm text-center"></div>
+                    <div
+                        class="flex items-center justify-end gap-4 mt-4 pt-6 border-t border-[#e7f3f3] dark:border-gray-800">
+                        <button type="button" onclick="history.back()"
+                            class="flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-transparent border-2 border-transparent hover:bg-slate-100 dark:hover:bg-gray-800 text-slate-600 dark:text-slate-300 text-base font-bold leading-normal transition-colors">
+                            <span class="truncate">Voltar</span>
+                        </button>
+                        <button type="submit" id="submit-btn"
+                            class="flex min-w-[160px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-primary hover:bg-[#0fd6d6] text-[#0d1b1b] shadow-lg shadow-primary/20 text-base font-bold leading-normal transition-all transform active:scale-95">
+                            <span class="truncate" id="btn-text">Finalizar</span>
+                            <span class="material-symbols-outlined ml-2 text-lg">check</span>
+                        </button>
+                    </div>
+                    </form>
+
+                    <script type="module">
+                        import { supabase } from './js/supabase-client.js';
+
+                        // 1. Check Authentication on Load - relaxed to allow script to run
+                        (async () => {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) {
+                                // If no session, try to see if we have a user (maybe just signed up)
+                                const { data: { user } } = await supabase.auth.getUser();
+                                if (!user) {
+                                    // Only redirect if totally unauthenticated
+                                    console.warn("No session or user found on Page 2");
+                                    // Alert is annoying, let's just redirect or let the form fail gracefully
+                                    // window.location.href = 'Login - Pagina Inicial.html';
+                                }
+                            }
+                        })();
+
+                        const form = document.getElementById('clinic-form');
+                        const errorDiv = document.getElementById('error-msg');
+                        const btnText = document.getElementById('btn-text');
+                        const btn = document.getElementById('submit-btn');
+
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+
+                            errorDiv.classList.add('hidden');
+                            const originalText = btnText.textContent;
+                            btnText.textContent = "Salvando...";
+                            btn.disabled = true;
+
+                            // Collect Form Data
+                            const fantasyName = document.getElementById('fantasy-name').value;
+                            const zip = document.getElementById('zip-code').value;
+                            const street = document.getElementById('street').value;
+                            const number = document.getElementById('number').value;
+                            const complement = document.getElementById('complement').value;
+                            const neighborhood = document.getElementById('neighborhood').value;
+                            const city = document.getElementById('city').value;
+                            const state = document.getElementById('state').value;
+
+                            // Collect Stored Page 1 Data
+                            const fullName = localStorage.getItem('temp_reg_name');
+                            const email = localStorage.getItem('temp_reg_email');
+
+                            try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                if (!user) throw new Error("Usuá¡rio náo autenticado.");
+
+                                // 1. Insert Clinic
+                                const { data: clinic, error: clinicError } = await supabase
+                                    .from('clinics')
+                                    .insert([{
+                                        name: fantasyName,
+                                        address_zip: zip,
+                                        address_street: street,
+                                        address_number: number,
+                                        address_neighborhood: neighborhood,
+                                        address_city: city,
+                                        address_state: state
+                                    }])
+                                    .select()
+                                    .single();
+
+                                if (clinicError) throw clinicError;
+
+                                // 2. Insert Profile (Linking User + Clinic)
+                                const { error: profileError } = await supabase
+                                    .from('profiles')
+                                    .insert([{
+                                        id: user.id,
+                                        clinic_id: clinic.id,
+                                        full_name: fullName || email, // Fallback
+                                        role: 'admin',
+                                        email: email || user.email
+                                    }]);
+
+                                if (profileError) throw profileError;
+
+                                // 3. Clear Storage & Redirect
+                                localStorage.removeItem('temp_reg_name');
+                                localStorage.removeItem('temp_reg_email');
+                                localStorage.removeItem('temp_reg_cr');
+
+                                window.location.href = 'Pagina - Dashboard.html';
+
+                            } catch (err) {
+                                console.error(err);
+                                errorDiv.textContent = err.message || "Erro ao salvar dados.";
+                                errorDiv.classList.remove('hidden');
+                                btnText.textContent = originalText;
+                                btn.disabled = false;
+                            }
+                        });
+                    </script>
+                    <div class="hidden lg:flex flex-col gap-6 pt-2">
+                        <div
+                            class="rounded-2xl bg-white dark:bg-gray-800 p-6 border border-[#e7f3f3] dark:border-gray-700 shadow-sm sticky top-24">
+                            <div
+                                class="size-10 rounded-full bg-primary/20 flex items-center justify-center mb-4 text-primary">
+                                <span class="material-symbols-outlined">lightbulb</span>
+                            </div>
+                            <h4 class="text-[#0d1b1b] dark:text-white text-lg font-bold mb-2">Por que esses
+                                dados
+                                sáo importantes?</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                                O <strong>logo</strong> e o <strong>endereço</strong> cadastrados aqui seráo
+                                exibidos automaticamente nos cabeçalhos de:
+                            </p>
+                            <ul class="flex flex-col gap-3">
+                                <li class="flex gap-3 items-center text-sm text-[#0d1b1b] dark:text-slate-300">
+                                    <span class="material-symbols-outlined text-primary text-lg">description</span>
+                                    Receitas e Prescrições
+                                </li>
+                                <li class="flex gap-3 items-center text-sm text-[#0d1b1b] dark:text-slate-300">
+                                    <span class="material-symbols-outlined text-primary text-lg">receipt_long</span>
+                                    Faturas e Recibos
+                                </li>
+                                <li class="flex gap-3 items-center text-sm text-[#0d1b1b] dark:text-slate-300">
+                                    <span class="material-symbols-outlined text-primary text-lg">lab_profile</span>
+                                    Laudos Neurovisuais
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-6 border-t border-[#e7f3f3] dark:border-gray-700">
+                                <p class="text-xs text-slate-400">Vocáª poderá¡ alterar essas informações
+                                    posteriormente nas configurações.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>
+
