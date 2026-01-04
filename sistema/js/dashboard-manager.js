@@ -2,6 +2,9 @@ import { supabase } from './supabase-client.js';
 import { loadSidebar } from './sidebar-loader.js';
 
 export async function initDashboard() {
+    // 0. Immediate Sidebar Load (optimistic)
+    loadSidebar();
+
     // 1. Auth Check
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -14,8 +17,8 @@ export async function initDashboard() {
     await loadFinancialPerformance();
     await loadAgendaPreview();
 
-    // 3. User Info & Sidebar
-    loadSidebar();
+    // 3. User Info & Sidebar (Already called, but safe to ignore or keep as fallback if auth needed for some parts)
+    // loadSidebar(); // Removed to avoid double call, handled at top
 
     // 4. Search Redirect
     const searchInput = document.getElementById('header-search-input');

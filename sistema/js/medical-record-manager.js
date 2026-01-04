@@ -2,6 +2,8 @@ import { supabase } from './supabase-client.js';
 import { loadSidebar } from './sidebar-loader.js';
 import { updateAppointmentStatus } from './agenda-manager.js';
 
+export let currentPatient = null;
+
 export async function setupRecordPage(recordType) {
     // 1. Elements
     const btnSave = document.getElementById('btn-save-record');
@@ -30,11 +32,28 @@ export async function setupRecordPage(recordType) {
         await loadRecord(recordId);
     }
 
-    // 6. Setup Save
-    if (btnSave) {
-        btnSave.onclick = async () => {
+    // 6. Setup Save (Header and Float)
+    const saveBtns = ['btn-save-record', 'btn-save-header', 'btn-save-float'];
+    saveBtns.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.onclick = async () => {
+                const data = collectFormData();
+                await saveRecord(recordType, patientId, recordId, data);
+            };
+        }
+    });
+
+    // 7. Setup Print
+    const btnPrint = document.getElementById('btn-print-record');
+    if (btnPrint) {
+        btnPrint.onclick = async () => {
             const data = collectFormData();
-            await saveRecord(recordType, patientId, recordId, data);
+            // Save without redirecting to dashboard
+            const savedId = await saveRecord(recordType, patientId, recordId, data, false);
+            if (savedId) {
+                window.location.href = `Impressão.html?record_id=${savedId}&patient_id=${patientId}`;
+            }
         };
     }
 }
@@ -50,11 +69,12 @@ async function loadPatientHeader(patientId) {
         if (error) throw error;
         if (!p) throw new Error("Paciente não encontrado");
 
+        currentPatient = p; // Assign global variable
+
         // Update DOM
         if (document.getElementById('p-name')) document.getElementById('p-name').textContent = p.full_name;
-        if (document.getElementById('p-id')) document.getElementById('p-id').textContent = p.id.substring(0, 8); // Short ID
 
-        // Age
+        // Age Calculation
         let age = '?';
         if (p.birth_date) {
             const today = new Date();
@@ -65,14 +85,44 @@ async function loadPatientHeader(patientId) {
                 age--;
             }
         }
-        if (document.getElementById('p-age')) document.getElementById('p-age').textContent = `${age} anos`;
+
+        // Format Details: CPF • Idade (anos) • Sexo
+        const cpf = p.cpf || 'CPF n/d';
+        const rawGender = p.gender || 'Sexo n/d';
+        const genderMap = { 'M': 'Masculino', 'F': 'Feminino' };
+        const gender = genderMap[rawGender] || rawGender; // Map or use raw
+
+        const detailsText = `${cpf} <span class="mx-2 text-primary">•</span> ${age} anos <span class="mx-2 text-primary">•</span> ${gender}`;
+
+        if (document.getElementById('p-details')) {
+            document.getElementById('p-details').innerHTML = detailsText;
+        }
+
+        // Format Since Date
+        if (document.getElementById('p-since')) {
+            const sinceDate = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '--/--/----';
+            document.getElementById('p-since').textContent = `Paciente desde: ${sinceDate}`;
+        }
+
+        // Form Date (Initial Default)
+        if (document.getElementById('record-date')) {
+            const today = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('record-date').textContent = `Data: ${today}`;
+        }
 
         // Photo (Initials if no photo)
         const elPhoto = document.getElementById('p-photo');
         if (elPhoto) {
-            // Placeholder logic
+            // Placeholder logic (simulated for now, replace with actual photo URL if available)
             elPhoto.style.backgroundImage = 'none';
-            elPhoto.classList.add('flex', 'items-center', 'justify-center', 'bg-primary', 'text-white', 'text-2xl', 'font-bold');
+            elPhoto.className = ''; // Reset classes
+            elPhoto.classList.add('bg-primary/20', 'rounded-full', 'shadow-md', 'flex', 'items-center', 'justify-center', 'text-text-main', 'dark:text-white', 'text-2xl', 'font-bold', 'size-20', 'md:size-24');
+
+            // If photo URL exists:
+            // elPhoto.style.backgroundImage = `url(${p.photo_url})`;
+            // elPhoto.classList.remove('flex', ...);
+            // elPhoto.classList.add('bg-center', 'bg-cover');
+
             elPhoto.textContent = p.full_name ? p.full_name.substring(0, 2).toUpperCase() : '??';
         }
 
@@ -85,36 +135,6 @@ async function loadPatientHeader(patientId) {
 async function loadProviderHeader() {
     await loadSidebar();
     return;
-    /*
-    try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-    
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-    
-        if (profile) {
-            const elName = document.getElementById('header-user-name');
-            const elRole = document.getElementById('header-user-role');
-            if (elName) elName.textContent = profile.full_name || 'Usuário';
-            if (elRole) elRole.textContent = profile.role === 'admin' ? 'Administrador' : 'Optometrista';
-    
-            const elAvatar = document.getElementById('header-user-avatar');
-            if (elAvatar) {
-                // If avatar_url exists use it, else initials
-                elAvatar.style.backgroundImage = 'none';
-                elAvatar.style.backgroundColor = '#13ecec';
-                elAvatar.classList.add('flex', 'items-center', 'justify-center', 'text-black', 'text-xs', 'font-bold');
-                elAvatar.textContent = profile.full_name ? profile.full_name.substring(0, 2).toUpperCase() : 'EU';
-            }
-        }
-    } catch (err) {
-        console.error('Erro ao carregar provider', err);
-    }
-    */
 }
 
 export function collectFormData() {
@@ -133,16 +153,47 @@ export function collectFormData() {
             data[key] = el.value;
         }
     });
+
+    // --- Custom Logic: Snapshot Date, Age, and Full Gender ---
+    if (currentPatient) {
+        // 1. Date (Current save time)
+        const recordDateObj = new Date();
+        const recordDateStr = recordDateObj.toISOString();
+        // data['record_date'] = recordDateStr; 
+
+        // 2. Age (at current moment)
+        if (currentPatient.birth_date) {
+            const birthDate = new Date(currentPatient.birth_date);
+            // Use current date for calculation
+            let age = recordDateObj.getFullYear() - birthDate.getFullYear();
+            const m = recordDateObj.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && recordDateObj.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            data['patient_age_snapshot'] = age;
+        } else {
+            data['patient_age_snapshot'] = '?';
+        }
+
+        // 3. Gender (Full String)
+        const genderMap = { 'M': 'Masculino', 'F': 'Feminino' };
+        // If gender is already full string, use it, else map it, else default
+        let gender = currentPatient.gender || 'Não Informado';
+        if (genderMap[gender]) gender = genderMap[gender];
+
+        data['patient_gender_snapshot'] = gender;
+    }
+
     return data;
 }
 
-export async function saveRecord(type, patientId, recordId, content) {
+export async function saveRecord(type, patientId, recordId, content, redirect = true) {
     try {
         // Auth check
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             alert('Sessão expirada. Faça login novamente.');
-            return;
+            return null;
         }
 
         // Get clinic_id from profile
@@ -154,7 +205,7 @@ export async function saveRecord(type, patientId, recordId, content) {
 
         if (!profile || !profile.clinic_id) {
             alert('Erro: Usuário sem clínica vinculada.');
-            return;
+            return null;
         }
 
         const payload = {
@@ -166,6 +217,8 @@ export async function saveRecord(type, patientId, recordId, content) {
             date: new Date().toISOString()
         };
 
+        let finalRecordId = recordId;
+
         if (recordId) {
             // Update
             const { error: err } = await supabase
@@ -175,10 +228,13 @@ export async function saveRecord(type, patientId, recordId, content) {
             if (err) throw err;
         } else {
             // Insert
-            const { error: err } = await supabase
+            const { data: inserted, error: err } = await supabase
                 .from('medical_records')
-                .insert([payload]);
+                .insert([payload])
+                .select()
+                .single();
             if (err) throw err;
+            if (inserted) finalRecordId = inserted.id;
         }
 
         // Check for Appointment to complete
@@ -188,13 +244,18 @@ export async function saveRecord(type, patientId, recordId, content) {
             await updateAppointmentStatus(apptId, 'completed');
         }
 
-        alert('Ficha salva com sucesso!');
-        // Redirect back to patient chart
-        window.location.href = `Pontuario Pacientes.html?id=${patientId}`;
+        if (redirect) {
+            alert('Ficha salva com sucesso!');
+            // Redirect back to patient chart
+            window.location.href = `Pontuario Pacientes.html?id=${patientId}`;
+        }
+
+        return finalRecordId;
 
     } catch (err) {
         console.error("Erro ao salvar", err);
         alert('Erro ao salvar ficha: ' + err.message);
+        return null;
     }
 }
 
@@ -232,6 +293,36 @@ export async function loadRecord(recordId) {
                 if (el.value === content[el.name]) el.checked = true;
             }
         });
+
+        // 1. Set Record Date in Header (Read-Only)
+        if (document.getElementById('record-date') && data.date) {
+            const recDate = new Date(data.date).toLocaleDateString('pt-BR');
+            document.getElementById('record-date').textContent = `Data: ${recDate}`;
+        }
+
+        // 2. Update Header with Snapshots if available
+        if (data.data) {
+            const snapAge = data.data.patient_age_snapshot;
+            const snapGender = data.data.patient_gender_snapshot;
+
+            if (snapAge !== undefined || snapGender !== undefined) {
+                const detailsEl = document.getElementById('p-details');
+                if (detailsEl && currentPatient) {
+                    const cpf = currentPatient.cpf || 'CPF n/d';
+                    // Use snapshot or current
+                    const age = snapAge !== undefined ? snapAge : '?';
+
+                    const genderMap = { 'M': 'Masculino', 'F': 'Feminino' };
+                    let gender = snapGender;
+                    if (gender === undefined) {
+                        const raw = currentPatient.gender || 'Sexo n/d';
+                        gender = genderMap[raw] || raw;
+                    }
+
+                    detailsEl.innerHTML = `${cpf} <span class="mx-2 text-primary">•</span> ${age} anos <span class="mx-2 text-primary">•</span> ${gender}`;
+                }
+            }
+        }
 
     } catch (err) {
         console.error("Erro ao carregar ficha", err);

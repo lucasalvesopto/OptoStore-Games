@@ -81,6 +81,7 @@ function injectAppointmentModal() {
                         <option value="pediatric">Pediátrico</option>
                         <option value="functional">Funcional</option>
                         <option value="neuro">Neuro/Comportamental</option>
+                        <option value="visual">Processamento Visual</option>
                         <option value="trv">Terapia Visual (TRV)</option>
                         <option value="general">Geral / Retorno</option>
                     </select>
@@ -304,6 +305,10 @@ async function saveAppointment() {
 }
 
 // NEW: Global Status Updater
+let currentUserRole = null;
+
+
+
 export async function updateAppointmentStatus(apptId, newStatus) {
     if (!apptId) return;
 
@@ -323,7 +328,59 @@ export async function updateAppointmentStatus(apptId, newStatus) {
     }
 }
 
+
+// Expose functions globally for HTML filters
+window.loadAgenda = loadAgenda;
+window.clearFilters = () => {
+    document.getElementById('filter-date').value = '';
+    document.getElementById('filter-status').value = '';
+    loadAgenda();
+};
+
+window.openStatusSelector = (id, currentStatus) => {
+    const newStatus = prompt("Digite o novo status (scheduled, confirmed, in_progress, completed, cancelled, no_show):", currentStatus);
+    if (newStatus && newStatus !== currentStatus) {
+        updateAppointmentStatus(id, newStatus).then(() => loadAgenda());
+    }
+};
+
+// Better UX: Status Modal
+function injectStatusModal() {
+    if (document.getElementById('status-modal')) return;
+    const html = `
+    <div id="status-modal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeStatusModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-white dark:bg-surface-light rounded-xl shadow-xl p-4">
+            <h3 class="font-bold text-lg mb-4 text-slate-900 dark:text-white">Alterar Status</h3>
+            <input type="hidden" id="status-appt-id">
+            <div class="flex flex-col gap-2">
+                <button onclick="setStatus('confirmed')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-emerald-50 text-emerald-700 font-medium">Confirmado</button>
+                <button onclick="setStatus('in_progress')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-amber-50 text-amber-700 font-medium">Em Andamento</button>
+                <button onclick="setStatus('completed')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-blue-50 text-blue-700 font-medium">Concluído</button>
+                <button onclick="setStatus('cancelled')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-rose-50 text-rose-700 font-medium">Cancelado</button>
+                <button onclick="setStatus('no_show')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium">Faltou</button>
+                <button onclick="setStatus('scheduled')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 font-medium">Agendado (Reiniciar)</button>
+            </div>
+            <button onclick="closeStatusModal()" class="w-full mt-4 py-2 text-slate-400 hover:text-slate-600">Cancelar</button>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+
+    window.closeStatusModal = () => document.getElementById('status-modal').classList.add('hidden');
+
+    window.setStatus = async (status) => {
+        const id = document.getElementById('status-appt-id').value;
+        if (id) {
+            await updateAppointmentStatus(id, status);
+            loadAgenda();
+            closeStatusModal();
+        }
+    };
+}
+
 async function loadAgenda() {
+    injectStatusModal(); // Ensure modal exists
+
     const container = document.getElementById('appointments-container');
     if (!container) return;
 
@@ -331,16 +388,49 @@ async function loadAgenda() {
 
     if (!currentClinicId) {
         const { data: { session } } = await supabase.auth.getSession();
-        const { data: profile } = await supabase.from('profiles').select('clinic_id').eq('id', session.user.id).single();
-        if (profile) currentClinicId = profile.clinic_id;
+        const { data: profile } = await supabase.from('profiles').select('clinic_id, role').eq('id', session.user.id).single();
+        if (profile) {
+            currentClinicId = profile.clinic_id;
+            currentUserRole = profile.role;
+        }
     }
 
-    const { data: appts, error } = await supabase
+    // Read Filters
+    const filterDate = document.getElementById('filter-date')?.value;
+    const filterStatus = document.getElementById('filter-status')?.value;
+
+    let query = supabase
         .from('appointments')
         .select(`*, patients(full_name), profiles(full_name)`)
-        .eq('clinic_id', currentClinicId)
-        .order('date', { ascending: true })
-        .order('start_time', { ascending: true });
+        .eq('clinic_id', currentClinicId);
+
+    // Filter Logic
+    if (filterDate) {
+        // Specific Date
+        query = query.eq('date', filterDate);
+    } else {
+        // Default: Show recent history + future (LAST 30 DAYS?) or just ALL Descending limit 50?
+        // User asked "Most recent to oldest". Usually means pagination. I'll limit to 50 for performance.
+        // And maybe filter out very old ones?
+        // Let's just limit 50 ordered by date DESC.
+        query = query.limit(50);
+    }
+
+    if (filterStatus) {
+        query = query.eq('status', filterStatus);
+    }
+
+    // Sort: Recent to Oldest (DESC)
+    // Primary: Date DESC. Secondary: Time DESC (late appointments first?) or ASC?
+    // "Recent to Oldest":
+    // 2024-01-03 -> 2024-01-02.
+    // Inside 2024-01-03: 18:00 is more recent than 08:00? Yes.
+    // So both DESC.
+    query = query
+        .order('date', { ascending: false })
+        .order('start_time', { ascending: false });
+
+    const { data: appts, error } = await query;
 
     if (error) {
         container.innerHTML = `<p class="text-center text-red-500">Erro: ${error.message}</p>`;
@@ -350,7 +440,7 @@ async function loadAgenda() {
     if (!appts || appts.length === 0) {
         container.innerHTML = `
             <div class="p-12 text-center bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800">
-                 <p class="text-slate-500">Nenhum agendamento encontrado.</p>
+                 <p class="text-slate-500">Nenhum agendamento encontrado com os filtros atuais.</p>
                  <button onclick="openAppointmentModal()" class="text-primary hover:underline font-bold mt-2">Criar novo</button>
             </div>`;
         return;
@@ -365,6 +455,7 @@ async function loadAgenda() {
             'pediatric': 'Pediátrico',
             'functional': 'Funcional',
             'neuro': 'Neuro/Comp.',
+            'visual': 'Proc. Visual',
             'trv': 'TRV',
             'general': 'Geral'
         }[appt.type] || appt.type;
@@ -381,14 +472,21 @@ async function loadAgenda() {
         const statusLabel = statusMap[appt.status] || appt.status;
 
         // Color
-        let statusColor = 'bg-slate-100 text-slate-800';
-        if (appt.status === 'confirmed') statusColor = 'bg-emerald-100 text-emerald-800';
-        if (appt.status === 'completed') statusColor = 'bg-blue-100 text-blue-800';
-        if (appt.status === 'in_progress') statusColor = 'bg-amber-100 text-amber-800';
-        if (appt.status === 'cancelled' || appt.status === 'no_show') statusColor = 'bg-rose-100 text-rose-800';
+        let statusColor = 'bg-slate-100 text-slate-800 border-slate-200';
+        if (appt.status === 'confirmed') statusColor = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        if (appt.status === 'completed') statusColor = 'bg-blue-100 text-blue-800 border-blue-200';
+        if (appt.status === 'in_progress') statusColor = 'bg-amber-100 text-amber-800 border-amber-200';
+        if (appt.status === 'cancelled' || appt.status === 'no_show') statusColor = 'bg-rose-100 text-rose-800 border-rose-200';
+
+        // Admin Delete Button Check
+        // Note: currentUserRole must be 'admin' to see the button.
+        const canDelete = currentUserRole === 'admin' || currentUserRole === 'owner';
+
+        // Status Click Handler
+        const statusClick = `onclick="openStatusModal('${appt.id}')"`;
 
         return `
-            <div class="flex items-center justify-between p-4 bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all shadow-sm">
+            <div class="flex items-center justify-between p-4 bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all shadow-sm group">
                 <div class="flex items-center gap-4">
                      <div class="flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-lg p-2 min-w-[4rem]">
                         <span class="text-lg font-bold text-slate-900 dark:text-white">${startStr}</span>
@@ -404,11 +502,35 @@ async function loadAgenda() {
                      </div>
                 </div>
                 <div class="flex items-center gap-3">
-                     <span class="px-3 py-1 rounded-full text-xs font-bold ${statusColor} uppercase">${statusLabel}</span>
+                     <button ${statusClick} class="px-3 py-1 rounded-full text-xs font-bold ${statusColor} border uppercase hover:brightness-95 transition-all cursor-pointer" title="Clique para alterar status">
+                        ${statusLabel}
+                     </button>
+                     
+                     ${canDelete ? `
+                     <button onclick="deleteAppointment('${appt.id}')" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Excluir Agendamento">
+                        <span class="material-symbols-outlined">delete</span>
+                     </button>` : ''}
                 </div>
             </div>`;
     }).join('');
 }
+
+window.openStatusModal = (id) => {
+    document.getElementById('status-appt-id').value = id;
+    document.getElementById('status-modal').classList.remove('hidden');
+}
+
+window.deleteAppointment = async (id) => {
+    if (!confirm('Tem certeza que deseja excluir este agendamento?')) return;
+    try {
+        const { error } = await supabase.from('appointments').delete().eq('id', id);
+        if (error) throw error;
+        loadAgenda(); // Reload list
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao excluir: ' + err.message);
+    }
+};
 
 export async function loadPatientAgenda(patientId, containerId) {
     const container = document.getElementById(containerId);
@@ -436,7 +558,7 @@ export async function loadPatientAgenda(patientId, containerId) {
     container.innerHTML = appts.map(appt => {
         const dateStr = new Date(appt.date).toLocaleDateString();
         const startStr = appt.start_time.substring(0, 5);
-        const typeLabel = { 'pediatric': 'Pediátrico', 'functional': 'Funcional', 'neuro': 'Neuro/Comp.', 'trv': 'TRV', 'general': 'Geral' }[appt.type] || appt.type;
+        const typeLabel = { 'pediatric': 'Pediátrico', 'functional': 'Funcional', 'neuro': 'Neuro/Comp.', 'visual': 'Proc. Visual', 'trv': 'TRV', 'general': 'Geral' }[appt.type] || appt.type;
         const statusMap = {
             'scheduled': 'Agendado',
             'confirmed': 'Confirmado',
