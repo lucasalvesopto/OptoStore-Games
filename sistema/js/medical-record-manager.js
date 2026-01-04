@@ -1,10 +1,19 @@
 import { supabase } from './supabase-client.js';
 import { loadSidebar } from './sidebar-loader.js';
 import { updateAppointmentStatus } from './agenda-manager.js';
+import { ensureAuthenticated } from './auth.js';
 
 export let currentPatient = null;
 
 export async function setupRecordPage(recordType) {
+    // 0. Auth Guard
+    const isAuthenticated = await ensureAuthenticated();
+    if (!isAuthenticated) {
+        window.location.replace('Login - Pagina Inicial.html');
+        return;
+    }
+
+    // 1. Elements
     // 1. Elements
     const btnSave = document.getElementById('btn-save-record');
 

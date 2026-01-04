@@ -21,6 +21,7 @@ export async function setupAgendaPage() {
 
     if (profile) {
         currentClinicId = profile.clinic_id;
+        currentUserRole = profile.role;
     }
 
     loadSidebar();

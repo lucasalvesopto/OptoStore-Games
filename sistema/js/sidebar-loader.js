@@ -12,6 +12,34 @@ export function loadSidebar() {
 
     // 3. Setup Mobile Menu
     setupMobileMenu();
+
+    // 4. Setup Logout Handler
+    setupLogout();
+
+    // 5. Init Chat (Lazy load)
+    import('./chat-manager.js').then(module => {
+        module.initChat();
+    }).catch(err => console.error("Failed to load chat", err));
+}
+
+import { handleLogout } from './auth.js';
+
+function setupLogout() {
+    // Find the logout link. It usually has href pointing to Login
+    const logoutLinks = document.querySelectorAll('a[href*="Login - Pagina Inicial.html"]');
+
+    logoutLinks.forEach(link => {
+        // Clone to replace to kill any old listeners (if any) or just add new one
+        // But since we want to prevent default, just adding is fine
+        link.addEventListener('click', async (e) => {
+            // Check if it's the logout button (contains logout icon or text 'Sair')
+            if (link.innerHTML.includes('logout') || link.innerText.includes('Sair')) {
+                e.preventDefault();
+                await handleLogout();
+                window.location.href = 'Login - Pagina Inicial.html';
+            }
+        });
+    });
 }
 
 function renderSidebar(profile) {
