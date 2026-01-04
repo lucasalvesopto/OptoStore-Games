@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>OptoClinic - Detalhes do Paciente</title>
+  <title>Pagina do Optometrista - Pontuário do Paciente</title>
   <!-- Fonts and Icons -->
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
@@ -26,23 +26,19 @@
         extend: {
           colors: {
             "primary": "#13ecec",
-            "background-light": "#f8fcfc",
+            "primary-dark": "#0ebdbd",
+            "background-light": "#f6f8f8",
             "background-dark": "#102222",
             "surface-light": "#ffffff",
-            "surface-dark": "#1a3333",
+            "surface-dark": "#182d2d",
             "text-main": "#0d1b1b",
-            "text-secondary": "#4c9a9a",
+            "text-sub": "#4c9a9a",
           },
           fontFamily: {
             "display": ["Inter", "sans-serif"],
-            "body": ["Noto Sans", "sans-serif"],
+            "sans": ["Inter", "sans-serif"],
           },
-          borderRadius: {
-            "DEFAULT": "0.5rem",
-            "lg": "1rem",
-            "xl": "1.5rem",
-            "full": "9999px"
-          },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
         },
       },
     }
@@ -82,7 +78,7 @@
   <div class="flex h-screen w-full">
     <!-- SideNavBar -->
     <!-- Sidebar -->
-    <aside
+    <aside id="app-sidebar"
       class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
       <div class="p-6">
         <div class="flex items-center gap-3 mb-8">
@@ -99,7 +95,7 @@
           <div class="flex gap-3 items-center">
             <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
               id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
             </div>
             <div class="flex flex-col overflow-hidden">
               <h2 id="sidebar-clinic-name"
@@ -113,12 +109,12 @@
           <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             href="Pagina - Dashboard.html">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="text-sm font-semibold">Dashboard</span>
+            <span class="text-sm font-medium">Dashboard</span>
           </a>
           <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
             href="Pagina - Pacientes.html">
-            <span class="material-symbols-outlined text-primary-dark dark:text-primary">groups</span>
-            <span class="text-sm font-medium">Pacientes</span>
+            <span class="material-symbols-outlined text-primary-dark dark:text-primary fill-1">groups</span>
+            <span class="text-sm font-semibold">Pacientes</span>
           </a>
           <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             href="Pagina - Agenda.html">
@@ -151,7 +147,7 @@
       <header
         class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
         <div class="flex items-center gap-4 lg:hidden">
-          <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+          <button id="mobile-menu-btn" class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
             <span class="material-symbols-outlined">menu</span>
           </button>
         </div>
@@ -169,29 +165,19 @@
         <!-- Right Actions -->
         <div class="flex items-center gap-3 ml-auto">
           <button onclick="window.location.href='Cadastro Novo Paciente.html'"
-            class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
-            <span class="material-symbols-outlined">add</span>
+            class="flex items-center justify-center h-10 px-4 gap-2 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span class="hidden sm:inline">Novo Paciente</span>
           </button>
           <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-          <button
-            class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-            <span class="material-symbols-outlined filled">notifications</span>
-            <span
-              class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
-          </button>
           <button
             class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
             <span class="material-symbols-outlined">chat</span>
           </button>
           <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
-            <div class="text-right hidden sm:block">
+            <div class="text-right">
               <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...</p>
               <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
-            </div>
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
-              data-alt="Profile picture of Dr. Ricardo"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
             </div>
           </div>
         </div>
@@ -255,18 +241,18 @@
               <button onclick="switchTab('overview')" id="tab-btn-overview"
                 class="pb-3 border-b-2 border-primary text-primary font-semibold text-sm whitespace-nowrap transition-colors">Visão
                 Geral</button>
+              <button onclick="switchTab('agenda')" id="tab-btn-agenda"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Agenda</button>
               <button onclick="switchTab('history')" id="tab-btn-history"
                 class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Histórico
                 Clínico</button>
-              <button onclick="switchTab('prescriptions')" id="tab-btn-prescriptions"
-                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Prescrições</button>
-              <button onclick="switchTab('finance')" id="tab-btn-finance"
-                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Financeiro</button>
               <button onclick="switchTab('files')" id="tab-btn-files"
                 class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Arquivos</button>
-              <button onclick="switchTab('agenda')" id="tab-btn-agenda"
-                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Agenda</button>
-            </div>
+              <!-- <button onclick="switchTab('prescriptions')" id="tab-btn-prescriptions"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Prescrições</button> -->
+              <button onclick="switchTab('finance')" id="tab-btn-finance"
+                class="pb-3 border-b-2 border-transparent text-text-secondary hover:text-text-main dark:hover:text-white font-medium text-sm whitespace-nowrap transition-colors">Financeiro</button>
+            </div>/
           </div>
 
           <!-- Tab Contents -->
@@ -284,7 +270,7 @@
                     <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                       <span class="material-symbols-outlined text-6xl text-primary">event</span>
                     </div>
-                    <p class="text-text-secondary dark:text-gray-400 text-sm font-medium mb-1">Próxima Consulta</p>
+                    <p class="text-text-secondary dark:text-gray-400 text-sm font-medium mb-1">Última Consulta</p>
                     <div class="flex items-end gap-2">
                       <h3 id="overview-next-appt-date" class="text-xl font-bold text-text-main dark:text-white">---</h3>
                     </div>
@@ -381,89 +367,104 @@
         </div> <!-- End Overview Tab -->
 
         <div id="tab-content-history" class="tab-content hidden">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
-            <h3 class="font-bold text-lg mb-4">Histórico Completo</h3>
-            <div id="full-history-list" class="flex flex-col gap-4">
-              <p class="text-slate-500">Carregando histórico...</p>
+          <div class="max-w-7xl mx-auto">
+            <div
+              class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <h3 class="font-bold text-lg mb-4">Histórico Completo</h3>
+              <div id="full-history-list" class="flex flex-col gap-4">
+                <p class="text-slate-500">Carregando histórico...</p>
+              </div>
             </div>
           </div>
         </div>
         <div id="tab-content-prescriptions" class="tab-content hidden">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="font-bold text-lg">Prescrições Emitidas</h3>
-              <p class="text-sm text-slate-500">Gere novas prescrições através das fichas de consulta.</p>
-            </div>
-            <div id="prescriptions-list" class="flex flex-col gap-4">
-              <p class="text-slate-500 p-8 text-center border border-dashed rounded-lg">Nenhuma prescrição encontrada.
-              </p>
+          <div class="max-w-7xl mx-auto">
+            <div
+              class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg">Prescrições Emitidas</h3>
+                <p class="text-sm text-slate-500">Gere novas prescrições através das fichas de consulta.</p>
+              </div>
+              <div id="prescriptions-list" class="flex flex-col gap-4">
+                <p class="text-slate-500 p-8 text-center border border-dashed rounded-lg">Nenhuma prescrição encontrada.
+                </p>
+              </div>
             </div>
           </div>
         </div>
         <div id="tab-content-agenda" class="tab-content hidden">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="font-bold text-lg">Agendamentos do Paciente</h3>
-              <button onclick="openAppointmentModal(currentPatientId, document.getElementById('p-name').textContent)"
-                class="text-sm bg-primary/10 text-primary-dark px-3 py-1.5 rounded-lg hover:bg-primary/20 font-bold transition-colors">
-                + Novo Agendamento
-              </button>
-            </div>
-            <div id="patient-agenda-list" class="flex flex-col gap-3">
-              <p class="text-slate-500 text-center">Carregando...</p>
+          <div class="max-w-7xl mx-auto">
+            <div
+              class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg">Agendamentos do Paciente</h3>
+                <button onclick="openAppointmentModal(currentPatientId, document.getElementById('p-name').textContent)"
+                  class="text-sm bg-primary/10 text-primary-dark px-3 py-1.5 rounded-lg hover:bg-primary/20 font-bold transition-colors">
+                  + Novo Agendamento
+                </button>
+              </div>
+              <div id="patient-agenda-list" class="flex flex-col gap-3">
+                <p class="text-slate-500 text-center">Carregando...</p>
+              </div>
             </div>
           </div>
         </div>
         <div id="tab-content-finance" class="tab-content hidden">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
-            <h3 class="font-bold text-lg mb-6">Histórico Financeiro do Paciente</h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="bg-slate-50 dark:bg-slate-800/10 border-b border-slate-200 dark:border-slate-800">
-                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Data</th>
-                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Descrição</th>
-                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Valor</th>
-                    <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="patient-finance-list" class="divide-y divide-slate-200 dark:divide-slate-800">
-                  <tr>
-                    <td colspan="4" class="p-4 text-center text-slate-500">Carregando...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-800/20 rounded-lg flex justify-between items-center">
-              <span class="text-sm text-slate-500 font-medium">Total Pago</span>
-              <span id="patient-finance-total" class="text-xl font-bold text-emerald-600">R$ 0,00</span>
+          <div class="max-w-7xl mx-auto">
+            <div
+              class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <h3 class="font-bold text-lg mb-6">Histórico Financeiro do Paciente</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/10 border-b border-slate-200 dark:border-slate-800">
+                      <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Data</th>
+                      <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Descrição</th>
+                      <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Valor</th>
+                      <th class="px-4 py-3 text-xs font-bold text-slate-500 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patient-finance-list" class="divide-y divide-slate-200 dark:divide-slate-800">
+                    <tr>
+                      <td colspan="4" class="p-4 text-center text-slate-500">Carregando...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-800/20 rounded-lg flex justify-between items-center">
+                <span class="text-sm text-slate-500 font-medium">Total Pago</span>
+                <span id="patient-finance-total" class="text-xl font-bold text-emerald-600">R$ 0,00</span>
+              </div>
             </div>
           </div>
         </div>
         <div id="tab-content-files" class="tab-content hidden">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="font-bold text-lg">Exames Complementares</h3>
-              <button
-                class="flex items-center gap-2 px-4 py-2 bg-primary text-text-main font-bold rounded-lg text-sm hover:brightness-105 transition-all">
-                <span class="material-symbols-outlined text-[18px]">upload</span>
-                Enviar Arquivo
-              </button>
-            </div>
-            <!-- Dropzone Area -->
+          <div class="max-w-7xl mx-auto">
             <div
-              class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer mb-6">
-              <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
-              <p class="text-sm font-medium text-text-main dark:text-white">Clique para selecionar ou arraste arquivos
-                aqui</p>
-              <p class="text-xs text-slate-500 mt-1">PDF, JPG, PNG (Max 5MB)</p>
-              <input type="file" id="file-upload-input" class="hidden" multiple accept=".pdf,.jpg,.jpeg,.png">
-            </div>
+              class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg">Exames Complementares Solicitados</h3>
+                <button
+                  class="flex items-center gap-2 px-4 py-2 bg-primary text-text-main font-bold rounded-lg text-sm hover:brightness-105 transition-all">
+                  <span class="material-symbols-outlined text-[18px]">upload</span>
+                  Enviar Arquivo
+                </button>
+              </div>
+              <!-- Dropzone Area -->
+              <div
+                class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer mb-6">
+                <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+                <p class="text-sm font-medium text-text-main dark:text-white">Clique para selecionar ou arraste arquivos
+                  aqui</p>
+                <p class="text-xs text-slate-500 mt-1">PDF, JPG, PNG (Max 5MB)</p>
+                <input type="file" id="file-upload-input" class="hidden" multiple accept=".pdf,.jpg,.jpeg,.png">
+              </div>
 
-            <h4 class="font-semibold text-sm mb-3">Arquivos Recentes</h4>
-            <div id="files-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- File Items will go here -->
-              <p class="text-slate-500 text-sm col-span-2">Nenhum exame anexado.</p>
+              <h4 class="font-semibold text-sm mb-3">Arquivos Recentes</h4>
+              <div id="files-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- File Items will go here -->
+                <p class="text-slate-500 text-sm col-span-2">Nenhum exame anexado.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -488,6 +489,16 @@
       </div>
 
       <div class="flex flex-col gap-3">
+        <!-- Avulsa Warning Banner -->
+        <div id="avulsa-warning"
+          class="hidden mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+          <span class="material-symbols-outlined text-amber-600 text-sm mt-0.5">info</span>
+          <div class="text-sm text-amber-800">
+            <p class="font-bold text-xs uppercase mb-0.5">Consulta Avulsa</p>
+            <p class="text-xs">Nenhum agendamento pendente para hoje.</p>
+          </div>
+        </div>
+
         <p class="text-sm text-slate-500 mb-2">Selecione o tipo de ficha:</p>
 
         <button onclick="startConsultation('pediatric')"
@@ -523,6 +534,18 @@
           <div>
             <h4 class="font-bold text-[#0d1b1b] dark:text-white">Neuro/Comportamental</h4>
             <p class="text-xs text-slate-500">Avaliação visual e comportamental</p>
+          </div>
+        </button>
+
+        <button onclick="startConsultation('visual')"
+          class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group">
+          <div
+            class="bg-teal-100 dark:bg-teal-900/30 p-2 rounded-lg text-teal-600 dark:text-teal-400 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined">visibility</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-[#0d1b1b] dark:text-white">Processamento Visual</h4>
+            <p class="text-xs text-slate-500">Avaliação de percepção visual</p>
           </div>
         </button>
 
@@ -611,8 +634,15 @@
       }
     };
 
-    window.openNewConsultationModal = () => {
-      document.getElementById('new-consultation-modal').classList.remove('hidden');
+    window.openNewConsultationModal = (showWarning = false) => {
+      const modal = document.getElementById('new-consultation-modal');
+      const warning = document.getElementById('avulsa-warning');
+
+      if (modal) modal.classList.remove('hidden');
+      if (warning) {
+        if (showWarning) warning.classList.remove('hidden');
+        else warning.classList.add('hidden');
+      }
     };
 
     // NEW LOGIC FOR CONSULTATION / AGENDA LINK
@@ -634,7 +664,7 @@
       if (appts && appts.length > 0) {
         showStartConsultationModal(appts);
       } else {
-        openNewConsultationModal();
+        openNewConsultationModal(true);
       }
     };
 
@@ -651,7 +681,7 @@
                     <div class="flex flex-col gap-2 mb-6 max-h-60 overflow-y-auto">
                         ${appts.map(a => {
         const date = new Date(a.date).toLocaleDateString('pt-BR');
-        const typeLabel = { 'pediatric': 'Pediátrica', 'functional': 'Funcional', 'neuro': 'Neuro', 'trv': 'TRV' }[a.type] || a.type;
+        const typeLabel = { 'pediatric': 'Pediátrica', 'functional': 'Funcional', 'neuro': 'Neuro', 'visual': 'Processamento Visual', 'trv': 'TRV' }[a.type] || a.type;
         return `
                                 <button onclick="startSpecificConsult('${a.type}', '${a.id}')" class="text-left p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-primary/10 hover:border-primary transition-all group">
                                     <span class="font-bold block text-slate-800 dark:text-white group-hover:text-primary transition-colors">${typeLabel}</span>
@@ -681,6 +711,7 @@
         'pediatric': 'Nova Ficha - Pediatrica.html',
         'functional': 'Nova Ficha - Funcional.html',
         'neuro': 'Nova Ficha - NeuroComportamental.html',
+        'visual': 'Nova Ficha - Processamento Visual.html',
         'trv': 'Nova Ficha - TRV.html',
         'general': 'Nova Ficha - Funcional.html'
       };
@@ -704,11 +735,28 @@
         case 'pediatric': url = 'Nova Ficha - Pediatrica.html'; break;
         case 'functional': url = 'Nova Ficha - Funcional.html'; break;
         case 'neuro': url = 'Nova Ficha - NeuroComportamental.html'; break;
+        case 'visual': url = 'Nova Ficha - Processamento Visual.html'; break;
         case 'trv': url = 'Nova Ficha - TRV.html'; break;
       }
 
       if (url) {
         window.location.href = `${url}?patient_id=${currentPatientId}`;
+      }
+    };
+
+
+
+    window.deleteMedicalRecord = async (id) => {
+      if (!confirm('Tem certeza que deseja excluir este registro do histórico?')) return;
+      try {
+        const { error } = await supabase.from('medical_records').delete().eq('id', id);
+        if (error) throw error;
+        alert('Registro excluído com sucesso.');
+        loadHistory();
+        loadRecentHistory();
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao excluir: ' + err.message);
       }
     };
 
@@ -846,7 +894,9 @@
         .from('medical_records')
         .select('*, profiles:professional_id(full_name, role)')
         .eq('patient_id', currentPatientId)
-        .order('date', { ascending: false });
+        .eq('patient_id', currentPatientId)
+        .order('date', { ascending: false })
+        .limit(10);
 
       if (error || !data || data.length === 0) {
         listEl.innerHTML = '<p class="text-slate-500 p-4 border border-dashed rounded-lg text-center">Nenhum histórico clínico encontrado.</p>';
@@ -872,6 +922,9 @@
         } else if (record.record_type === 'trv') {
           typeLabel = 'Terapia Visual (TRV)';
           pageUrl = 'Nova Ficha - TRV.html';
+        } else if (record.record_type === 'visual') {
+          typeLabel = 'Processamento Visual';
+          pageUrl = 'Nova Ficha - Processamento Visual.html';
         } else if (record.record_type === 'exam_file') {
           typeLabel = 'Exame Complementar';
           // For files, we might not have a pageUrl, but we can open the file link or show an alert/modal.
@@ -904,6 +957,14 @@
 
         const openUrl = `${pageUrl}?patient_id=${currentPatientId}&record_id=${record.id}`;
 
+        const deleteBtn = currentUserRole === 'admin'
+          ? `<div class="self-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button onclick="event.stopPropagation(); deleteMedicalRecord('${record.id}')" class="p-2 text-slate-300 hover:text-red-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Excluir Registro">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                 </button>
+               </div>`
+          : '';
+
         return `
                 <div onclick="window.location.href='${openUrl}'" class="flex items-start gap-4 p-4 rounded-xl border border-border-color bg-white dark:bg-surface-dark dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer group shadow-sm">
                     <div class="bg-primary/10 p-3 rounded-lg text-primary-dark dark:text-primary group-hover:bg-primary group-hover:text-black transition-colors">
@@ -916,6 +977,7 @@
                         </div>
                         <p class="text-sm text-text-secondary mt-1">Realizado por: ${proName}</p>
                     </div>
+                    ${deleteBtn}
                     <div class="self-center opacity-0 group-hover:opacity-100 transition-opacity">
                          <span class="material-symbols-outlined text-slate-400">chevron_right</span>
                     </div>
@@ -958,6 +1020,7 @@
         .from('medical_records')
         .select('*, profiles:professional_id(full_name, role)')
         .eq('patient_id', currentPatientId)
+        .neq('record_type', 'prescription') // Exclude prescriptions (shown in their own tab)
         .order('date', { ascending: false })
         .limit(3);
 
@@ -975,7 +1038,7 @@
         if (record.record_type === 'pediatric') {
           typeLabel = 'Ficha Pediátrica';
           pageUrl = 'Nova Ficha - Pediatrica.html';
-        } else if (record.record_type === 'functional' || record.record_type === 'funcional') {
+        } else if (record.record_type === 'functional' || record.record_type === 'funcional' || record.record_type === 'general') {
           typeLabel = 'Ficha Funcional';
           pageUrl = 'Nova Ficha - Funcional.html';
         } else if (record.record_type === 'neuro') {
@@ -984,7 +1047,11 @@
         } else if (record.record_type === 'trv') {
           typeLabel = 'Terapia Visual (TRV)';
           pageUrl = 'Nova Ficha - TRV.html';
+        } else if (record.record_type === 'visual') {
+          typeLabel = 'Processamento Visual';
+          pageUrl = 'Nova Ficha - Processamento Visual.html';
         }
+
 
         const openUrl = `${pageUrl}?patient_id=${currentPatientId}&record_id=${record.id}`;
 
@@ -1014,11 +1081,11 @@
         .from('appointments')
         .select('*')
         .eq('patient_id', currentPatientId)
-        .in('status', ['scheduled', 'confirmed'])
-        .gte('date', new Date().toISOString().split('T')[0])
-        .order('date', { ascending: true })
+        .in('status', ['completed', 'paid', 'scheduled', 'confirmed', 'in_progress']) // Any status really, maybe filter out cancelled?
+        .lte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (data) {
         const d = new Date(data.date).toLocaleDateString();
@@ -1028,7 +1095,7 @@
         dateEl.classList.add('text-primary');
       } else {
         dateEl.textContent = '---';
-        infoEl.textContent = 'Sem agendamentos futuros';
+        infoEl.textContent = 'Sem histórico recente';
         dateEl.classList.remove('text-primary');
       }
     }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Cadastro de Paciente - Visão Total</title>
+    <title>Cadastro de Paciente</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
         rel="stylesheet" />
     <link
@@ -18,18 +18,19 @@
                 extend: {
                     colors: {
                         "primary": "#13ecec",
-                        "primary-hover": "#0ebdbd",
+                        "primary-dark": "#0ebdbd",
                         "background-light": "#f6f8f8",
                         "background-dark": "#102222",
                         "surface-light": "#ffffff",
-                        "surface-dark": "#162a2a",
+                        "surface-dark": "#182d2d",
                         "text-main": "#0d1b1b",
-                        "text-muted": "#4c9a9a",
+                        "text-sub": "#4c9a9a",
                     },
                     fontFamily: {
-                        "display": ["Inter", "sans-serif"]
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
                     },
-                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
                 },
             },
         }
@@ -51,7 +52,7 @@
 
 <body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden h-screen flex">
     <!-- Sidebar -->
-    <aside
+    <aside id="app-sidebar"
         class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-8">
@@ -82,17 +83,17 @@
             </div>
             <nav class="flex flex-col gap-1">
                 <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                    href="Pagina - Dashboard.html">
+                    href="Pagina - Dashboard.html" id="sidebar-dashboard-link">
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="text-sm font-semibold">Dashboard</span>
                 </a>
                 <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-slate-900 dark:text-white group"
-                    href="Pagina - Pacientes.html">
+                    href="Pagina - Pacientes.html" id="sidebar-patients-link">
                     <span class="material-symbols-outlined text-primary-dark dark:text-primary fill-1">groups</span>
-                    <span class="text-sm font-medium">Pacientes</span>
+                    <span class="text-sm font-semibold">Pacientes</span>
                 </a>
                 <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                    href="Pagina - Agenda.html">
+                    href="Pagina - Agenda.html" id="sidebar-schedule-link">
                     <span class="material-symbols-outlined">calendar_month</span>
                     <span class="text-sm font-medium">Agenda</span>
                 </a>
@@ -122,7 +123,7 @@
         <header
             class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
             <div class="flex items-center gap-4 lg:hidden">
-                <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                <button id="mobile-menu-btn" class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
@@ -140,29 +141,20 @@
             <!-- Right Actions -->
             <div class="flex items-center gap-3 ml-auto">
                 <button onclick="window.location.href='Cadastro Novo Paciente.html'"
-                    class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+                    class="flex items-center justify-center h-10 px-4 gap-2 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
                     <span class="material-symbols-outlined">add</span>
+                    <span class="hidden sm:inline">Novo Paciente</span>
                 </button>
                 <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                <button
-                    class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                    <span class="material-symbols-outlined filled">notifications</span>
-                    <span
-                        class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
-                </button>
                 <button
                     class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
                     <span class="material-symbols-outlined">chat</span>
                 </button>
                 <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
-                    <div class="text-right hidden sm:block">
+                    <div class="text-right">
                         <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...
                         </p>
                         <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
-                    </div>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
-                        data-alt="Profile picture of Dr. Ricardo"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
                     </div>
                 </div>
             </div>

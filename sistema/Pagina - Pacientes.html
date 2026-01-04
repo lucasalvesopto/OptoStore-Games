@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Listagem de Pacientes - Visão Total</title>
+    <title>Pagina do Optometrista - Listagem de Pacientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
         rel="stylesheet" />
     <link
@@ -19,18 +19,19 @@
                 extend: {
                     colors: {
                         "primary": "#13ecec",
-                        "primary-hover": "#0ebdbd",
+                        "primary-dark": "#0ebdbd",
                         "background-light": "#f6f8f8",
                         "background-dark": "#102222",
                         "surface-light": "#ffffff",
-                        "surface-dark": "#162a2a",
+                        "surface-dark": "#182d2d",
                         "text-main": "#0d1b1b",
-                        "text-muted": "#4c9a9a",
+                        "text-sub": "#4c9a9a",
                     },
                     fontFamily: {
-                        "display": ["Inter", "sans-serif"]
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
                     },
-                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
                 },
             },
         }
@@ -52,7 +53,7 @@
 
 <body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden h-screen flex">
     <!-- Sidebar -->
-    <aside
+    <aside id="app-sidebar"
         class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-8">
@@ -71,7 +72,7 @@
                 <div class="flex gap-3 items-center">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
                         id="sidebar-clinic-logo" data-alt="Clinic logo showing an abstract eye symbol"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTgGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
                     </div>
                     <div class="flex flex-col overflow-hidden">
                         <h2 id="sidebar-clinic-name"
@@ -118,12 +119,12 @@
         </div>
     </aside>
     <!-- Main Content -->
-    <div class="flex flex-col flex-1 h-full overflow-hidden relative">
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         <!-- Top Navbar -->
         <header
             class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
             <div class="flex items-center gap-4 lg:hidden">
-                <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                <button id="mobile-menu-btn" class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
@@ -141,29 +142,20 @@
             <!-- Right Actions -->
             <div class="flex items-center gap-3 ml-auto">
                 <button onclick="window.location.href='Cadastro Novo Paciente.html'"
-                    class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
-                    <span class="material-symbols-outlined">add</span>
+                    class="flex items-center justify-center h-10 px-4 gap-2 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+                    <span class="material-symbols-outlined text-[20px]">add</span>
+                    <span class="hidden sm:inline">Novo Paciente</span>
                 </button>
                 <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                <button
-                    class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                    <span class="material-symbols-outlined filled">notifications</span>
-                    <span
-                        class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-dark"></span>
-                </button>
                 <button
                     class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
                     <span class="material-symbols-outlined">chat</span>
                 </button>
                 <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
-                    <div class="text-right hidden sm:block">
+                    <div class="text-right">
                         <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...
                         </p>
                         <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
-                    </div>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
-                        data-alt="Profile picture of Dr. Ricardo"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
                     </div>
                 </div>
             </div>
@@ -203,11 +195,7 @@
                             <option value="active">Ativo</option>
                             <option value="inactive">Inativo</option>
                         </select>
-                        <button
-                            class="flex items-center gap-2 px-4 h-[44px] rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 whitespace-nowrap shadow-sm">
-                            <span>Especialidade: Todas</span>
-                            <span class="material-symbols-outlined text-[18px] text-slate-400">expand_more</span>
-                        </button>
+
                         <button
                             class="flex items-center gap-2 px-4 h-[44px] rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 whitespace-nowrap shadow-sm">
                             <span>Última Visita</span>
@@ -241,7 +229,7 @@
                                         Contato</th>
                                     <th
                                         class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        Próxima Consulta</th>
+                                        Última Consulta</th>
                                     <th
                                         class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                         Status</th>
@@ -284,123 +272,144 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-    <script type="module">
-        import { supabase } from './js/supabase-client.js';
-        import { loadSidebar } from './js/sidebar-loader.js';
+        <script type="module">
+            import { supabase } from './js/supabase-client.js';
+            import { loadSidebar } from './js/sidebar-loader.js';
 
-        loadSidebar();
+            loadSidebar();
 
-        const patientsList = document.getElementById('patients-list');
-        const countDisplay = document.getElementById('count-display');
-        const totalCountDisplay = document.getElementById('total-patients-count');
-        const userNameDisplay = document.getElementById('header-user-name');
-        const userRoleDisplay = document.getElementById('header-user-role');
+            const patientsList = document.getElementById('patients-list');
+            const countDisplay = document.getElementById('count-display');
+            const totalCountDisplay = document.getElementById('total-patients-count');
+            const userNameDisplay = document.getElementById('header-user-name');
+            const userRoleDisplay = document.getElementById('header-user-role');
 
-        // Search & Filter Elements
-        const searchInput = document.getElementById('patient-search-input');
-        const statusFilter = document.getElementById('filter-status');
+            // Search & Filter Elements
+            const searchInput = document.getElementById('patient-search-input');
+            const statusFilter = document.getElementById('filter-status');
 
-        let allPatientsSource = []; // Store fetched patients
+            let allPatientsSource = []; // Store fetched patients
 
-        // Filter Event Listeners
-        if (searchInput) searchInput.addEventListener('input', filterPatients);
-        if (statusFilter) statusFilter.addEventListener('change', filterPatients);
+            // Filter Event Listeners
+            if (searchInput) searchInput.addEventListener('input', filterPatients);
+            if (statusFilter) statusFilter.addEventListener('change', filterPatients);
 
-        async function loadPatients() {
-            try {
-                // 1. Auth Check
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session) {
-                    window.location.href = 'Login - Pagina Inicial.html';
-                    return;
+            let currentUserRole = null;
+
+            async function loadPatients() {
+                try {
+                    // 1. Auth Check
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = 'Login - Pagina Inicial.html';
+                        return;
+                    }
+
+                    // 2. Load User Profile & Clinic
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*, clinics(name, social_name)')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (profile) {
+                        currentUserRole = profile.role;
+                    }
+
+                    // 3. Fetch Patients
+                    const { data: patients, error } = await supabase
+                        .from('patients')
+                        .select('*')
+                        .eq('clinic_id', profile.clinic_id)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    // 4. Fetch Last Appointments
+                    if (patients && patients.length > 0) {
+                        const pIds = patients.map(p => p.id);
+                        const today = new Date().toISOString().split('T')[0];
+                        const { data: appts } = await supabase
+                            .from('appointments')
+                            .select('patient_id, date, start_time, status')
+                            .in('patient_id', pIds)
+                            .lte('date', today) // Past or today included
+                            .in('status', ['completed', 'confirmed']) // Usually completed/confirmed are what matters for 'Last Visit'
+                            .order('date', { ascending: false }) // Newest first
+                            .order('start_time', { ascending: false });
+
+                        // Attach latest appointment to patient
+                        patients.forEach(p => {
+                            p.last_appointment = appts?.find(a => a.patient_id === p.id);
+                        });
+                    }
+
+                    // 5. Check URL for Search
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const searchParam = urlParams.get('search');
+
+                    allPatientsSource = patients || [];
+
+                    if (searchParam && searchInput) {
+                        searchInput.value = searchParam;
+                    }
+
+                    filterPatients(); // Initial render with filter
+
+                } catch (err) {
+                    console.error("Erro ao carregar pacientes:", err);
+                    patientsList.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Erro ao carregar dados: ${err.message}</td></tr>`;
                 }
-
-                // 2. Load User Profile & Clinic
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*, clinics(name, social_name)')
-                    .eq('id', session.user.id)
-                    .single();
-
-
-
-                // 3. Fetch Patients
-                const { data: patients, error } = await supabase
-                    .from('patients')
-                    .select('*')
-                    .eq('clinic_id', profile.clinic_id)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                // 4. Fetch Next Appointments
-                if (patients && patients.length > 0) {
-                    const pIds = patients.map(p => p.id);
-                    const today = new Date().toISOString().split('T')[0];
-                    const { data: appts } = await supabase
-                        .from('appointments')
-                        .select('patient_id, date, start_time, status')
-                        .in('patient_id', pIds)
-                        .gte('date', today)
-                        .in('status', ['scheduled', 'confirmed', 'in_progress'])
-                        .order('date', { ascending: true })
-                        .order('start_time', { ascending: true });
-
-                    // Attach earliest upcoming appointment to patient
-                    patients.forEach(p => {
-                        p.next_appointment = appts?.find(a => a.patient_id === p.id);
-                    });
-                }
-
-                // 5. Check URL for Search
-                const urlParams = new URLSearchParams(window.location.search);
-                const searchParam = urlParams.get('search');
-
-                allPatientsSource = patients || [];
-
-                if (searchParam && searchInput) {
-                    searchInput.value = searchParam;
-                }
-
-                filterPatients(); // Initial render with filter
-
-            } catch (err) {
-                console.error("Erro ao carregar pacientes:", err);
-                patientsList.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Erro ao carregar dados: ${err.message}</td></tr>`;
             }
-        }
 
-        function filterPatients() {
-            const term = searchInput ? searchInput.value.toLowerCase() : '';
-            const status = statusFilter ? statusFilter.value : 'all';
+            // Expose delete function globally
+            window.deletePatient = async (id) => {
+                if (!confirm('ATENÇÃO: Tem certeza que deseja excluir este paciente?\n\nIsso apagará permanentemente o cadastro, prontuários, exames e agendamentos deste paciente.\n\nEsta ação não pode ser desfeita.')) return;
 
-            const filtered = allPatientsSource.filter(p => {
-                // Text Search
-                const matchText = (p.full_name || '').toLowerCase().includes(term) ||
-                    (p.cpf || '').includes(term) ||
-                    (p.phone || '').includes(term);
+                try {
+                    const { error } = await supabase.from('patients').delete().eq('id', id);
 
-                // Status Filter (Assume all active for now as status field might be missing in DB or implicit)
-                // If DB has status, use p.status. If not, ignore or use logic.
-                // Assuming 'active' is default.
-                const pStatus = p.status || 'active'; // Default to active if undefined
-                const matchStatus = status === 'all' || pStatus === status;
+                    if (error) throw error;
 
-                return matchText && matchStatus;
-            });
+                    alert('Paciente excluído com sucesso.');
+                    loadPatients(); // Reload
+                } catch (err) {
+                    console.error(err);
+                    alert('Erro ao excluir paciente: ' + err.message);
+                }
+            };
 
-            renderPatients(filtered);
-        }
+            function filterPatients() {
+                const term = searchInput ? searchInput.value.toLowerCase() : '';
+                const status = statusFilter ? statusFilter.value : 'all';
 
-        function renderPatients(patients) {
-            const count = patients.length;
-            if (countDisplay) countDisplay.innerText = count;
-            if (totalCountDisplay) totalCountDisplay.innerText = count;
+                const filtered = allPatientsSource.filter(p => {
+                    // Text Search
+                    const matchText = (p.full_name || '').toLowerCase().includes(term) ||
+                        (p.cpf || '').includes(term) ||
+                        (p.phone || '').includes(term);
 
-            if (count === 0) {
-                patientsList.innerHTML = `
+                    // Status Filter (Assume all active for now as status field might be missing in DB or implicit)
+                    // If DB has status, use p.status. If not, ignore or use logic.
+                    // Assuming 'active' is default.
+                    const pStatus = p.status || 'active'; // Default to active if undefined
+                    const matchStatus = status === 'all' || pStatus === status;
+
+                    return matchText && matchStatus;
+                });
+
+                renderPatients(filtered);
+            }
+
+            function renderPatients(patients) {
+                const count = patients.length;
+                if (countDisplay) countDisplay.innerText = count;
+                if (totalCountDisplay) totalCountDisplay.innerText = count;
+
+                if (count === 0) {
+                    patientsList.innerHTML = `
                     <tr>
                         <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="flex flex-col items-center justify-center gap-3">
@@ -410,19 +419,25 @@
                             </div>
                         </td>
                     </tr>`;
-                return;
-            }
+                    return;
+                }
 
-            patientsList.innerHTML = patients.map(p => {
-                const age = calculateAge(p.birth_date);
-                const nextAppt = p.next_appointment
-                    ? `<div class="flex flex-col">
-                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${new Date(p.next_appointment.date).toLocaleDateString('pt-BR')}</span>
-                        <span class="text-[10px] text-slate-500">${p.next_appointment.start_time.substring(0, 5)}</span>
+                patientsList.innerHTML = patients.map(p => {
+                    const age = calculateAge(p.birth_date);
+                    const lastAppt = p.last_appointment
+                        ? `<div class="flex flex-col">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${new Date(p.last_appointment.date).toLocaleDateString('pt-BR')}</span>
+                        <span class="text-[10px] text-slate-500">${p.last_appointment.status === 'completed' ? 'Concluída' : 'Realizada'}</span>
                        </div>`
-                    : `<span class="text-xs text-slate-400">Sem agendamento</span>`;
+                        : `<span class="text-xs text-slate-400">Nunca atendido</span>`;
 
-                return `
+                    const deleteBtn = currentUserRole === 'admin'
+                        ? `<button onclick="event.stopPropagation(); window.deletePatient('${p.id}')" class="text-slate-400 hover:text-red-500 transition-colors ml-2" title="Excluir Paciente">
+                             <span class="material-symbols-outlined">delete</span>
+                           </button>`
+                        : '';
+
+                    return `
                 <tr class="group hover:bg-slate-50 dark:hover:bg-[#132424] transition-colors cursor-pointer" onclick="window.location.href='Pontuario Pacientes.html?id=${p.id}'">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-3">
@@ -452,7 +467,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${nextAppt}
+                        ${lastAppt}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
@@ -464,34 +479,35 @@
                         <button onclick="event.stopPropagation(); window.location.href='Cadastro Novo Paciente.html?edit=true&id=${p.id}'" class="text-slate-400 hover:text-primary transition-colors" title="Editar Paciente">
                             <span class="material-symbols-outlined">edit</span>
                         </button>
+                        ${deleteBtn}
                     </td>
                 </tr>
             `}).join('');
-        }
-
-        function getInitials(name) {
-            return name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??';
-        }
-
-        function calculateAge(birthDate) {
-            if (!birthDate) return '-';
-            const today = new Date();
-            const birth = new Date(birthDate);
-            let age = today.getFullYear() - birth.getFullYear();
-            const m = today.getMonth() - birth.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-                age--;
             }
-            return age;
-        }
 
-        function limitText(text, limit) {
-            if (text.length > limit) return text.substring(0, limit) + '...';
-            return text;
-        }
+            function getInitials(name) {
+                return name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??';
+            }
 
-        loadPatients();
-    </script>
+            function calculateAge(birthDate) {
+                if (!birthDate) return '-';
+                const today = new Date();
+                const birth = new Date(birthDate);
+                let age = today.getFullYear() - birth.getFullYear();
+                const m = today.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            function limitText(text, limit) {
+                if (text.length > limit) return text.substring(0, limit) + '...';
+                return text;
+            }
+
+            loadPatients();
+        </script>
 </body>
 
 </html>

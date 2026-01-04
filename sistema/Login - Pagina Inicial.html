@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Pagina do Optometrista - Login</title>
+  <title>Login - Pagina do Optometrista</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
@@ -16,6 +16,10 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
+  <script>
+    // Clear session cache on login page load to ensure clean state
+    sessionStorage.clear();
+  </script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -24,15 +28,19 @@
         extend: {
           colors: {
             "primary": "#13ecec",
+            "primary-dark": "#0ebdbd",
             "background-light": "#f6f8f8",
             "background-dark": "#102222",
+            "surface-light": "#ffffff",
+            "surface-dark": "#182d2d",
             "text-main": "#0d1b1b",
-            "text-muted": "#647777",
+            "text-sub": "#4c9a9a",
           },
           fontFamily: {
-            "display": ["Inter", "sans-serif"]
+            "display": ["Inter", "sans-serif"],
+            "sans": ["Inter", "sans-serif"],
           },
-          borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
         },
       },
     }
@@ -78,7 +86,8 @@
             Gestáo Inteligente para Optometria Especializada.
           </h2>
           <p class="mb-10 text-lg text-gray-300 font-normal leading-relaxed">
-            A plataforma completa para gerenciar clá­nicas com foco em Neuro, Pediá¡trico e Comportamental. Simplifique o
+            A plataforma completa para gerenciar Clínicas com foco em Neuro, Pediátrico e Comportamental. Simplifique
+            o
             fluxo clá­nico e foque no paciente.
           </p>
           <!-- Feature Tags -->
@@ -91,7 +100,7 @@
             <div
               class="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors cursor-default">
               <span class="material-symbols-outlined text-primary text-[20px]">face_3</span>
-              <span class="text-sm font-medium tracking-wide">Pediá¡trico</span>
+              <span class="text-sm font-medium tracking-wide">Pediátrico</span>
             </div>
             <div
               class="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2.5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors cursor-default">
@@ -103,13 +112,13 @@
         <!-- Footer on Image -->
         <div class="flex justify-between items-end border-t border-white/10 pt-8">
           <div class="text-sm text-gray-400">
-            <p>Â© 2024 Pagina do Optometrista.</p>
+            <p>2026 - Pagina do Optometrista.</p>
             <p>Tecnologia avançada para Visão.</p>
           </div>
           <!-- Testimonial Quote (Optional Polish) -->
           <div class="hidden xl:block max-w-xs text-right">
-            <p class="text-sm italic text-gray-300">"Revolucionou nosso atendimento pediá¡trico."</p>
-            <p class="text-xs text-primary mt-1 font-semibold">- Clá­nica Visual Care</p>
+            <p class="text-sm italic text-gray-300">"Revolucionou nosso atendimento Pediátrico."</p>
+            <p class="text-xs text-primary mt-1 font-semibold">- Clínica Visual Care</p>
           </div>
         </div>
       </div>
@@ -180,10 +189,10 @@
               </div>
               <div class="space-y-2">
                 <label class="block text-sm font-semibold text-text-main dark:text-gray-200" for="clinicName">Nome da
-                  Clá­nica</label>
+                  Clínica</label>
                 <input
                   class="block w-full rounded-lg border-0 py-3.5 px-4 text-text-main bg-white ring-1 ring-inset ring-gray-200 focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm"
-                  id="clinicName" type="text" placeholder="Ex: Clá­nica Visão" />
+                  id="clinicName" type="text" placeholder="Ex: Clínica Visão" />
               </div>
             </div>
             <!-- Password Field -->
@@ -199,7 +208,7 @@
                 </div>
                 <input autocomplete="current-password"
                   class="block w-full rounded-lg border-0 py-3.5 pl-10 pr-10 text-text-main bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-[#152a2a] dark:ring-gray-700 dark:text-white sm:text-sm sm:leading-6 transition-shadow"
-                  id="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required="" type="password" />
+                  id="password" name="password" placeholder="Senha" required="" type="password" />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer group">
                   <span
                     class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-[20px]">visibility_off</span>
@@ -225,7 +234,7 @@
             <div class="text-sm text-center">
               <a href="Cadastro - Page1 - doutor.html"
                 class="font-medium text-primary hover:text-primary/80 transition-colors">
-                Náo tem conta? Cadastre sua clá­nica
+                Náo tem conta? Cadastre sua Clínica
               </a>
             </div>
             <!-- Submit Button -->
@@ -302,16 +311,16 @@
           signupFields.classList.remove('hidden');
           document.getElementById('fullName').required = true;
           document.getElementById('clinicName').required = true;
-          submitBtnText.textContent = "Criar Conta e Clá­nica";
+          submitBtnText.textContent = "Criar Conta e Clínica";
           toggleBtn.textContent = "Já¡ tem conta? Fazer Login";
           pageTitle.textContent = "Comece Agora";
-          pageSubtitle.textContent = "Crie sua conta para gerenciar sua clá­nica.";
+          pageSubtitle.textContent = "Crie sua conta para gerenciar sua Clínica.";
         } else {
           signupFields.classList.add('hidden');
           document.getElementById('fullName').required = false;
           document.getElementById('clinicName').required = false;
           submitBtnText.textContent = "Acessar Plataforma";
-          toggleBtn.textContent = "Náo tem conta? Cadastre sua clá­nica";
+          toggleBtn.textContent = "Náo tem conta? Cadastre sua Clínica";
           pageTitle.textContent = "Bem-vindo de volta";
           pageSubtitle.textContent = "Acesse o portal clá­nico unificado para especialistas e equipe.";
         }
@@ -364,6 +373,3 @@
 </body>
 
 </html>
-
-
-

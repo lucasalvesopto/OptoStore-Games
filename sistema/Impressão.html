@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Relatório de Impressão e Prescrição - Synapto</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ecec",
+                        "primary-dark": "#0bbfbf",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#102222",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c2c",
+                        "text-main": "#0d1b1b",
+                        "text-muted": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
+                        "serif": ["Merriweather", "serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        @media print {
+            @page {
+                margin: 0;
+                size: A4;
+            }
+
+            body {
+                background-color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            main {
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            .a4-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                border: none !important;
+                width: 100% !important;
+                padding: 10mm 15mm !important;
+            }
+
+            .input-print-noborder {
+                border: none !important;
+                padding: 0 !important;
+                background: transparent !important;
+            }
+        }
+
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 0 auto;
+            padding: 15mm;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            color: #1f2937;
+        }
+
+        /* Custom Input for table to look like text but be editable */
+        .table-input {
+            width: 100%;
+            text-align: center;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            background: transparent;
+            transition: border-color 0.2s;
+        }
+
+        .table-input:hover,
+        .table-input:focus {
+            border-color: #cbd5e1;
+            outline: none;
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display antialiased overflow-hidden">
+    <div class="flex h-screen w-full">
+        <!-- Dynamic Sidebar Container -->
+        <aside id="app-sidebar"
+            class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex-col hidden md:flex transition-transform duration-300 z-50 no-print">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-primary/20 p-2 rounded-lg">
+                        <span
+                            class="material-symbols-outlined text-primary-dark dark:text-primary text-3xl">visibility</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do
+                            Optometrista</h1>
+                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-6 border border-slate-100 dark:border-slate-700">
+                    <div class="flex gap-3 items-center">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+                            id="sidebar-clinic-logo" data-alt="Clinic logo"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4BJtPUvZewU_Krp1QI84SkqsltswXTpXlOwS9HgWPxhTdWG9LxYOMSsZptM4Zc3fWMmOcCcOyFFzHTsGN0k3b9zgS-ahr2QmCPEdq5GbH9e7j4Q3uTP2aoQvTmZjmgl2YGYbUKNj4akWaC3DfB1QitER0bqu_iICaYCrYxu66Dwb9thCLDMHrlypm0NdpKA08ILyrMcCOVDJo1N4Inl5oW9lqh3cg4erKd4eWd2i7O62r3dR_y2UmlfXXjJsKNn1CovSRG8HGI7kH");'>
+                        </div>
+                        <div class="flex flex-col overflow-hidden">
+                            <h2 id="sidebar-clinic-name"
+                                class="text-sm font-semibold truncate text-slate-900 dark:text-white">Clínica Visão
+                                Total</h2>
+                            <p id="sidebar-clinic-social" class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                Unidade Centro</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        href="Pagina - Dashboard.html">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-semibold">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        href="Pagina - Pacientes.html">
+                        <span class="material-symbols-outlined">groups</span>
+                        <span class="text-sm font-medium">Pacientes</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        href="Pagina - Agenda.html">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span class="text-sm font-medium">Agenda</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        href="Pagina - Financeiro.html">
+                        <span class="material-symbols-outlined">payments</span>
+                        <span class="text-sm font-medium">Financeiro</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="Pagina - Configuracoes.html">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-sm font-medium">Configurações</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors mt-1"
+                    href="Login - Pagina Inicial.html">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="text-sm font-medium">Sair</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden no-print"
+            onclick="toggleSidebar()"></div>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <!-- Header -->
+            <header
+                class="h-16 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark px-6 py-3 shrink-0 z-20 no-print">
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-600 dark:text-slate-300 mr-4"
+                    onclick="toggleSidebar()">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-sm font-bold text-text-main dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">print</span>
+                        Impressão
+                    </h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...
+                        </p>
+                        <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center bg-gray-100 dark:bg-gray-900">
+                <div class="a4-page font-serif relative" id="print-content">
+
+                    <!-- Clinic Header -->
+                    <div class="flex flex-col items-center mb-6">
+                        <div class="w-16 h-16 mb-2 text-teal-600 opacity-80" id="clinic-logo-container">
+                            <span class="material-symbols-outlined" style="font-size: 48px;">local_hospital</span>
+                        </div>
+                        <h1 id="clinic-name"
+                            class="text-2xl font-bold font-sans tracking-tight text-gray-900 uppercase">...</h1>
+                        <div class="text-center text-xs text-gray-500 mt-1 font-sans">
+                            <p id="clinic-address">...</p>
+                            <p id="clinic-contact">...</p>
+                        </div>
+                        <div class="w-full h-px bg-gray-300 mt-4"></div>
+                    </div>
+
+                    <!-- Patient Info -->
+                    <div class="grid grid-cols-4 gap-4 mb-8 text-sm">
+                        <div class="col-span-2">
+                            <p class="text-[10px] font-bold text-gray-400 font-sans uppercase">Nome do Paciente</p>
+                            <p id="p-name" class="text-base font-semibold text-gray-900">...</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 font-sans uppercase">Data Nasc.</p>
+                            <p id="p-dob" class="text-base text-gray-900">...</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-gray-400 font-sans uppercase">Idade</p>
+                            <p id="p-age" class="text-base text-gray-900">...</p>
+                        </div>
+                        <div class="col-span-4 mt-1">
+                            <p class="text-[10px] font-bold text-gray-400 font-sans uppercase">Data do Exame</p>
+                            <p id="record-date" class="text-base text-gray-900">...</p>
+                        </div>
+                    </div>
+
+                    <!-- Optical Prescription -->
+                    <div id="section-prescription" class="mb-10 hidden">
+                        <h2
+                            class="text-lg font-bold font-sans text-gray-800 mb-4 border-l-4 border-teal-500 pl-3 uppercase tracking-wide">
+                            Prescrição Óptica</h2>
+                        <div class="border border-gray-300 rounded-sm overflow-hidden mb-4">
+                            <table class="w-full text-center text-sm">
+                                <thead class="bg-gray-100 font-sans text-xs font-bold text-gray-600 uppercase">
+                                    <tr>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300 w-24">Distância</th>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300 w-16">Olho</th>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300">Esférico</th>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300">Cilíndrico</th>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300">Eixo</th>
+                                        <!-- Dynamic Cols for Neuro -->
+                                        <th class="py-2 px-2 border-b border-r border-gray-300 hidden col-prism">Prisma
+                                        </th>
+                                        <th class="py-2 px-2 border-b border-r border-gray-300 hidden col-base">Base
+                                        </th>
+
+                                        <th class="py-2 px-2 border-b border-gray-300">DNP / Alt</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-900">
+                                    <!-- Longe -->
+                                    <tr class="border-b border-gray-200">
+                                        <td class="border-r border-gray-300 font-sans font-bold text-gray-500 text-xs uppercase bg-gray-50/50"
+                                            rowspan="2">Longe</td>
+                                        <td class="py-3 border-r border-gray-300 font-bold">OD</td>
+                                        <td class="border-r border-gray-300"><input id="print_od_sph"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300"><input id="print_od_cyl"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300"><input id="print_od_axis"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300 hidden col-prism"><input id="print_od_prism"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300 hidden col-base"><input id="print_od_base"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="text-gray-600 text-xs"><input id="print_od_dnp" class="table-input"
+                                                type="text" placeholder="mm" /></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-300">
+                                        <td class="py-3 border-r border-gray-300 font-bold">OE</td>
+                                        <td class="border-r border-gray-300"><input id="print_oe_sph"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300"><input id="print_oe_cyl"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300"><input id="print_oe_axis"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300 hidden col-prism"><input id="print_oe_prism"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="border-r border-gray-300 hidden col-base"><input id="print_oe_base"
+                                                class="table-input" type="text" placeholder="—" /></td>
+                                        <td class="text-gray-600 text-xs"><input id="print_oe_dnp" class="table-input"
+                                                type="text" placeholder="mm" /></td>
+                                    </tr>
+                                    <!-- Perto -->
+                                    <tr class="border-b border-gray-200">
+                                        <td class="border-r border-gray-300 font-sans font-bold text-gray-500 text-xs uppercase bg-gray-50/50"
+                                            rowspan="2">Perto</td>
+                                        <td class="py-3 border-r border-gray-300 font-bold">OD</td>
+                                        <td colspan="3" class="border-r border-gray-300"><input id="print_od_add"
+                                                class="table-input" type="text" placeholder="Adição / Notas" /></td>
+                                        <td class="border-r border-gray-300 hidden col-prism"></td>
+                                        <td class="border-r border-gray-300 hidden col-base"></td>
+                                        <td class="text-gray-400">—</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-300">
+                                        <td class="py-3 border-r border-gray-300 font-bold">OE</td>
+                                        <td colspan="3" class="border-r border-gray-300"><input id="print_oe_add"
+                                                class="table-input" type="text" placeholder="Adição / Notas" /></td>
+                                        <td class="border-r border-gray-300 hidden col-prism"></td>
+                                        <td class="border-r border-gray-300 hidden col-base"></td>
+                                        <td class="text-gray-400">—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-sm">
+                            <p class="text-xs font-bold text-gray-500 font-sans uppercase mb-1">Tipo de Lente Sugerida /
+                                Observações</p>
+                            <input list="lens-types" id="print_lens_type"
+                                class="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-800 focus:ring-0"
+                                placeholder="Selecione ou digite..." />
+                            <datalist id="lens-types">
+                                <option value="Monofocal">
+                                <option value="Multifocal">
+                                <option value="Bifocal">
+                                <option value="Antirreflexo">
+                                <option value="Filtro Azul">
+                                <option value="Vide Obs">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <!-- Therapy Visual Plan -->
+                    <div id="section-therapy" class="flex-1 hidden">
+                        <h2
+                            class="text-lg font-bold font-sans text-gray-800 mb-4 border-l-4 border-teal-500 pl-3 uppercase tracking-wide">
+                            Plano de Terapia Visual</h2>
+
+                        <div id="therapy-generic-container" class="bg-teal-50/50 p-5 rounded-sm border border-teal-100">
+                            <h3 class="text-sm font-bold font-sans text-teal-800 mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">fitness_center</span>
+                                Exercícios Prescritos
+                            </h3>
+                            <ul id="therapy-list" class="list-disc list-outside ml-5 space-y-2 text-sm text-gray-800">
+                                <!-- Dynamic List -->
+                            </ul>
+                            <!-- Add Field (No Print) -->
+                            <div class="mt-4 flex gap-2 no-print">
+                                <input id="new-therapy-input" class="flex-1 text-sm border-gray-300 rounded px-2"
+                                    placeholder="Adicionar exercício..." />
+                                <button onclick="addTherapyItem()"
+                                    class="bg-teal-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-teal-700">+</button>
+                            </div>
+                        </div>
+
+                        <!-- TRV Container -->
+                        <div id="therapy-trv-container" class="hidden space-y-4">
+                            <!-- Monocular -->
+                            <div class="bg-teal-50/50 p-4 rounded-sm border border-teal-100">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                                    <h4 class="font-bold text-teal-800 uppercase text-xs tracking-wide">Fase Monocular
+                                    </h4>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-teal-200 pb-1">
+                                            Clínica</h5>
+                                        <ul id="print_trv_mono_clinic"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-teal-200 pb-1">
+                                            Casa</h5>
+                                        <ul id="print_trv_mono_home"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Biocular -->
+                            <div class="bg-indigo-50/50 p-4 rounded-sm border border-indigo-100">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                    <h4 class="font-bold text-indigo-800 uppercase text-xs tracking-wide">Fase Biocular
+                                    </h4>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-indigo-200 pb-1">
+                                            Clínica</h5>
+                                        <ul id="print_trv_bio_clinic"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-indigo-200 pb-1">
+                                            Casa</h5>
+                                        <ul id="print_trv_bio_home"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Binocular -->
+                            <div class="bg-rose-50/50 p-4 rounded-sm border border-rose-100">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                    <h4 class="font-bold text-rose-800 uppercase text-xs tracking-wide">Fase Binocular
+                                    </h4>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-rose-200 pb-1">
+                                            Clínica</h5>
+                                        <ul id="print_trv_bino_clinic"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            class="font-bold text-[10px] text-slate-500 uppercase mb-1 border-b border-rose-200 pb-1">
+                                            Casa</h5>
+                                        <ul id="print_trv_bino_home"
+                                            class="list-disc list-outside ml-4 text-sm text-gray-800 space-y-1"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="mt-auto pt-10">
+                        <p class="text-right text-sm text-gray-600 mb-12">
+                            <span id="print-location">...</span>, <span id="print-date">...</span>.
+                        </p>
+                        <div class="flex justify-center">
+                            <div class="w-64 text-center">
+                                <div class="border-b border-gray-800 mb-2"></div>
+                                <p id="pro-name" class="text-sm font-bold text-gray-900">Dr(a). ...</p>
+                                <p id="pro-crbo" class="text-xs text-gray-600 font-sans">Optometrista</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+    </div>
+
+    <!-- FAB: Save and Print -->
+    <div class="fixed bottom-6 right-8 no-print z-50">
+        <button id="btn-save-print"
+            class="bg-primary text-text-main p-4 rounded-full shadow-lg hover:brightness-105 transition-transform hover:scale-105 flex items-center justify-center group"
+            title="Salvar e Imprimir">
+            <span
+                class="material-symbols-outlined text-2xl font-bold group-hover:rotate-12 transition-transform">print</span>
+            <span class="ml-2 font-bold text-sm hidden group-hover:block transition-all duration-300">Imprimir</span>
+        </button>
+    </div>
+    </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+        import { loadSidebar } from './js/sidebar-loader.js';
+
+        // Load Sidebar
+        loadSidebar();
+
+        // Vars
+        let currentRecord = null;
+        let currentPatient = null;
+        let recordType = 'general';
+        let therapyItems = [];
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const recordId = params.get('record_id');
+            const patientId = params.get('patient_id'); // Fallback if no record (should have record for printing prescription)
+
+            if (!recordId) {
+                alert('ID do prontuário não fornecido.');
+                return;
+            }
+
+            // 1. Fetch Record & Patient & Profile
+            const { data: record, error } = await supabase
+                .from('medical_records')
+                .select('*, patients(*), profiles:professional_id(*)')
+                .eq('id', recordId)
+                .single();
+
+            if (error || !record) {
+                console.error(error);
+                alert('Erro ao carregar prontuário.');
+                return;
+            }
+
+            currentRecord = record;
+            currentPatient = record.patients;
+            recordType = record.record_type || 'general';
+
+            // 2. Fetch User Profile for Clinic Info
+            const { data: { session } } = await supabase.auth.getSession();
+            let currentUser = null;
+            if (session) {
+                // Try to fetch clinic via clinic_id
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*, clinics:clinic_id(*)')
+                    .eq('id', session.user.id)
+                    .single();
+                currentUser = profile;
+            }
+
+            // 3. Populate Header (Clinic)
+            if (currentUser && currentUser.clinics) {
+                const c = currentUser.clinics;
+
+                // Map fields using verified DB columns from Config page
+                const name = c.name || c.social_name || c.nome_fantasia || 'Nome da Clínica';
+
+                // Address Parts
+                const street = c.address_street || c.logradouro || '';
+                const number = c.address_number || c.numero || '';
+                const neighborhood = c.address_neighborhood || c.bairro || '';
+                const city = c.address_city || c.cidade || '';
+                const state = c.address_state || c.estado || '';
+                const zip = c.address_zip || c.cep || '';
+
+                // Contact
+                const phone = c.phone_primary || c.telefone || '';
+                const email = c.email_primary || c.email || '';
+                const cnpj = c.cnpj || '';
+
+                document.getElementById('clinic-name').textContent = name;
+
+                // Build Address String
+                let fullAddress = '';
+                if (street) {
+                    fullAddress = `${street}${number ? ', ' + number : ''}${neighborhood ? ' - ' + neighborhood : ''}`;
+                } else {
+                    fullAddress = c.address || c.endereco || '';
+                }
+
+                // Address Line
+                const addrParts = [];
+                if (fullAddress) addrParts.push(fullAddress);
+                if (city && state) addrParts.push(`${city} - ${state}`);
+                if (zip) addrParts.push(`CEP: ${zip}`);
+                document.getElementById('clinic-address').textContent = addrParts.join(' | ');
+
+                // Contact Line
+                const contactParts = [];
+                if (cnpj) contactParts.push(`CNPJ: ${cnpj}`);
+                if (phone) contactParts.push(`Tel: ${phone}`);
+                if (email) contactParts.push(`E-mail: ${email}`);
+                document.getElementById('clinic-contact').textContent = contactParts.join(' | ');
+
+                // Logo Logic
+                const logoContainer = document.getElementById('clinic-logo-container');
+                if (c.logo_url) {
+                    logoContainer.innerHTML = `<img src="${c.logo_url}" class="w-full h-full object-contain" alt="Logo" />`;
+                    // Remove text opacity if needed or keep container style
+                    logoContainer.classList.remove('text-teal-600', 'opacity-80');
+                }
+
+                // Location for Footer
+                if (city && state) {
+                    document.getElementById('print-location').textContent = `${city} - ${state}`;
+                } else if (fullAddress && fullAddress.includes('-')) {
+                    // Try to guess from address if city not separate and mostly formatted like "Street - City - State"
+                    document.getElementById('print-location').textContent = 'Local';
+                } else {
+                    document.getElementById('print-location').textContent = 'Itapipoca - CE'; // Fallback
+                }
+            } else {
+                document.getElementById('print-location').textContent = 'Itapipoca - CE';
+            }
+
+            if (document.getElementById('header-user-name') && currentUser) {
+                document.getElementById('header-user-name').textContent = currentUser.full_name;
+                document.getElementById('header-user-role').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Optometrista';
+            }
+
+            // 4. Populate Patient
+            if (currentPatient) {
+                document.getElementById('p-name').textContent = currentPatient.full_name;
+                document.getElementById('p-dob').textContent = currentPatient.birth_date ? new Date(currentPatient.birth_date).toLocaleDateString('pt-BR') : '--/--/----';
+
+                // Calculate Age
+                if (currentPatient.birth_date) {
+                    const today = new Date();
+                    const birth = new Date(currentPatient.birth_date);
+                    let age = today.getFullYear() - birth.getFullYear();
+                    const m = today.getMonth() - birth.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                    document.getElementById('p-age').textContent = `${age} anos`;
+                }
+            }
+
+            // 5. Populate Metadata
+            document.getElementById('record-date').textContent = new Date(record.date).toLocaleDateString('pt-BR');
+            document.getElementById('print-date').textContent = new Date().toLocaleDateString('pt-BR');
+            // Signature
+            document.getElementById('pro-name').textContent = currentUser ? currentUser.full_name : (record.profiles ? record.profiles.full_name : 'Profissional');
+
+            // 6. MAP DATA (The Hard Part)
+            mapPrescriptionData(record);
+        }
+
+        function mapPrescriptionData(record) {
+            const data = record.data || {};
+            const type = record.record_type;
+
+            const fields = {
+                od_sph: document.getElementById('print_od_sph'),
+                od_cyl: document.getElementById('print_od_cyl'),
+                od_axis: document.getElementById('print_od_axis'),
+                od_dnp: document.getElementById('print_od_dnp'),
+                od_add: document.getElementById('print_od_add'), // Used for Add or Notes
+
+                oe_sph: document.getElementById('print_oe_sph'),
+                oe_cyl: document.getElementById('print_oe_cyl'),
+                oe_axis: document.getElementById('print_oe_axis'),
+                oe_dnp: document.getElementById('print_oe_dnp'),
+                oe_add: document.getElementById('print_oe_add'),
+
+                lens_obs: document.getElementById('print_lens_type')
+            };
+
+            // Display Logic
+            const sectionPrescription = document.getElementById('section-prescription');
+            const sectionTherapy = document.getElementById('section-therapy');
+
+            // Default hidden
+
+            // Logic per type
+            if (type === 'functional') {
+                sectionPrescription.classList.remove('hidden');
+
+                // Map Functional - CORRECT KEYS (final_od_esf, etc)
+                fields.od_sph.value = data.final_od_esf || '';
+                fields.od_cyl.value = data.final_od_cil || '';
+                fields.od_axis.value = data.final_od_eixo || '';
+                fields.od_dnp.value = data.final_od_dnp || ''; // Assuming dnp key is correct? Use logic if needed
+                fields.od_add.value = data.final_od_adicao || '';
+
+                fields.oe_sph.value = data.final_oe_esf || '';
+                fields.oe_cyl.value = data.final_oe_cil || '';
+                fields.oe_axis.value = data.final_oe_eixo || '';
+                fields.oe_dnp.value = data.final_oe_dnp || '';
+                fields.oe_add.value = data.final_oe_adicao || '';
+
+                // Combined Lens Obs/Type/Material
+                const parts = [];
+                if (data.final_material) parts.push(`Material: ${data.final_material}`);
+                if (data.final_lens_type) parts.push(`${data.final_lens_type.replace(/^(Tipo:\s*)+/i, '')}`);
+                if (data.final_obs) parts.push(`Obs: ${data.final_obs}`);
+
+                fields.lens_obs.value = parts.join(' | ');
+
+            } else if (type === 'neuro') {
+                sectionPrescription.classList.remove('hidden');
+                // Neuro requires Prism/Base cols
+                document.querySelectorAll('.col-prism, .col-base').forEach(el => el.classList.remove('hidden'));
+
+                // MAP Refinement (String) -> Try Parse
+                // data.refinamento_od, data.refinamento_oe
+                parseAndFill(data.refinamento_od, fields.od_sph, fields.od_cyl, fields.od_axis);
+                parseAndFill(data.refinamento_oe, fields.oe_sph, fields.oe_cyl, fields.oe_axis);
+
+                if (data.cover_prism) document.getElementById('print_od_prism').value = data.cover_prism;
+
+                // Therapy?
+                if (data.therapy_list) {
+                    setupTherapyList(data.therapy_list);
+                }
+
+            } else if (type === 'pediatric') {
+                sectionPrescription.classList.remove('hidden');
+                // Map Static Retino
+                parseAndFill(data.static_od, fields.od_sph, fields.od_cyl, fields.od_axis);
+                parseAndFill(data.static_oe, fields.oe_sph, fields.oe_cyl, fields.oe_axis);
+
+                // Add? notes
+            } else if (type === 'trv') {
+                sectionTherapy.classList.remove('hidden');
+                document.getElementById('therapy-generic-container').classList.add('hidden');
+                document.getElementById('therapy-trv-container').classList.remove('hidden');
+
+                // Render Helper
+                const renderTrv = (key, target) => {
+                    const list = document.getElementById(target);
+                    list.innerHTML = '';
+                    let items = [];
+                    try {
+                        items = JSON.parse(data[key]);
+                    } catch (e) {
+                        if (data[key] && typeof data[key] === 'string' && data[key].trim()) items = [data[key]];
+                    }
+
+                    if (items && Array.isArray(items)) {
+                        items.forEach(i => {
+                            if (i && i.trim()) {
+                                const li = document.createElement('li');
+                                li.textContent = i;
+                                list.appendChild(li);
+                            }
+                        });
+                    } else if (items) {
+                        // Single item fallback
+                        const li = document.createElement('li');
+                        li.textContent = items;
+                        list.appendChild(li);
+                    }
+                };
+
+                renderTrv('trv_mono_clinic', 'print_trv_mono_clinic');
+                renderTrv('trv_mono_home', 'print_trv_mono_home');
+                renderTrv('trv_bio_clinic', 'print_trv_bio_clinic');
+                renderTrv('trv_bio_home', 'print_trv_bio_home');
+                renderTrv('trv_bino_home', 'print_trv_bino_home');
+
+            } else if (type === 'visual') {
+                sectionPrescription.classList.add('hidden');
+                sectionTherapy.classList.remove('hidden');
+                document.getElementById('therapy-generic-container').classList.add('hidden');
+                document.getElementById('therapy-trv-container').classList.add('hidden');
+
+                // Show Conclusion
+                const container = document.getElementById('therapy-list-container');
+                // Ensure we don't duplicate if re-running (though this runs once per load)
+                // We append a custom div or replace content if clean.
+                // Since this runs once, appending is safe-ish, but let's be cleaner.
+                // We'll create a dedicated container for visual conclusion if not exists, or append.
+
+                // Create Summary Block
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = "p-4 bg-slate-50 border border-slate-200 rounded-lg mt-4";
+                summaryDiv.innerHTML = `<h4 class="font-bold mb-2">Conclusão / Conduta</h4><p class="whitespace-pre-wrap text-sm">${data.visual_conclusao || 'Sem conclusão registrada.'}</p>`;
+
+                // Append to sectionTherapy (after the containers)
+                sectionTherapy.appendChild(summaryDiv);
+
+            } else if (type === 'prescription') {
+                sectionPrescription.classList.remove('hidden');
+                // Map Nested Prescription Data
+                if (data.od) {
+                    fields.od_sph.value = data.od.esf || '';
+                    fields.od_cyl.value = data.od.cyl || '';
+                    fields.od_axis.value = data.od.axis || '';
+                    fields.od_dnp.value = data.od.av || ''; // Using DNP input for AV
+                    if (document.getElementById('print_od_prism')) document.getElementById('print_od_prism').value = data.od.prism || '';
+                }
+                if (data.oe) {
+                    fields.oe_sph.value = data.oe.esf || '';
+                    fields.oe_cyl.value = data.oe.cyl || '';
+                    fields.oe_axis.value = data.oe.axis || '';
+                    fields.oe_dnp.value = data.oe.av || '';
+                }
+                document.getElementById('print_od_add').value = data.add || '';
+                document.getElementById('print_oe_add').value = data.add || '';
+                fields.lens_obs.value = data.lensType || data.obs || '';
+            }
+        }
+
+        function parseAndFill(str, fieldSph, fieldCyl, fieldAxis) {
+            if (!str) return;
+            // Try Regex: "-2.00 -1.00 x 180" or "-2.00 -1.00 180"
+            // Simple space separation
+            const parts = str.trim().split(/\s+/); // Split by space
+            if (parts.length >= 3) {
+                fieldSph.value = parts[0];
+                fieldCyl.value = parts[1];
+                // Check if 'x' is in parts[2]
+                fieldAxis.value = parts[2].replace(/[xXº°]/g, '');
+            } else {
+                fieldSph.value = str; // Put full string in Sph if parse fails
+            }
+        }
+
+        function setupTherapyList(items) {
+            if (items && items.length > 0) {
+                therapyItems = typeof items === 'string' ? JSON.parse(items) : items; // Handle if stored as string
+            }
+            renderTherapy();
+            document.getElementById('section-therapy').classList.remove('hidden');
+        }
+
+        window.addTherapyItem = () => {
+            const input = document.getElementById('new-therapy-input');
+            const val = input.value.trim();
+            if (val) {
+                therapyItems.push({ desc: val });
+                input.value = '';
+                renderTherapy();
+            }
+        };
+
+        window.removeTherapyItem = (index) => {
+            therapyItems.splice(index, 1);
+            renderTherapy();
+        };
+
+        function renderTherapy() {
+            const list = document.getElementById('therapy-list');
+            list.innerHTML = '';
+            therapyItems.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-start group";
+                li.innerHTML = `
+                   <span><strong class="font-sans text-gray-900">•</strong> ${item.desc || item}</span>
+                   <button onclick="removeTherapyItem(${index})" class="no-print opacity-0 group-hover:opacity-100 text-red-500 font-bold ml-2">x</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // SAVE AND PRINT
+        document.getElementById('btn-save-print').onclick = async () => {
+            if (!currentRecord) return;
+
+            const btn = document.getElementById('btn-save-print');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-2xl">refresh</span>`;
+            btn.disabled = true;
+
+            try {
+                // 1. Re-collect Data
+                const newData = { ...currentRecord.data };
+
+                // Funcional Mapping Back (Direct)
+                if (recordType === 'functional') {
+                    newData.final_od_esf = document.getElementById('print_od_sph').value;
+                    newData.final_od_cil = document.getElementById('print_od_cyl').value;
+                    newData.final_od_eixo = document.getElementById('print_od_axis').value;
+                    newData.final_od_dnp = document.getElementById('print_od_dnp').value;
+                    newData.final_od_adicao = document.getElementById('print_od_add').value;
+
+                    // Save Altura
+                    if (document.getElementById('print_od_alt')) newData.final_od_alt = document.getElementById('print_od_alt').value;
+                    if (document.getElementById('print_oe_alt')) newData.final_oe_alt = document.getElementById('print_oe_alt').value;
+
+                    newData.final_oe_esf = document.getElementById('print_oe_sph').value;
+                    newData.final_oe_cil = document.getElementById('print_oe_cyl').value;
+                    newData.final_oe_eixo = document.getElementById('print_oe_axis').value;
+                    newData.final_oe_dnp = document.getElementById('print_oe_dnp').value;
+                    newData.final_oe_adicao = document.getElementById('print_oe_add').value;
+
+                    // Save Lens Type to correct field for Ficha
+                    newData.final_lens_type = document.getElementById('print_lens_type').value;
+                }
+                else if (recordType === 'neuro' || recordType === 'pediatric') {
+                    // Reconstruct Strings?
+                    // Neuro
+                    if (recordType === 'neuro') {
+                        // Reconstruct Refinement
+                        const sOD = `${document.getElementById('print_od_sph').value} ${document.getElementById('print_od_cyl').value} x ${document.getElementById('print_od_axis').value}`;
+                        const sOE = `${document.getElementById('print_oe_sph').value} ${document.getElementById('print_oe_cyl').value} x ${document.getElementById('print_oe_axis').value}`;
+                        // Only update if not empty looking
+                        if (sOD.trim().length > 2) newData.refinamento_od = sOD;
+                        if (sOE.trim().length > 2) newData.refinamento_oe = sOE;
+
+                        // Prism
+                        newData.cover_prism = document.getElementById('print_od_prism').value;
+                        // newData.base ... if we had a field in DB
+                    }
+                    if (recordType === 'pediatric') {
+                        // Reconstruct Static
+                        const sOD = `${document.getElementById('print_od_sph').value} ${document.getElementById('print_od_cyl').value} x ${document.getElementById('print_od_axis').value}`;
+                        const sOE = `${document.getElementById('print_oe_sph').value} ${document.getElementById('print_oe_cyl').value} x ${document.getElementById('print_oe_axis').value}`;
+                        if (sOD.trim().length > 2) newData.static_od = sOD;
+                        if (sOE.trim().length > 2) newData.static_oe = sOE;
+                    }
+                }
+
+                // Therapy
+                if (therapyItems.length > 0) {
+                    newData.therapy_list = therapyItems;
+                }
+
+                // 2. Save
+                if (recordType === 'prescription') {
+                    const prescPayload = {
+                        od: {
+                            esf: document.getElementById('print_od_sph').value,
+                            cyl: document.getElementById('print_od_cyl').value,
+                            axis: document.getElementById('print_od_axis').value,
+                            prism: document.getElementById('print_od_prism') ? document.getElementById('print_od_prism').value : '',
+                            base: '',
+                            av: document.getElementById('print_od_dnp').value
+                        },
+                        oe: {
+                            esf: document.getElementById('print_oe_sph').value,
+                            cyl: document.getElementById('print_oe_cyl').value,
+                            axis: document.getElementById('print_oe_axis').value,
+                            prism: '',
+                            base: '',
+                            av: document.getElementById('print_oe_dnp').value
+                        },
+                        add: document.getElementById('print_od_add').value,
+                        lensType: document.getElementById('print_lens_type').value,
+                        treatment: '',
+                        obs: document.getElementById('print_lens_type').value
+                    };
+
+                    const { error } = await supabase.from('medical_records').update({ data: prescPayload, date: new Date().toISOString() }).eq('id', currentRecord.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('medical_records')
+                        .update({ data: newData })
+                        .eq('id', currentRecord.id);
+
+                    if (error) throw error;
+                }
+
+                // 2.1 ALSO Create/Save a "Prescription" Record (Only if NOT already editing a prescription)
+                // 2.1 REMOVED
+                /* if (recordType !== 'prescription') {
+                    try {
+                        const prescPayload = {
+                            od: {
+                                esf: document.getElementById('print_od_sph').value,
+                                cyl: document.getElementById('print_od_cyl').value,
+                                axis: document.getElementById('print_od_axis').value,
+                                prism: document.getElementById('print_od_prism') ? document.getElementById('print_od_prism').value : '',
+                                base: '', // Add field if exists
+                                av: document.getElementById('print_od_dnp').value // Using DNP/AV field map? Warning: ID says 'dnp' but placeholder might differ. 
+                                // Actually print_od_dnp is usually DNP. AV might be separate. 
+                                // In the print form, is there AV? 
+                                // Looking at lines 311: <input id="print_od_dnp" ... placeholder="DNP / AV">. OK.
+                            },
+                            oe: {
+                                esf: document.getElementById('print_oe_sph').value,
+                                cyl: document.getElementById('print_oe_cyl').value,
+                                axis: document.getElementById('print_oe_axis').value,
+                                prism: '', // No OE prism input in functional print usually unless neuro
+                                base: '',
+                                av: document.getElementById('print_oe_dnp').value
+                            },
+                            add: document.getElementById('print_od_add').value, // Use OD add as main
+                            lensType: document.getElementById('print_lens_type').value,
+                            treatment: '', // Not separate input in Print
+                            obs: document.getElementById('print_lens_type').value // Duplicate to populate obs in viewer
+                        };
+
+                        // Basic empty check
+                        const hasData = prescPayload.od.esf || prescPayload.od.cyl || prescPayload.oe.esf;
+
+                        if (hasData) {
+                            // Add source record ID to prevent duplicates
+                            prescPayload.source_record_id = currentRecord.id;
+
+                            // Fetch active session user again to be safe
+                            const { data: { session } } = await supabase.auth.getSession();
+                            const userId = session?.user?.id;
+                            if (!userId) throw new Error("Usuário não autenticado ao tentar salvar cópia da prescrição.");
+
+                            // CHECK IF COPY ALREADY EXISTS
+                            // We look for a prescription record that has this source_record_id in its JSON data
+                            const { data: existingCopy, error: checkError } = await supabase
+                                .from('medical_records')
+                                .select('id')
+                                .eq('record_type', 'prescription')
+                                .contains('data', { source_record_id: currentRecord.id })
+                                .maybeSingle();
+
+                            if (existingCopy) {
+                                // UPDATE existing copy
+                                await supabase.from('medical_records')
+                                    .update({
+                                        data: prescPayload,
+                                        date: new Date().toISOString()
+                                    })
+                                    .eq('id', existingCopy.id);
+                            } else {
+                                // INSERT new copy
+                                await supabase.from('medical_records').insert([{
+                                    patient_id: currentPatient.id,
+                                    clinic_id: currentRecord.clinic_id,
+                                    professional_id: userId,
+                                    record_type: 'prescription',
+                                    data: prescPayload,
+                                    date: new Date().toISOString()
+                                }]);
+                            }
+                        }
+
+                    } catch (prescErr) {
+                        console.error("Erro ao gerar cópia para prescrições:", prescErr);
+                        alert("Atenção: A ficha foi salva, mas houve um erro ao gerar a cópia para a aba Prescrições: " + prescErr.message);
+                    }
+                } */
+
+
+                // 3. Print
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+
+                setTimeout(() => {
+                    window.print();
+                    setTimeout(() => {
+                        alert('Impressão salva com sucesso! Os dados foram atualizados no prontuário.');
+                        // Redirect back to Patient Chart
+                        if (currentPatient && currentPatient.id) {
+                            window.location.href = `Pontuario Pacientes.html?id=${currentPatient.id}`;
+                        }
+                    }, 500);
+                }, 100);
+
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao salvar dados: ' + err.message);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        };
+
+        // --- INIT ---
+        window.onload = init;
+    </script>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Ficha Clá­nica Central - OptoManager</title>
+    <title>Ficha Clínica Funcional</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
@@ -140,22 +140,15 @@
             <header
                 class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
                 <div class="flex items-center gap-4 lg:hidden">
-                    <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                    <button id="mobile-menu-btn" class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
                 </div>
-                <!-- Search -->
-                <div class="hidden md:flex flex-1 max-w-xl">
-                    <!-- Search Input Removed/Hidden as it's not primary in Record view, or keep plain -->
-                </div>
+                <!-- Search Removed -->
                 <!-- Right Actions -->
                 <div class="flex items-center gap-3 ml-auto">
-                    <button id="btn-print-presc"
-                        class="hidden md:flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-md transition-all hover:brightness-105 hover:bg-indigo-700">
-                        <span class="material-symbols-outlined text-[20px]">print</span>
-                        Prescrição
-                    </button>
-                    <button id="btn-save-record"
+
+                    <button id="btn-save-header"
                         class="flex items-center justify-center gap-2 px-4 h-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
                         <span class="material-symbols-outlined">save</span>
                         Salvar Ficha
@@ -168,20 +161,9 @@
 
                         setupRecordPage('functional');
                         setupPrescriptionModal();
-
-                        const btnPrint = document.getElementById('btn-print-presc');
-                        if (btnPrint) {
-                            btnPrint.onclick = () => {
-                                const formData = collectFormData();
-                                openPrescriptionModal({
-                                    name: currentPatient?.name || 'Paciente',
-                                    age: currentPatient?.age || '?'
-                                }, formData, 'functional');
-                            };
-                        }
                     </script>
                     <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
-                        <div class="text-right hidden sm:block">
+                        <div class="text-right">
                             <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">
                                 Carregando...</p>
                             <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
@@ -191,944 +173,1052 @@
             </header>
 
             <div class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8 pb-24">
-                <div class="max-w-[1024px] mx-auto flex flex-col gap-6">
+                <div class="max-w-7xl mx-auto flex flex-col gap-6">
                     <!-- Patient Info Card -->
                     <div
-                        class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-border-color dark:border-gray-700">
-                        <div class="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-                            <div class="flex gap-5 items-center">
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-border-color dark:border-gray-700">
+                        <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+                            <div
+                                class="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
                                 <div class="relative">
                                     <div id="p-photo"
-                                        class="bg-center bg-no-repeat bg-cover rounded-full size-20 shadow-md bg-gray-200">
+                                        class="bg-center bg-no-repeat bg-cover rounded-full size-24 md:size-32 shadow-md bg-primary/20 flex items-center justify-center text-primary text-4xl font-bold">
                                     </div>
+                                    <div class="absolute bottom-1 right-1 size-5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"
+                                        title="Paciente Ativo"></div>
                                 </div>
-                                <div>
-                                    <h3 id="p-name" class="text-2xl font-bold text-text-main dark:text-white">Carregando
-                                        Paciente...</h3>
-                                    <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-text-secondary">
-                                        <span class="flex items-center gap-1"><span
-                                                class="material-symbols-outlined text-[16px]">cake</span> <span
-                                                id="p-age">-- anos</span></span>
+                                <div class="flex flex-col gap-2">
+                                    <div>
+                                        <h1 id="p-name"
+                                            class="text-text-main dark:text-white text-2xl md:text-3xl font-bold tracking-tight">
+                                            Carregando...
+                                        </h1>
+                                        <div id="p-details"
+                                            class="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 text-text-secondary dark:text-gray-400 text-sm mt-1 font-medium">
+                                            ... <span class="mx-2 text-primary">•</span> ... <span
+                                                class="mx-2 text-primary">•</span> ...
+                                        </div>
+                                        <p id="p-since" class="text-text-secondary/70 dark:text-gray-500 text-xs mt-1">
+                                            Paciente desde: ...</p>
                                     </div>
+                                    <!-- Chips / Tags (Optional) -->
+                                    <!-- <div class="flex flex-wrap gap-2 mt-1 justify-center sm:justify-start">
+                                        <span class="px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">Particular</span>
+                                    </div> -->
                                 </div>
                             </div>
+                            <!-- Right Side: Date & Type -->
                             <div
-                                class="flex flex-col items-start md:items-end gap-1 bg-primary/5 dark:bg-gray-800 p-3 rounded-lg border border-primary/10">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-text-secondary">Ficha
-                                    Clínica</span>
-                                <span class="font-medium text-text-main dark:text-white">Funcional</span>
+                                class="flex flex-col items-center md:items-end gap-3 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                                <span id="record-date" class="text-sm font-semibold text-text-secondary">Data:
+                                    --/--/----</span>
+                                <div
+                                    class="bg-primary/10 text-primary-dark dark:text-primary px-4 py-1.5 rounded-lg border border-primary/20 font-bold text-sm uppercase tracking-wide">
+                                    Ficha Funcional
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm"
-                            open="">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">chat_bubble</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">1.
-                                        Cabeçalho
-                                        &amp; Anamnese</h3>
+
+                <div
+                    class="max-w-5xl mx-auto p-6 mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm"
+                        open="">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">chat_bubble</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">1.
+                                    Cabeçalho
+                                    &amp; Anamnese</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-text-secondary mb-1">Queixa
+                                        Principal</label>
+                                    <textarea
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-xl p-3 text-text-main dark:text-white focus:ring-1 focus:ring-primary h-24 resize-none"
+                                        placeholder="Ex: Baixa acuidade visual para longe..."></textarea>
                                 </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-text-secondary mb-1">Antecedentes
+                                        Pessoais/Familiares</label>
+                                    <textarea
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-xl p-3 text-text-main dark:text-white focus:ring-1 focus:ring-primary h-24 resize-none"
+                                        placeholder="Ex: Histórico de glaucoma na família..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">eyeglasses</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">2.
+                                    Lensometria
+                                </h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-0 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark overflow-x-auto">
+                            <table class="w-full text-sm text-center">
+                                <thead
+                                    class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
+                                    <tr>
+                                        <th class="px-2 py-2">Olho</th>
+                                        <th class="px-2 py-2">Esférico</th>
+                                        <th class="px-2 py-2">Cilíndrico</th>
+                                        <th class="px-2 py-2">Eixo</th>
+                                        <th class="px-2 py-2">Adição</th>
+                                        <th class="px-2 py-2">Prisma</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
+                                    <tr>
+                                        <td class="font-bold text-blue-500 py-2">OD</td>
+                                        <td><input
+                                                class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="-0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="0°" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="+0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="" type="text" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold text-green-500 py-2">OE</td>
+                                        <td><input
+                                                class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="-0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="0°" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="+0.00" type="text" /></td>
+                                        <td><input
+                                                class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                                placeholder="" type="text" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm"
+                        open="">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">visibility</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">3.
+                                    Acuidade
+                                    Visual</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-0 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark overflow-x-auto">
+                            <table class="w-full text-sm text-center min-w-[600px]">
+                                <thead
+                                    class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
+                                    <tr>
+                                        <th class="px-2 py-2 w-16">Olho</th>
+                                        <th class="px-2 py-2">VL SC</th>
+                                        <th class="px-2 py-2">VL PH</th>
+                                        <th class="px-2 py-2">VL CC</th>
+                                        <th class="px-2 py-2 border-l border-surface-light dark:border-surface-dark">
+                                            VP
+                                            SC</th>
+                                        <th class="px-2 py-2">VP CC</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
+                                    <tr>
+                                        <td class="font-bold text-blue-500 py-3">OD</td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2 border-l border-surface-light dark:border-surface-dark">
+                                            <input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" />
+                                        </td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold text-green-500 py-3">OE</td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2 border-l border-surface-light dark:border-surface-dark">
+                                            <input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" />
+                                        </td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold text-purple-500 py-3">AO</td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2 bg-gray-50 dark:bg-white/5"></td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="20/---" type="text" /></td>
+                                        <td class="px-2 border-l border-surface-light dark:border-surface-dark">
+                                            <input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" />
+                                        </td>
+                                        <td class="px-2"><input
+                                                class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
+                                                placeholder="J---" type="text" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">move_selection_right</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">4.
+                                    Avaliação
+                                    Motora Preliminar</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-text-secondary uppercase">Kappa</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] text-text-secondary mb-1">OD</span>
+                                            <select
+                                                class="bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm w-full">
+                                                <option>Zero</option>
+                                                <option>Positivo</option>
+                                                <option>Negativo</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] text-text-secondary mb-1">OE</span>
+                                            <select
+                                                class="bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm w-full">
+                                                <option>Zero</option>
+                                                <option>Positivo</option>
+                                                <option>Negativo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-text-secondary uppercase">Hirschberg</label>
+                                    <input
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
+                                        placeholder="Ex: Centrado" type="text" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-text-secondary uppercase">PIRLANMG</label>
+                                    <input
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
+                                        placeholder="PIRLANMG..." type="text" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-text-secondary uppercase">Ducções</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
+                                            placeholder="OD" type="text" />
+                                        <input
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
+                                            placeholder="OE" type="text" />
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-text-secondary uppercase">Versões</label>
+                                    <input
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
+                                        placeholder="SPEC" type="text" />
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-text-secondary uppercase">Reflexos
+                                    Pupilares</label>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm text-center border-collapse">
+                                        <thead
+                                            class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
+                                            <tr>
+                                                <th class="px-2 py-2 text-left">Tipo</th>
+                                                <th class="px-2 py-2">Olho Direito (OD)</th>
+                                                <th class="px-2 py-2">Olho Esquerdo (OE)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            class="divide-y divide-surface-light dark:divide-surface-dark bg-surface-light/10">
+                                            <tr>
+                                                <td class="px-2 py-2 text-left font-medium">Fotomotor</td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2 py-2 text-left font-medium">Consensual</td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2 py-2 text-left font-medium">Acomodativo</td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                                <td class="p-1"><select
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
+                                                        <option>Presente</option>
+                                                        <option>Ausente</option>
+                                                    </select></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">medical_services</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">5. Saúde
+                                    Ocular</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <h4 class="font-bold text-primary flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">magnification_small</span>
+                                    Biomicroscopia
+                                </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-xs font-medium text-text-secondary mb-1">Queixa
-                                            Principal</label>
+                                        <label class="block text-xs font-medium text-text-secondary mb-1">Olho
+                                            Direito
+                                            (OD)</label>
                                         <textarea
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-xl p-3 text-text-main dark:text-white focus:ring-1 focus:ring-primary h-24 resize-none"
-                                            placeholder="Ex: Baixa acuidade visual para longe..."></textarea>
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
+                                            placeholder="Pálpebras, Córnea, Cristalino..."></textarea>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-medium text-text-secondary mb-1">Antecedentes
-                                            Pessoais/Familiares</label>
+                                        <label class="block text-xs font-medium text-text-secondary mb-1">Olho
+                                            Esquerdo
+                                            (OE)</label>
                                         <textarea
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-xl p-3 text-text-main dark:text-white focus:ring-1 focus:ring-primary h-24 resize-none"
-                                            placeholder="Ex: Histá³rico de glaucoma na famá­lia..."></textarea>
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
+                                            placeholder="Pálpebras, Córnea, Cristalino..."></textarea>
                                     </div>
                                 </div>
                             </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">eyeglasses</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">2.
-                                        Lensometria
-                                    </h3>
+                            <div class="space-y-3">
+                                <h4 class="font-bold text-primary flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">visibility</span> Oftalmoscopia
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-text-secondary mb-1">Olho
+                                            Direito
+                                            (OD)</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
+                                            placeholder="Disco, Mácula, Vasos..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-text-secondary mb-1">Olho
+                                            Esquerdo
+                                            (OE)</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
+                                            placeholder="Disco, Mácula, Vasos..."></textarea>
+                                    </div>
                                 </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-0 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark overflow-x-auto">
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">lens_blur</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">6.
+                                    Refração
+                                    Objetiva &amp; Ceratometria</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
+                            <div>
+                                <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Ceratometria</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
+                                        <input
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
+                                            placeholder="K1 / K2 @ Eixo" />
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-green-500 text-sm">OE</span>
+                                        <input
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
+                                            placeholder="K1 / K2 @ Eixo" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Retinoscopia
+                                    Estática
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                            <input
+                                                class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="AV" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-green-500 text-sm">OE</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                            <input
+                                                class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="AV" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Retinoscopia
+                                    Dinâmica
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-green-500 text-sm">OE</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">input</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">7.
+                                    Refração
+                                    Subjetiva &amp; Afinamento</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
+                            <div>
+                                <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Subjetivo</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input id="subj_od_esf"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input id="subj_od_cil"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input id="subj_od_eixo"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                            <input id="subj_od_av"
+                                                class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="AV" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-8 font-bold text-green-500 text-sm">OE</span>
+                                        <div class="flex flex-1 gap-1">
+                                            <input id="subj_oe_esf"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Esf" />
+                                            <input id="subj_oe_cil"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Cil" />
+                                            <input id="subj_oe_eixo"
+                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="Eixo" />
+                                            <input id="subj_oe_av"
+                                                class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                placeholder="AV" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Afinamento</h4>
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
+                                            <div class="flex flex-1 gap-1">
+                                                <input id="afin_od_esf"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Esf" />
+                                                <input id="afin_od_cil"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Cil" />
+                                                <input id="afin_od_eixo"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Eixo" />
+                                                <input id="afin_od_av"
+                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="AV" />
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold text-green-500 text-sm">OE</span>
+                                            <div class="flex flex-1 gap-1">
+                                                <input id="afin_oe_esf"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Esf" />
+                                                <input id="afin_oe_cil"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Cil" />
+                                                <input id="afin_oe_eixo"
+                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="Eixo" />
+                                                <input id="afin_oe_av"
+                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
+                                                    placeholder="AV" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Adição</h4>
+                                    <input id="afin_adicao"
+                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
+                                        placeholder="+0.00" />
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">diversity_1</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">8. Visão
+                                    Binocular &amp; Acomodaçáo</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Coverteste</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <label class="w-16 text-xs text-text-secondary">Longe</label>
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Orto / XL / XL'" />
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <label class="w-16 text-xs text-text-secondary">40 cm</label>
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Orto / XL / XL'" />
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <label class="w-16 text-xs text-text-secondary">20 cm</label>
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Orto / XL / XL'" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Reservas
+                                        Fusionais
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <label class="w-24 text-xs text-text-secondary">Visão Longe</label>
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Positiva" />
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Negativa" />
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <label class="w-24 text-xs text-text-secondary">Visão Perto</label>
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Positiva" />
+                                            <input
+                                                class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
+                                                placeholder="Negativa" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">PPC (Ponto Próximo
+                                    de
+                                    Convergência)</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm text-center">
+                                        <thead
+                                            class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
+                                            <tr>
+                                                <th class="px-2 py-1 text-left">Estímulo</th>
+                                                <th class="px-2 py-1">Embaça (cm)</th>
+                                                <th class="px-2 py-1">Duplica (cm)</th>
+                                                <th class="px-2 py-1">Recobra (cm)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
+                                            <tr>
+                                                <td class="px-2 py-2 text-left text-xs font-medium">Objeto Real</td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2 py-2 text-left text-xs font-medium">Com Luz</td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2 py-2 text-left text-xs font-medium">Com Filtro</td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                                <td><input
+                                                        class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Amplitude de
+                                        Acomodaçáo</h4>
+                                    <div class="grid grid-cols-3 gap-2 mb-2">
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="OD" />
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="OE" />
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="Má©todo" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Flexibilidade
+                                        Acomodativa</h4>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="+2,50 / -2,50 (cpm)" />
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="+2,50 / -2,50 (cpm)" />
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="Distância 40cm" />
+                                        <input
+                                            class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
+                                            placeholder="Nível Visual J2" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details
+                        class="group bg-white dark:bg-surface-dark rounded-xl border border-primary dark:border-primary overflow-hidden shadow-md"
+                        open="">
+                        <summary
+                            class="flex items-center justify-between p-4 cursor-pointer bg-primary/10 dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-surface-dark/80 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">description</span>
+                                <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">9.
+                                    Diagnóstico
+                                    &amp; Conduta</h3>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                        </summary>
+                        <div
+                            class="p-6 border-t border-primary/20 dark:border-primary/20 bg-white dark:bg-surface-dark space-y-6">
+                            <div>
+                                <h4 class="text-xs font-bold text-primary uppercase mb-3">Fórmula Final
+                                    (Prescrição)
+                                </h4>
                                 <table class="w-full text-sm text-center">
                                     <thead
-                                        class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
+                                        class="bg-surface-light dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
                                         <tr>
                                             <th class="px-2 py-2">Olho</th>
-                                            <th class="px-2 py-2">Esfá©rico</th>
-                                            <th class="px-2 py-2">Cilá­ndrico</th>
+                                            <th class="px-2 py-2">Esférico</th>
+                                            <th class="px-2 py-2">Cilíndrico</th>
                                             <th class="px-2 py-2">Eixo</th>
-                                            <th class="px-2 py-2">Adiçáo</th>
-                                            <th class="px-2 py-2">Prisma</th>
+                                            <th class="px-2 py-2">AV</th>
+                                            <th class="px-2 py-2">Adição</th>
+                                            <th class="px-2 py-2">Altura</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
                                         <tr>
                                             <td class="font-bold text-blue-500 py-2">OD</td>
-                                            <td><input
-                                                    class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                            <td><input id="final_od_esf"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
                                                     placeholder="-0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="0Â°" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                            <td><input id="final_od_cil"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="-0.00" type="text" /></td>
+                                            <td><input id="final_od_eixo"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="0" type="text" /></td>
+                                            <td><input id="final_od_av"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="20/20" type="text" /></td>
+                                            <td><input id="final_od_adicao"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
                                                     placeholder="+0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="" type="text" /></td>
+                                            <td><input id="final_od_alt"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="mm" type="text" /></td>
                                         </tr>
                                         <tr>
                                             <td class="font-bold text-green-500 py-2">OE</td>
-                                            <td><input
-                                                    class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-20 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                            <td><input id="final_oe_esf"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
                                                     placeholder="-0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="0Â°" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
+                                            <td><input id="final_oe_cil"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="-0.00" type="text" /></td>
+                                            <td><input id="final_oe_eixo"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="0" type="text" /></td>
+                                            <td><input id="final_oe_av"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="20/20" type="text" /></td>
+                                            <td><input id="final_oe_adicao"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
                                                     placeholder="+0.00" type="text" /></td>
-                                            <td><input
-                                                    class="w-16 text-center bg-transparent border-b border-surface-light focus:border-primary text-sm p-1"
-                                                    placeholder="" type="text" /></td>
+                                            <td><input id="final_oe_alt"
+                                                    class="w-full text-center bg-transparent border-none text-sm font-bold"
+                                                    placeholder="mm" type="text" /></td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm"
-                            open="">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">visibility</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">3.
-                                        Acuidade
-                                        Visual</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-0 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark overflow-x-auto">
-                                <table class="w-full text-sm text-center min-w-[600px]">
-                                    <thead
-                                        class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
-                                        <tr>
-                                            <th class="px-2 py-2 w-16">Olho</th>
-                                            <th class="px-2 py-2">VL SC</th>
-                                            <th class="px-2 py-2">VL PH</th>
-                                            <th class="px-2 py-2">VL CC</th>
-                                            <th
-                                                class="px-2 py-2 border-l border-surface-light dark:border-surface-dark">
-                                                VP
-                                                SC</th>
-                                            <th class="px-2 py-2">VP CC</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
-                                        <tr>
-                                            <td class="font-bold text-blue-500 py-3">OD</td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2 border-l border-surface-light dark:border-surface-dark">
-                                                <input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" />
-                                            </td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-bold text-green-500 py-3">OE</td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2 border-l border-surface-light dark:border-surface-dark">
-                                                <input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" />
-                                            </td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-bold text-purple-500 py-3">AO</td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2 bg-gray-50 dark:bg-white/5"></td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="20/---" type="text" /></td>
-                                            <td class="px-2 border-l border-surface-light dark:border-surface-dark">
-                                                <input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" />
-                                            </td>
-                                            <td class="px-2"><input
-                                                    class="w-full h-8 text-center rounded bg-surface-light dark:bg-background-dark border-none text-sm"
-                                                    placeholder="J---" type="text" /></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">move_selection_right</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">4.
-                                        Avaliação
-                                        Motora Preliminar</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-bold text-text-secondary uppercase">Kappa</label>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <div class="flex flex-col">
-                                                <span class="text-[10px] text-text-secondary mb-1">OD</span>
-                                                <select
-                                                    class="bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm w-full">
-                                                    <option>Zero</option>
-                                                    <option>Positivo</option>
-                                                    <option>Negativo</option>
-                                                </select>
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-[10px] text-text-secondary mb-1">OE</span>
-                                                <select
-                                                    class="bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm w-full">
-                                                    <option>Zero</option>
-                                                    <option>Positivo</option>
-                                                    <option>Negativo</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-2">
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
                                         <label
-                                            class="text-xs font-bold text-text-secondary uppercase">Hirschberg</label>
-                                        <input
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
-                                            placeholder="Ex: Centrado" type="text" />
+                                            class="block text-xs font-medium text-text-secondary mb-1">Material</label>
+                                        <input id="final_material"
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm"
+                                            placeholder="Ex: Resina, Policarbonato..." />
                                     </div>
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-bold text-text-secondary uppercase">PIRLANMG</label>
-                                        <input
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
-                                            placeholder="Pupilas Isocá³ricas..." type="text" />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-bold text-text-secondary uppercase">Ducções</label>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
-                                                placeholder="OD" type="text" />
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
-                                                placeholder="OE" type="text" />
-                                        </div>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-bold text-text-secondary uppercase">Versões</label>
-                                        <input
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg text-sm p-2"
-                                            placeholder="SPEC" type="text" />
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold text-text-secondary uppercase">Reflexos
-                                        Pupilares</label>
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full text-sm text-center border-collapse">
-                                            <thead
-                                                class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
-                                                <tr>
-                                                    <th class="px-2 py-2 text-left">Tipo</th>
-                                                    <th class="px-2 py-2">Olho Direito (OD)</th>
-                                                    <th class="px-2 py-2">Olho Esquerdo (OE)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="divide-y divide-surface-light dark:divide-surface-dark bg-surface-light/10">
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left font-medium">Fotomotor</td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left font-medium">Consensual</td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left font-medium">Acomodativo</td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                    <td class="p-1"><select
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-md text-xs">
-                                                            <option>Presente</option>
-                                                            <option>Ausente</option>
-                                                        </select></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div>
+                                        <label class="block text-xs font-medium text-text-secondary mb-1">Tipo de
+                                            Lente</label>
+                                        <input id="final_lens_type"
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm"
+                                            placeholder="Ex: Monofocal, Multifocal..." />
                                     </div>
                                 </div>
                             </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">medical_services</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">5. Saúde
-                                        Ocular</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
                             <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div class="space-y-3">
-                                    <h4 class="font-bold text-primary flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-sm">magnification_small</span>
-                                        Biomicroscopia
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-xs font-medium text-text-secondary mb-1">Olho
-                                                Direito
-                                                (OD)</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
-                                                placeholder="Pá¡lpebras, Cá³rnea, Cristalino..."></textarea>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-text-secondary mb-1">Olho
-                                                Esquerdo
-                                                (OE)</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
-                                                placeholder="Pá¡lpebras, Cá³rnea, Cristalino..."></textarea>
-                                        </div>
+                                class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-surface-light dark:border-surface-dark">
+                                <div class="space-y-4">
+                                    <h5
+                                        class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
+                                        Visual / Refrativo</h5>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagnóstico</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
                                     </div>
                                 </div>
-                                <div class="space-y-3">
-                                    <h4 class="font-bold text-primary flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-sm">visibility</span> Oftalmoscopia
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-xs font-medium text-text-secondary mb-1">Olho
-                                                Direito
-                                                (OD)</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
-                                                placeholder="Disco, Má¡cula, Vasos..."></textarea>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-text-secondary mb-1">Olho
-                                                Esquerdo
-                                                (OE)</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-24 resize-none"
-                                                placeholder="Disco, Má¡cula, Vasos..."></textarea>
-                                        </div>
+                                <div class="space-y-4">
+                                    <h5
+                                        class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
+                                        Motor / Binocular</h5>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagnóstico</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <h5
+                                        class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
+                                        Saúde Ocular</h5>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagnóstico</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
+                                        <textarea
+                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
                                     </div>
                                 </div>
                             </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">lens_blur</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">6.
-                                        Refraçáo
-                                        Objetiva &amp; Ceratometria</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
-                                <div>
-                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Ceratometria</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
-                                                placeholder="K1 / K2 @ Eixo" />
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-green-500 text-sm">OE</span>
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
-                                                placeholder="K1 / K2 @ Eixo" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Retinoscopia
-                                        Está¡tica
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                                <input
-                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="AV" />
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-green-500 text-sm">OE</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                                <input
-                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="AV" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Retinoscopia
-                                        Diná¢mica
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-green-500 text-sm">OE</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">input</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">7.
-                                        Refraçáo
-                                        Subjetiva &amp; Afinamento</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
-                                <div>
-                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Subjetivo</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                                <input
-                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="AV" />
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-8 font-bold text-green-500 text-sm">OE</span>
-                                            <div class="flex flex-1 gap-1">
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Esf" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Cil" />
-                                                <input
-                                                    class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="Eixo" />
-                                                <input
-                                                    class="w-16 bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1"
-                                                    placeholder="AV" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Afinamento</h4>
-                                        <div class="flex flex-col gap-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="w-8 font-bold text-blue-500 text-sm">OD</span>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1"
-                                                    placeholder="Resultado" />
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="w-8 font-bold text-green-500 text-sm">OE</span>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1"
-                                                    placeholder="Resultado" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Adiçáo</h4>
-                                        <input
-                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-2"
-                                            placeholder="+0.00" />
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-surface-light dark:border-surface-dark overflow-hidden shadow-sm">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-surface-light/30 dark:bg-surface-dark hover:bg-surface-light/50 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">diversity_1</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">8. Visão
-                                        Binocular &amp; Acomodaçáo</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-surface-light dark:border-surface-dark bg-white dark:bg-surface-dark space-y-6">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Coverteste</h4>
-                                        <div class="space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <label class="w-16 text-xs text-text-secondary">Longe</label>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Orto / XL / XL'" />
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <label class="w-16 text-xs text-text-secondary">40 cm</label>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Orto / XL / XL'" />
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <label class="w-16 text-xs text-text-secondary">20 cm</label>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Orto / XL / XL'" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Reservas
-                                            Fusionais
-                                        </h4>
-                                        <div class="space-y-2">
-                                            <div class="flex items-center gap-2">
-                                                <label class="w-24 text-xs text-text-secondary">Visão Longe</label>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Positiva" />
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Negativa" />
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <label class="w-24 text-xs text-text-secondary">Visão Perto</label>
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Positiva" />
-                                                <input
-                                                    class="flex-1 bg-surface-light dark:bg-background-dark border-none rounded text-sm p-1.5"
-                                                    placeholder="Negativa" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">PPC (Ponto Prá³ximo
-                                        de
-                                        Convergáªncia)</h4>
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full text-sm text-center">
-                                            <thead
-                                                class="bg-surface-light/50 dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
-                                                <tr>
-                                                    <th class="px-2 py-1 text-left">Está­mulo</th>
-                                                    <th class="px-2 py-1">Embaça (cm)</th>
-                                                    <th class="px-2 py-1">Duplica (cm)</th>
-                                                    <th class="px-2 py-1">Recobra (cm)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left text-xs font-medium">Objeto Real</td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left text-xs font-medium">Com Luz</td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-2 py-2 text-left text-xs font-medium">Com Filtro</td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                    <td><input
-                                                            class="w-full bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1" />
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Amplitude de
-                                            Acomodaçáo</h4>
-                                        <div class="grid grid-cols-3 gap-2 mb-2">
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="OD" />
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="OE" />
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="Má©todo" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-text-secondary uppercase mb-2">Flexibilidade
-                                            Acomodativa</h4>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="OD (cpm)" />
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="OE (cpm)" />
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="Distá¢ncia" />
-                                            <input
-                                                class="bg-surface-light dark:bg-background-dark border-none rounded text-center text-sm p-1.5"
-                                                placeholder="Ná­vel Visual" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
-                        <details
-                            class="group bg-white dark:bg-surface-dark rounded-xl border border-primary dark:border-primary overflow-hidden shadow-md"
-                            open="">
-                            <summary
-                                class="flex items-center justify-between p-4 cursor-pointer bg-primary/10 dark:bg-surface-dark hover:bg-primary/20 dark:hover:bg-surface-dark/80 transition-colors select-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary">description</span>
-                                    <h3 class="text-text-main dark:text-white text-base md:text-lg font-bold">9.
-                                        Diagná³stico
-                                        &amp; Conduta</h3>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-text-secondary transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                            </summary>
-                            <div
-                                class="p-6 border-t border-primary/20 dark:border-primary/20 bg-white dark:bg-surface-dark space-y-6">
-                                <div>
-                                    <h4 class="text-xs font-bold text-primary uppercase mb-3">Fá³rmula Final
-                                        (Prescrição)
-                                    </h4>
-                                    <table class="w-full text-sm text-center">
-                                        <thead
-                                            class="bg-surface-light dark:bg-surface-dark/50 text-xs text-text-secondary uppercase">
-                                            <tr>
-                                                <th class="px-2 py-2">Olho</th>
-                                                <th class="px-2 py-2">Esfá©rico</th>
-                                                <th class="px-2 py-2">Cilá­ndrico</th>
-                                                <th class="px-2 py-2">Eixo</th>
-                                                <th class="px-2 py-2">AV</th>
-                                                <th class="px-2 py-2">Adiçáo</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-surface-light dark:divide-surface-dark">
-                                            <tr>
-                                                <td class="font-bold text-blue-500 py-2">OD</td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="-0.00" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="-0.00" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="0" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="20/20" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="+0.00" type="text" /></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="font-bold text-green-500 py-2">OE</td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="-0.00" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="-0.00" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="0" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="20/20" type="text" /></td>
-                                                <td><input
-                                                        class="w-full text-center bg-transparent border-none text-sm font-bold"
-                                                        placeholder="+0.00" type="text" /></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label
-                                                class="block text-xs font-medium text-text-secondary mb-1">Material</label>
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm"
-                                                placeholder="Ex: Resina, Policarbonato..." />
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-text-secondary mb-1">Tipo de
-                                                Lente</label>
-                                            <input
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm"
-                                                placeholder="Ex: Monofocal, Multifocal..." />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-surface-light dark:border-surface-dark">
-                                    <div class="space-y-4">
-                                        <h5
-                                            class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
-                                            Visual / Refrativo</h5>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagná³stico</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-4">
-                                        <h5
-                                            class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
-                                            Motor / Binocular</h5>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagná³stico</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-4">
-                                        <h5
-                                            class="text-sm font-bold text-text-main dark:text-white border-b pb-1 dark:border-gray-700">
-                                            Saúde Ocular</h5>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Diagná³stico</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-[10px] uppercase font-bold text-text-secondary mb-1">Conduta</label>
-                                            <textarea
-                                                class="w-full bg-surface-light dark:bg-background-dark border-none rounded-lg p-2 text-sm h-20 resize-none"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
+                        </div>
+                    </details>
+                </div>
+                <div class="hidden p-6 space-y-4" id="tab-neuro">
+                    <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
+                        <h3 class="font-bold mb-2">Histórico do Desenvolvimento</h3>
                     </div>
-                    <div class="hidden p-6 space-y-4" id="tab-neuro">
-                        <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
-                            <h3 class="font-bold mb-2">Histá³rico do Desenvolvimento</h3>
-                        </div>
-                        <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
-                            <h3 class="font-bold mb-2">Reflexos Primitivos</h3>
-                        </div>
-                    </div>
-                    <div class="hidden p-6 space-y-4" id="tab-trv">
-                        <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
-                            <h3 class="font-bold mb-2">Exames Acomodativos</h3>
-                        </div>
-                    </div>
-                    <div class="hidden p-6 space-y-4" id="tab-pediatria">
-                        <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
-                            <h3 class="font-bold mb-2">Avaliação Perinatal</h3>
-                        </div>
+                    <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
+                        <h3 class="font-bold mb-2">Reflexos Primitivos</h3>
                     </div>
                 </div>
-                <div class="fixed bottom-6 right-8 flex flex-col gap-3 z-40">
-                    <script type="module">
-                        import { setupRecordPage } from './js/medical-record-manager.js';
-                        // Initialize with record type 'functional'
-                        setupRecordPage('functional');
-                    </script>
+                <div class="hidden p-6 space-y-4" id="tab-trv">
+                    <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
+                        <h3 class="font-bold mb-2">Exames Acomodativos</h3>
+                    </div>
+                </div>
+                <div class="hidden p-6 space-y-4" id="tab-pediatria">
+                    <div class="border border-surface-light p-4 rounded bg-white dark:bg-surface-dark">
+                        <h3 class="font-bold mb-2">Avaliação Perinatal</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="fixed bottom-6 right-8 flex flex-col gap-3 z-40">
+                <button id="btn-print-record"
+                    class="bg-gray-800 text-white p-4 rounded-full shadow-lg hover:bg-gray-700 transition-transform hover:scale-105 flex items-center justify-center group"
+                    title="Imprimir">
+                    <span
+                        class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">print</span>
+                </button>
+                <button id="btn-save-float"
+                    class="bg-primary text-text-main p-4 rounded-full shadow-lg hover:brightness-105 transition-transform hover:scale-105 flex items-center justify-center group"
+                    title="Salvar Ficha">
+                    <span
+                        class="material-symbols-outlined text-2xl font-bold group-hover:rotate-12 transition-transform">save</span>
+                </button>
+                <script type="module">
+                    import { setupRecordPage } from './js/medical-record-manager.js';
+                    // Initialize with record type 'functional'
+                    setupRecordPage('functional');
+
+                    // Auto-copy Logic
+                    function setupAutoCopy() {
+                        const fields = ['esf', 'cil', 'eixo', 'av'];
+                        const eyes = ['od', 'oe'];
+
+                        // Helper to set event listeners
+                        function linkFields(sourceId, targetId) {
+                            const source = document.getElementById(sourceId);
+                            const target = document.getElementById(targetId);
+                            if (source && target) {
+                                source.addEventListener('input', () => {
+                                    target.value = source.value;
+                                    // Trigger input event on target to cascade if needed (Subj -> Afin -> Final)
+                                    target.dispatchEvent(new Event('input'));
+                                });
+                            }
+                        }
+
+                        eyes.forEach(eye => {
+                            fields.forEach(field => {
+                                // Subjetivo -> Afinamento
+                                linkFields(`subj_${eye}_${field}`, `afin_${eye}_${field}`);
+                                // Afinamento -> Final
+                                linkFields(`afin_${eye}_${field}`, `final_${eye}_${field}`);
+                            });
+                        });
+
+                        // Special case: Adicao (Shared in Afinamento, but Split in Final usually? 
+                        // Wait, looking at IDs: 'afin_adicao' (single) vs 'final_od_adicao' and 'final_oe_adicao' (double)
+                        // Usually addition is same for both eyes. Let's link single afin to both final.
+                        const sourceAdd = document.getElementById('afin_adicao');
+                        const targetAddOD = document.getElementById('final_od_adicao');
+                        const targetAddOE = document.getElementById('final_oe_adicao');
+
+                        if (sourceAdd) {
+                            sourceAdd.addEventListener('input', () => {
+                                if (targetAddOD) targetAddOD.value = sourceAdd.value;
+                                if (targetAddOE) targetAddOE.value = sourceAdd.value;
+                            });
+                        }
+                    }
+
+                    // Run setup after module load (or immediately if DOM is ready, safe to run in module)
+                    setupAutoCopy();
+
+                </script>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Gestão Financeira - Visão Total</title>
+  <title>Pagina do Optometrista - Financeiro</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
     rel="stylesheet" />
@@ -22,14 +22,19 @@
         extend: {
           colors: {
             "primary": "#13ecec",
+            "primary-dark": "#0ebdbd",
             "background-light": "#f6f8f8",
             "background-dark": "#102222",
             "surface-light": "#ffffff",
-            "surface-dark": "#1a2c2c",
+            "surface-dark": "#182d2d",
+            "text-main": "#0d1b1b",
+            "text-sub": "#4c9a9a",
           },
           fontFamily: {
-            "display": ["Inter", "sans-serif"]
+            "display": ["Inter", "sans-serif"],
+            "sans": ["Inter", "sans-serif"],
           },
+          borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
         },
       },
     }
@@ -40,7 +45,7 @@
   class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
   <div class="flex h-screen w-full">
     <!-- Side Navigation -->
-    <aside
+    <aside id="app-sidebar"
       class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col transition-colors duration-200 hidden md:flex">
       <div class="p-6">
         <div class="flex items-center gap-3 mb-8">
@@ -110,26 +115,22 @@
       <header
         class="h-16 flex items-center justify-between px-6 py-3 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 shrink-0 z-20">
         <div class="flex items-center gap-4 lg:hidden">
-          <button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+          <button id="mobile-menu-btn" class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
             <span class="material-symbols-outlined">menu</span>
           </button>
         </div>
         <!-- Right Actions -->
         <div class="flex items-center gap-3 ml-auto">
-          <button onclick="window.location.href='Nova Transação Financeira.html'"
-            class="flex items-center justify-center size-10 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
-            <span class="material-symbols-outlined">add</span>
+          <button onclick="window.location.href='Cadastro Novo Paciente.html'"
+            class="flex items-center justify-center h-10 px-4 gap-2 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            <span class="hidden sm:inline">Novo Paciente</span>
           </button>
           <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
           <div class="flex items-center gap-3 pl-2 ml-2 border-l border-slate-200 dark:border-slate-700">
-            <div class="text-right hidden sm:block">
+            <div class="text-right">
               <p id="header-user-name" class="text-sm font-bold text-slate-900 dark:text-white">Carregando...</p>
               <p id="header-user-role" class="text-xs text-slate-500 dark:text-slate-400">...</p>
-            </div>
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer"
-              data-alt="Profile picture of Dr. Ricardo"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNdoBP7xYbwl4VoXFp0I53c4thInGIwHjPk0g5Tx3P8gassLNTwpmshlsqZ51TmjuqTAig8exeHzyw36eAID3cBpFrQoYfY-hPXGpWmSgX3KO6gWmuMiJ6CS8K6xxntctWq54ki3b4So_dUePMTw38o_EivRTeTMyfwMLzuPote4HiVVdX_Zr3nsliMMJP3-Tqjt2VHMUZWU8t0toq0ANvHhgaRB3ShKS1kQ0QcOnx92ZgVNl7x9E-V1T-9eIvzWlerdlx2eLTDXvM");'>
             </div>
           </div>
         </div>
@@ -262,6 +263,9 @@
                       Valor</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Status</th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">
+                      Ações</th>
                   </tr>
                 </thead>
                 <tbody id="transactions-list" class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -278,9 +282,36 @@
     </div>
   </div>
 
+  <script>
+      (function () {
+        try {
+          const cached = sessionStorage.getItem('user_profile_cache');
+          if (cached) {
+            const profile = JSON.parse(cached);
+            const hName = document.getElementById('header-user-name');
+            const hRole = document.getElementById('header-user-role');
+            if (hName) hName.textContent = profile.full_name || 'Usuário';
+
+            const roleMap = { 'admin': 'Administrador', 'optometrist': 'Optometrista', 'secretary': 'Recepcionista' };
+            if (hRole) hRole.textContent = roleMap[profile.role] || profile.role || 'Membro da Equipe';
+
+            const sbName = document.getElementById('sidebar-clinic-name');
+            const sbSocial = document.getElementById('sidebar-clinic-social');
+            const sbLogo = document.getElementById('sidebar-clinic-logo');
+            if (profile.clinics) {
+              if (sbName) sbName.textContent = profile.clinics.name;
+              if (sbSocial) sbSocial.textContent = profile.clinics.social_name;
+              if (sbLogo && profile.clinics.logo_url) sbLogo.style.backgroundImage = `url("${profile.clinics.logo_url}")`;
+            }
+          }
+        } catch (e) { console.error('Fast render error', e); }
+      })();
+  </script>
   <script type="module">
     import { supabase } from './js/supabase-client.js';
     import { loadSidebar } from './js/sidebar-loader.js';
+
+    loadSidebar();
 
     const transactionsList = document.getElementById('transactions-list');
     const userNameDisplay = document.getElementById('header-user-name');
@@ -291,120 +322,7 @@
     const statNetBalance = document.getElementById('stat-net-balance');
     const statPending = document.getElementById('stat-total-pending');
 
-    async function loadFinance() {
-      try {
-        // 1. Auth & Profile
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          window.location.href = 'Login - Pagina Inicial.html';
-          return;
-        }
 
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*, clinics(name, social_name)')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile) {
-          loadSidebar();
-        }
-
-        // 2. Fetch Transactions
-        const { data: transactions, error: tErr } = await supabase
-          .from('transactions')
-          .select('*')
-          .eq('clinic_id', profile.clinic_id)
-          .order('date', { ascending: false });
-
-        if (tErr) throw tErr;
-
-        // 3. Fetch Appointments with Price
-        const { data: appointments, error: aErr } = await supabase
-          .from('appointments')
-          .select('*, patients(full_name)')
-          .eq('clinic_id', profile.clinic_id)
-          .not('price', 'is', null)
-          .gt('price', 0)
-          .order('date', { ascending: false });
-
-        if (aErr) throw aErr;
-
-        // 4. Merge Data
-        const mappedAppts = (appointments || []).map(a => {
-          // Use payment_status field (default 'pending')
-          // If appointment is cancelled/no_show, status is cancelled regardless of payment? 
-          // Only if payment wasn't made. But typically cancelling voids payment.
-          let status = a.payment_status || 'pending';
-
-          if (a.status === 'cancelled' || a.status === 'no_show') status = 'cancelled';
-
-          const typeMap = { 'pediatric': 'Pediátrica', 'functional': 'Funcional', 'neuro': 'Neuro-Comportamental', 'trv': 'TRV', 'general': 'Geral' };
-          const typeLabel = typeMap[a.type] || a.type;
-
-          return {
-            id: a.id,
-            description: `Consulta - ${a.patients?.full_name || 'Paciente'}`,
-            category: `Consulta (${typeLabel})`,
-            date: a.date,
-            amount: a.price,
-            type: 'income',
-            status: status,
-            method: a.payment_method,
-            is_appointment: true
-          };
-        });
-
-        const allItems = [...(transactions || []), ...mappedAppts].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        if (allItems.length === 0) {
-          transactionsList.innerHTML = `<tr><td colspan='5' class='px-6 py-12 text-center text-slate-500'>Nenhuma transação registrada.</td></tr>`;
-          updateStats([]);
-          return;
-        }
-
-        // 5. Render
-        transactionsList.innerHTML = allItems.map(t => {
-          const isIncome = t.type === 'income';
-          const colorClass = isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
-          const amountFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount);
-          const dateFormatted = new Date(t.date).toLocaleDateString('pt-BR');
-          const methodLabel = t.method ? `<br><span class="text-[10px] text-slate-400 uppercase">${t.method}</span>` : '';
-
-          let statusBadge = '';
-          if (t.status === 'paid' && t.is_appointment) {
-            // Click to edit? Maybe later. For now just show paid.
-            statusBadge = `<button onclick="openPayment('${t.id}', '${t.amount}')" class="inline-flex flex-col items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 hover:bg-emerald-200 cursor-pointer">Pago ${methodLabel}</button>`;
-          }
-          else if (t.status === 'paid') {
-            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Pago</span>';
-          }
-          else if (t.status === 'pending' && t.is_appointment) {
-            // Clickable to Pay
-            statusBadge = `<button onclick="openPayment('${t.id}', '${t.amount}')" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 hover:brightness-95 cursor-pointer ring-1 ring-amber-500/20">Receber</button>`;
-          }
-          else if (t.status === 'pending') {
-            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Pendente</span>';
-          }
-          else statusBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300">${t.status}</span>`;
-
-          return `
-                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm font-medium text-slate-900 dark:text-white">${t.description}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm text-slate-500 dark:text-slate-400">${t.category || '-'}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm text-slate-500 dark:text-slate-400">${dateFormatted}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm font-bold ${colorClass}">${isIncome ? '+' : '-'} ${amountFormatted}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
-                    </tr>`;
-        }).join('');
-
-        updateStats(allItems);
-
-      } catch (err) {
-        console.error(err);
-        transactionsList.innerHTML = "<tr><td colspan='5'>Erro inesperado</td></tr>";
-      }
-    }
 
     function updateStats(transactions) {
       let income = 0;
@@ -431,6 +349,179 @@
       statTotalExpense.textContent = fmt(expense);
       statNetBalance.textContent = fmt(net);
       statPending.textContent = fmt(pending);
+    }
+
+    // --- INITIALIZATION ---
+    // Set Default Dates (Current Month)
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+    const startInput = document.getElementById('filter-date-start');
+    const endInput = document.getElementById('filter-date-end');
+    const filterBtn = document.getElementById('btn-filter');
+
+    if (startInput) startInput.value = firstDay;
+    if (endInput) endInput.value = lastDay;
+
+    // Attach Filter Listener
+    if (filterBtn) {
+      filterBtn.addEventListener('click', () => loadFinance());
+    }
+
+    // Expose delete function globally
+    window.deleteTransaction = async (id, isAppt) => {
+      if (!confirm('Tem certeza que deseja excluir este registro permanentemente?')) return;
+
+      try {
+        const table = isAppt ? 'appointments' : 'transactions';
+        const { error } = await supabase.from(table).delete().eq('id', id);
+
+        if (error) throw error;
+
+        alert('Registro excluído com sucesso.');
+        loadFinance(); // Reload
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao excluir: ' + err.message);
+      }
+    };
+
+    let currentUserRole = null;
+
+    async function loadFinance() {
+      try {
+        transactionsList.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-slate-500">Carregando dados...</td></tr>';
+
+        // 1. Auth & Profile
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          window.location.href = 'Login - Pagina Inicial.html';
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*, clinics(name, social_name)')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          currentUserRole = profile.role;
+          loadSidebar();
+        }
+
+        // Get Filter Values
+        const startDate = startInput ? startInput.value : firstDay;
+        const endDate = endInput ? endInput.value : lastDay;
+        const methodFilter = document.getElementById('filter-method').value;
+
+        // 2. Fetch Transactions (Filtered)
+        let tQuery = supabase
+          .from('transactions')
+          .select('*')
+          .eq('clinic_id', profile.clinic_id)
+          .gte('date', startDate)
+          .lte('date', endDate)
+          .order('date', { ascending: false });
+
+        // Apply method filter if needed (if method column exists, assuming mixed logic for now)
+
+        const { data: transactions, error: tErr } = await tQuery;
+        if (tErr) throw tErr;
+
+        // 3. Fetch Appointments with Price (Filtered)
+        const { data: appointments, error: aErr } = await supabase
+          .from('appointments')
+          .select('*, patients(full_name)')
+          .eq('clinic_id', profile.clinic_id)
+          .not('price', 'is', null)
+          .gt('price', 0)
+          .gte('date', startDate)
+          .lte('date', endDate)
+          .order('date', { ascending: false });
+
+        if (aErr) throw aErr;
+
+        // 4. Merge Data
+        const mappedAppts = (appointments || []).map(a => {
+          let status = a.payment_status || 'pending';
+          if (a.status === 'cancelled' || a.status === 'no_show') status = 'cancelled';
+
+          const typeMap = { 'pediatric': 'Pediátrica', 'functional': 'Funcional', 'neuro': 'Neuro-Comportamental', 'trv': 'TRV', 'general': 'Geral' };
+          const typeLabel = typeMap[a.type] || a.type;
+
+          return {
+            id: a.id,
+            description: `Consulta - ${a.patients?.full_name || 'Paciente'}`,
+            category: `Consulta (${typeLabel})`,
+            date: a.date,
+            amount: a.price,
+            type: 'income',
+            status: status,
+            method: a.payment_method,
+            is_appointment: true
+          };
+        });
+
+        let allItems = [...(transactions || []), ...mappedAppts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Client-side Method Filter (because methods can be in different columns or json)
+        if (methodFilter !== 'all') {
+          allItems = allItems.filter(item => (item.method || '').toLowerCase().includes(methodFilter.toLowerCase()));
+        }
+
+        if (allItems.length === 0) {
+          transactionsList.innerHTML = `<tr><td colspan='6' class='px-6 py-12 text-center text-slate-500'>Nenhuma transação encontrada neste período.</td></tr>`;
+          updateStats([]);
+          return;
+        }
+
+        // 5. Render
+        transactionsList.innerHTML = allItems.map(t => {
+          const isIncome = t.type === 'income';
+          const colorClass = isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+          const amountFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount);
+          const dateFormatted = new Date(t.date).toLocaleDateString('pt-BR');
+          const methodLabel = t.method ? `<br><span class="text-[10px] text-slate-400 uppercase">${t.method}</span>` : '';
+
+          let statusBadge = '';
+          if (t.status === 'paid' && t.is_appointment) {
+            statusBadge = `<button onclick="openPayment('${t.id}', '${t.amount}')" class="inline-flex flex-col items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 hover:bg-emerald-200 cursor-pointer">Pago ${methodLabel}</button>`;
+          }
+          else if (t.status === 'paid') {
+            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Pago</span>';
+          }
+          else if (t.status === 'pending' && t.is_appointment) {
+            statusBadge = `<button onclick="openPayment('${t.id}', '${t.amount}')" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 hover:brightness-95 cursor-pointer ring-1 ring-amber-500/20">Receber</button>`;
+          }
+          else if (t.status === 'pending') {
+            statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Pendente</span>';
+          }
+          else statusBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300">${t.status}</span>`;
+
+          // Admin Action
+          const deleteBtn = currentUserRole === 'admin'
+            ? `<button onclick="deleteTransaction('${t.id}', ${t.is_appointment || false})" class="text-slate-400 hover:text-red-500 p-1 rounded transition-colors" title="Excluir"><span class="material-symbols-outlined text-[18px]">delete</span></button>`
+            : '';
+
+          return `
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm font-medium text-slate-900 dark:text-white">${t.description}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm text-slate-500 dark:text-slate-400">${t.category || '-'}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm text-slate-500 dark:text-slate-400">${dateFormatted}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="text-sm font-bold ${colorClass}">${isIncome ? '+' : '-'} ${amountFormatted}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">${deleteBtn}</td>
+                    </tr>`;
+        }).join('');
+
+        updateStats(allItems);
+
+      } catch (err) {
+        console.error(err);
+        transactionsList.innerHTML = "<tr><td colspan='6'>Erro inesperado</td></tr>";
+      }
     }
 
     loadFinance();
