@@ -129,7 +129,7 @@
                     <div class="flex flex-col">
                         <h1 class="text-base font-bold leading-tight text-slate-900 dark:text-white">Pagina do
                             Optometrista</h1>
-                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pro Admin</span>
+                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Versão 04/jan/2026</span>
                     </div>
                 </div>
                 <div
@@ -217,7 +217,12 @@
                 <div class="a4-page font-serif relative" id="print-content">
 
                     <!-- Clinic Header -->
-                    <div class="flex flex-col items-center mb-6">
+                    <div class="flex flex-col items-center mb-6 relative">
+                        <!-- Second Copy Badge (Hidden by default) -->
+                        <div id="badge-second-copy"
+                            class="hidden absolute top-0 right-0 border-2 border-gray-400 text-gray-400 font-bold px-4 py-1 rounded uppercase text-xs tracking-widest opacity-70 transform rotate-12">
+                            2ª Via
+                        </div>
                         <div class="w-16 h-16 mb-2 text-teal-600 opacity-80" id="clinic-logo-container">
                             <span class="material-symbols-outlined" style="font-size: 48px;">local_hospital</span>
                         </div>
@@ -316,7 +321,8 @@
                                                 class="table-input" type="text" placeholder="Adição / Notas" /></td>
                                         <td class="border-r border-gray-300 hidden col-prism"></td>
                                         <td class="border-r border-gray-300 hidden col-base"></td>
-                                        <td class="text-gray-400">—</td>
+                                        <td class="text-gray-600 text-xs"><input id="print_od_alt" class="table-input"
+                                                type="text" placeholder="mm" /></td>
                                     </tr>
                                     <tr class="border-b border-gray-300">
                                         <td class="py-3 border-r border-gray-300 font-bold">OE</td>
@@ -324,25 +330,34 @@
                                                 class="table-input" type="text" placeholder="Adição / Notas" /></td>
                                         <td class="border-r border-gray-300 hidden col-prism"></td>
                                         <td class="border-r border-gray-300 hidden col-base"></td>
-                                        <td class="text-gray-400">—</td>
+                                        <td class="text-gray-600 text-xs"><input id="print_oe_alt" class="table-input"
+                                                type="text" placeholder="mm" /></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-sm">
-                            <p class="text-xs font-bold text-gray-500 font-sans uppercase mb-1">Tipo de Lente Sugerida /
-                                Observações</p>
-                            <input list="lens-types" id="print_lens_type"
-                                class="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-800 focus:ring-0"
-                                placeholder="Selecione ou digite..." />
-                            <datalist id="lens-types">
-                                <option value="Monofocal">
-                                <option value="Multifocal">
-                                <option value="Bifocal">
-                                <option value="Antirreflexo">
-                                <option value="Filtro Azul">
-                                <option value="Vide Obs">
-                            </datalist>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-50 border border-gray-200 p-4 rounded-sm">
+                                <p class="text-xs font-bold text-gray-500 font-sans uppercase mb-1">Tipo de Lente
+                                    Sugerida</p>
+                                <input list="lens-types" id="print_lens_type"
+                                    class="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-800 focus:ring-0"
+                                    placeholder="Ex: Multifocal Antirreflexo..." />
+                                <datalist id="lens-types">
+                                    <option value="Monofocal">
+                                    <option value="Multifocal">
+                                    <option value="Bifocal">
+                                    <option value="Ocupacional">
+                                    <option value="Lente de Contato">
+                                </datalist>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 p-4 rounded-sm">
+                                <p class="text-xs font-bold text-gray-500 font-sans uppercase mb-1">Observações
+                                    Adicionais</p>
+                                <input id="print_obs"
+                                    class="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-800 focus:ring-0"
+                                    placeholder="Ex: Uso constante, Proteção UV..." />
+                            </div>
                         </div>
                     </div>
 
@@ -466,7 +481,17 @@
     </div>
 
     <!-- FAB: Save and Print -->
-    <div class="fixed bottom-6 right-8 no-print z-50">
+    <div class="fixed bottom-6 right-8 no-print z-50 flex flex-col gap-3 items-end">
+
+        <div
+            class="bg-white dark:bg-surface-dark p-2 rounded-lg shadow border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+            <input type="checkbox" id="chk-second-copy" onchange="toggleSecondCopy()"
+                class="rounded border-gray-300 text-primary focus:ring-primary">
+            <label for="chk-second-copy"
+                class="text-xs font-bold text-slate-700 dark:text-gray-300 cursor-pointer select-none">Marcar como 2ª
+                Via</label>
+        </div>
+
         <button id="btn-save-print"
             class="bg-primary text-text-main p-4 rounded-full shadow-lg hover:brightness-105 transition-transform hover:scale-105 flex items-center justify-center group"
             title="Salvar e Imprimir">
@@ -630,21 +655,25 @@
         function mapPrescriptionData(record) {
             const data = record.data || {};
             const type = record.record_type;
+            console.log('Mapping Data. Type:', type, 'Data:', data);
 
             const fields = {
                 od_sph: document.getElementById('print_od_sph'),
                 od_cyl: document.getElementById('print_od_cyl'),
                 od_axis: document.getElementById('print_od_axis'),
                 od_dnp: document.getElementById('print_od_dnp'),
-                od_add: document.getElementById('print_od_add'), // Used for Add or Notes
+                od_alt: document.getElementById('print_od_alt'), // New
+                od_add: document.getElementById('print_od_add'),
 
                 oe_sph: document.getElementById('print_oe_sph'),
                 oe_cyl: document.getElementById('print_oe_cyl'),
                 oe_axis: document.getElementById('print_oe_axis'),
                 oe_dnp: document.getElementById('print_oe_dnp'),
+                oe_alt: document.getElementById('print_oe_alt'), // New
                 oe_add: document.getElementById('print_oe_add'),
 
-                lens_obs: document.getElementById('print_lens_type')
+                lens_obs: document.getElementById('print_lens_type'),
+                obs: document.getElementById('print_obs')
             };
 
             // Display Logic
@@ -661,22 +690,24 @@
                 fields.od_sph.value = data.final_od_esf || '';
                 fields.od_cyl.value = data.final_od_cil || '';
                 fields.od_axis.value = data.final_od_eixo || '';
-                fields.od_dnp.value = data.final_od_dnp || ''; // Assuming dnp key is correct? Use logic if needed
+                fields.od_dnp.value = data.final_od_dnp || '';
+                fields.od_alt.value = data.final_od_alt || '';
                 fields.od_add.value = data.final_od_adicao || '';
 
                 fields.oe_sph.value = data.final_oe_esf || '';
                 fields.oe_cyl.value = data.final_oe_cil || '';
                 fields.oe_axis.value = data.final_oe_eixo || '';
                 fields.oe_dnp.value = data.final_oe_dnp || '';
+                fields.oe_alt.value = data.final_oe_alt || '';
                 fields.oe_add.value = data.final_oe_adicao || '';
 
-                // Combined Lens Obs/Type/Material
+                // Lens Type
                 const parts = [];
-                if (data.final_material) parts.push(`Material: ${data.final_material}`);
-                if (data.final_lens_type) parts.push(`${data.final_lens_type.replace(/^(Tipo:\s*)+/i, '')}`);
-                if (data.final_obs) parts.push(`Obs: ${data.final_obs}`);
+                if (data.final_material) parts.push(data.final_material);
+                if (data.final_lens_type) parts.push(data.final_lens_type.replace(/^(Tipo:\s*)+/i, ''));
 
-                fields.lens_obs.value = parts.join(' | ');
+                fields.lens_obs.value = parts.join(' ');
+                fields.obs.value = data.final_obs || '';
 
             } else if (type === 'neuro') {
                 sectionPrescription.classList.remove('hidden');
@@ -695,13 +726,17 @@
                     setupTherapyList(data.therapy_list);
                 }
 
+                fields.lens_obs.value = data.final_lens_type || '';
+                fields.obs.value = data.final_obs || '';
+
             } else if (type === 'pediatric') {
                 sectionPrescription.classList.remove('hidden');
                 // Map Static Retino
                 parseAndFill(data.static_od, fields.od_sph, fields.od_cyl, fields.od_axis);
                 parseAndFill(data.static_oe, fields.oe_sph, fields.oe_cyl, fields.oe_axis);
 
-                // Add? notes
+                fields.lens_obs.value = data.final_lens_type || '';
+                fields.obs.value = data.final_obs || '';
             } else if (type === 'trv') {
                 sectionTherapy.classList.remove('hidden');
                 document.getElementById('therapy-generic-container').classList.add('hidden');
@@ -779,7 +814,8 @@
                 }
                 document.getElementById('print_od_add').value = data.add || '';
                 document.getElementById('print_oe_add').value = data.add || '';
-                fields.lens_obs.value = data.lensType || data.obs || '';
+                fields.lens_obs.value = data.lensType || '';
+                fields.obs.value = data.obs || '';
             }
         }
 
@@ -847,6 +883,9 @@
             try {
                 // 1. Re-collect Data
                 const newData = { ...currentRecord.data };
+                console.log('Saving... Record Type:', recordType);
+                console.log('Current Data:', newData);
+                console.log('Inputs - Lens:', document.getElementById('print_lens_type').value, 'Obs:', document.getElementById('print_obs').value);
 
                 // Funcional Mapping Back (Direct)
                 if (recordType === 'functional') {
@@ -866,8 +905,11 @@
                     newData.final_oe_dnp = document.getElementById('print_oe_dnp').value;
                     newData.final_oe_adicao = document.getElementById('print_oe_add').value;
 
-                    // Save Lens Type to correct field for Ficha
+                    newData.final_oe_adicao = document.getElementById('print_oe_add').value;
+
+                    // Save Lens Type and Obs to correct field for Ficha
                     newData.final_lens_type = document.getElementById('print_lens_type').value;
+                    newData.final_obs = document.getElementById('print_obs').value;
                 }
                 else if (recordType === 'neuro' || recordType === 'pediatric') {
                     // Reconstruct Strings?
@@ -891,6 +933,10 @@
                         if (sOD.trim().length > 2) newData.static_od = sOD;
                         if (sOE.trim().length > 2) newData.static_oe = sOE;
                     }
+
+                    // Save Common Fields (Lens/Obs) for these types too
+                    newData.final_lens_type = document.getElementById('print_lens_type').value;
+                    newData.final_obs = document.getElementById('print_obs').value;
                 }
 
                 // Therapy
@@ -920,7 +966,7 @@
                         add: document.getElementById('print_od_add').value,
                         lensType: document.getElementById('print_lens_type').value,
                         treatment: '',
-                        obs: document.getElementById('print_lens_type').value
+                        obs: document.getElementById('print_obs').value
                     };
 
                     const { error } = await supabase.from('medical_records').update({ data: prescPayload, date: new Date().toISOString() }).eq('id', currentRecord.id);
@@ -1033,6 +1079,17 @@
                 alert('Erro ao salvar dados: ' + err.message);
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
+            }
+        };
+
+        // Toggle Second Copy
+        window.toggleSecondCopy = () => {
+            const chk = document.getElementById('chk-second-copy');
+            const badge = document.getElementById('badge-second-copy');
+            if (chk.checked) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
             }
         };
 

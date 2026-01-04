@@ -312,7 +312,7 @@
           document.getElementById('fullName').required = true;
           document.getElementById('clinicName').required = true;
           submitBtnText.textContent = "Criar Conta e Clínica";
-          toggleBtn.textContent = "Já¡ tem conta? Fazer Login";
+          toggleBtn.textContent = "Já tem conta? Fazer Login";
           pageTitle.textContent = "Comece Agora";
           pageSubtitle.textContent = "Crie sua conta para gerenciar sua Clínica.";
         } else {
@@ -320,9 +320,26 @@
           document.getElementById('fullName').required = false;
           document.getElementById('clinicName').required = false;
           submitBtnText.textContent = "Acessar Plataforma";
-          toggleBtn.textContent = "Náo tem conta? Cadastre sua Clínica";
+          toggleBtn.textContent = "Não tem conta? Cadastre sua Clínica";
           pageTitle.textContent = "Bem-vindo de volta";
-          pageSubtitle.textContent = "Acesse o portal clá­nico unificado para especialistas e equipe.";
+          pageSubtitle.textContent = "Acesse o portal clínico unificado para especialistas e equipe.";
+        }
+      });
+    }
+
+    // Password Toggle Logic
+    const passwordInput = document.getElementById('password');
+    const togglePasswordBtn = document.querySelector('.absolute.inset-y-0.right-0');
+
+    if (togglePasswordBtn && passwordInput) {
+      togglePasswordBtn.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        const icon = togglePasswordBtn.querySelector('span');
+        if (icon) {
+          icon.textContent = type === 'password' ? 'visibility_off' : 'visibility';
+          icon.classList.toggle('text-primary'); // Optional highlight
         }
       });
     }
@@ -344,14 +361,16 @@
         btn.classList.add('opacity-70', 'cursor-not-allowed');
 
         try {
+          const rememberMe = document.getElementById('remember-me').checked;
+
           if (isSignUpMode) {
             const fullName = document.getElementById('fullName').value;
             const clinicName = document.getElementById('clinicName').value;
             await handleSignUp(email, password, clinicName, fullName);
-            alert("Conta criada com sucesso! Vocáª já¡ pode fazer login.");
+            alert("Conta criada com sucesso! Você já pode fazer login.");
             toggleBtn.click();
           } else {
-            await handleLogin(email, password);
+            await handleLogin(email, password, rememberMe);
             window.location.href = 'Pagina - Dashboard.html';
           }
         } catch (error) {
