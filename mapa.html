@@ -5,26 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EntreOptos - Encontre seu Especialista</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet Assets -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Marker Cluster Assets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        #map { height: 500px; width: 100%; border-radius: 1.5rem; z-index: 10; transition: all 0.3s ease; }
+        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+        #map { height: 500px; width: 100%; border-radius: 2rem; z-index: 10; transition: all 0.3s ease; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
         
         .brand-teal { color: #2dd4bf; }
         .bg-brand-teal { background-color: #2dd4bf; }
         .brand-coral { color: #fb7185; }
+        .bg-brand-coral { background-color: #fb7185; }
         
         /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #2dd4bf; border-radius: 10px; }
 
         /* Modal Animation */
-        .modal-enter { animation: modalIn 0.3s ease-out forwards; }
+        .modal-enter { animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
@@ -37,325 +46,313 @@
             text-transform: uppercase;
         }
 
-        /* Leaflet Marker transition */
-        .leaflet-marker-icon {
-            transition: transform 0.2s ease;
-        }
-        .leaflet-marker-icon:hover {
-            transform: scale(1.1) !important;
-        }
+        /* Marker Cluster Customization */
+        .marker-cluster-small { background-color: rgba(45, 212, 191, 0.6); }
+        .marker-cluster-small div { background-color: rgba(20, 184, 166, 0.8); color: white; }
+        .marker-cluster-medium { background-color: rgba(45, 212, 191, 0.6); }
+        .marker-cluster-medium div { background-color: rgba(20, 184, 166, 0.8); color: white; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800 pb-10">
 
     <!-- Modal de Perfil -->
-    <div id="profile-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl modal-enter relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10 transition-colors">
+    <div id="profile-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-[2.5rem] max-w-lg w-full overflow-hidden shadow-2xl modal-enter relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 z-10 bg-slate-50 rounded-full transition-all" aria-label="Fechar">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-            
-            <div id="modal-content" class="p-8">
-                <!-- Conteúdo injetado via JS -->
-            </div>
+            <div id="modal-content" class="p-8 sm:p-10"></div>
         </div>
     </div>
 
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <!-- Símbolo EntreOptos -->
-                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="38" height="38" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="45" stroke="#2dd4bf" stroke-width="8"/>
                     <path d="M30 50C30 40 40 30 50 30C60 30 70 40 70 50C70 60 60 70 50 70C40 70 30 60 30 50Z" fill="#fb7185"/>
                     <circle cx="50" cy="50" r="10" fill="white"/>
                     <path d="M20 50H10M90 50H80M50 20V10M50 90V80" stroke="#2dd4bf" stroke-width="4" stroke-linecap="round"/>
                 </svg>
-                <div>
-                    <h1 class="text-xl font-bold leading-none text-slate-800">Entre<span class="text-teal-500">Optos</span></h1>
-                    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Cuidado Visual</p>
+                <div class="hidden sm:block">
+                    <h1 class="text-xl font-black leading-none text-slate-800 tracking-tight">Entre<span class="text-teal-500">Optos</span></h1>
+                    <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">Diretório de Especialistas</p>
                 </div>
             </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-600 items-center">
-                <a href="#" class="hover:text-teal-600 transition">Sobre</a>
-                <a href="#" class="hover:text-teal-600 transition">Cursos</a>
-                <button class="bg-teal-500 text-white px-5 py-2.5 rounded-full hover:bg-teal-600 transition shadow-md shadow-teal-100 font-bold">Sou Optometrista</button>
-            </nav>
+            <div class="flex items-center space-x-4">
+                <button onclick="detectLocation()" class="text-xs font-bold text-teal-600 bg-teal-50 px-4 py-2 rounded-full hover:bg-teal-100 transition-all flex items-center space-x-2">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                    <span>Perto de Mim</span>
+                </button>
+                <button class="bg-slate-800 text-white px-5 py-2.5 rounded-full hover:bg-slate-900 transition-all shadow-md font-bold text-sm">Entrar</button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-10">
-        <!-- Hero -->
-        <section class="mb-10 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div class="max-w-2xl">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-                    Encontre o <span class="text-teal-500">especialista</span> ideal para sua família.
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+        <!-- Hero & UX Steps -->
+        <section class="mb-12">
+            <div class="max-w-3xl mb-10">
+                <h2 class="text-3xl sm:text-5xl font-black text-slate-900 mb-6 leading-tight">
+                    Encontre o cuidado visual que sua <span class="text-teal-500">família merece.</span>
                 </h2>
-                <p class="text-lg text-slate-500">
-                    O mapa oficial da rede EntreOptos. Localize profissionais certificados pela nossa metodologia de cuidado visual e desenvolvimento.
-                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                    <div class="flex items-center space-x-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <span class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold italic">1</span>
+                        <p class="text-xs font-bold text-slate-600 uppercase tracking-tight">Filtre Especialidades</p>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <span class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold italic">2</span>
+                        <p class="text-xs font-bold text-slate-600 uppercase tracking-tight">Agrupe no Mapa</p>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <span class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold italic">3</span>
+                        <p class="text-xs font-bold text-slate-600 uppercase tracking-tight">Fale no WhatsApp</p>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-center space-x-2 text-sm font-bold bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
-                <span class="w-3 h-3 bg-orange-400 rounded-full animate-pulse"></span>
-                <span class="text-slate-600"><span id="count-total">0</span> Especialistas Ativos</span>
+
+            <!-- Busca Integrada -->
+            <div class="bg-white p-4 sm:p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-white flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
+                <div class="relative flex-1">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="name-search" placeholder="Nome ou Cidade..." class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-teal-500/10 transition-all font-medium">
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                    <select id="state-filter" class="flex-1 p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-teal-500/10 font-bold text-slate-600 transition-all cursor-pointer">
+                        <option value="">Brasil (Todos)</option>
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espírito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PR">Paraná</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <div id="specialty-filters" class="hidden">
+                        <input type="checkbox" value="Pediatria">
+                        <input type="checkbox" value="Terapia Visual">
+                        <input type="checkbox" value="Baixa Visão">
+                    </div>
+                    <button id="reset-filters-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-black py-4 px-8 rounded-2xl transition-all shadow-lg shadow-teal-100 uppercase tracking-widest text-sm">
+                        Buscar
+                    </button>
+                </div>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            <!-- Sidebar Filtros -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-100 sticky top-28">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold">Filtros de Busca</h3>
-                        <button id="reset-filters" class="text-xs text-teal-600 font-bold hover:bg-teal-50 px-2 py-1 rounded">Limpar</button>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Estado (UF)</label>
-                            <select id="state-filter" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-teal-500 font-medium text-slate-700 transition-all">
-                                <option value="">Brasil (Todos)</option>
-                                <option value="AM">Amazonas</option>
-                                <option value="BA">Bahia</option>
-                                <option value="CE">Ceará</option>
-                                <option value="DF">Distrito Federal</option>
-                                <option value="MG">Minas Gerais</option>
-                                <option value="PE">Pernambuco</option>
-                                <option value="PR">Paraná</option>
-                                <option value="RJ">Rio de Janeiro</option>
-                                <option value="RS">Rio Grande do Sul</option>
-                                <option value="SC">Santa Catarina</option>
-                                <option value="SP">São Paulo</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Especialidades</label>
-                            <div class="space-y-3" id="specialty-filters">
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" value="Pediatria" class="w-5 h-5 accent-teal-500 rounded-lg">
-                                    <span class="text-sm font-medium group-hover:text-teal-600 transition">Optometria Pediátrica</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" value="Terapia Visual" class="w-5 h-5 accent-teal-500 rounded-lg">
-                                    <span class="text-sm font-medium group-hover:text-teal-600 transition">Terapia Visual</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" value="Baixa Visão" class="w-5 h-5 accent-teal-500 rounded-lg">
-                                    <span class="text-sm font-medium group-hover:text-teal-600 transition">Baixa Visão</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" value="Lentes Especiais" class="w-5 h-5 accent-teal-500 rounded-lg">
-                                    <span class="text-sm font-medium group-hover:text-teal-600 transition">Lentes Especiais</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Layout de Exibição -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8 space-y-6">
+                <div class="relative">
+                    <div id="map" class="border-4 border-white"></div>
                 </div>
             </div>
 
-            <!-- Map and Results -->
-            <div class="lg:col-span-3 space-y-8">
-                <div class="relative">
-                    <div id="map" class="shadow-2xl border border-white"></div>
-                </div>
-                
-                <div class="flex items-center space-x-3">
-                    <h3 class="text-2xl font-bold text-slate-800">Profissionais</h3>
-                    <div class="h-px flex-1 bg-slate-200"></div>
+            <div class="lg:col-span-4 space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <h3 class="text-xl font-black text-slate-800 tracking-tight">Especialistas (<span id="count-total">0</span>)</h3>
+                    <span class="text-[10px] uppercase font-black text-slate-400">Perto de você</span>
                 </div>
 
-                <div id="results" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div id="results" class="grid grid-cols-1 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scroll">
                     <!-- Cards dinâmicos -->
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-100 py-16 mt-20">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-slate-400 text-sm font-medium">© 2024 EntreOptos - Unindo ciência, tecnologia e cuidado visual.</p>
-        </div>
-    </footer>
-
     <script>
-        // Dados dos especialistas
-        const specialists = [
-            { id: 1, name: "Karine Rocha", state: "SP", city: "São Paulo", lat: -23.5505, lng: -46.6333, special: ["Pediatria", "Terapia Visual"], phone: "11999999999", verified: true, address: "Av. Paulista, 1000 - Bela Vista, São Paulo - SP", bio: "Fundadora do EntreOptos, especialista em neuro-optometria e desenvolvimento visual infantil." },
-            { id: 2, name: "João Silva", state: "RJ", city: "Rio de Janeiro", lat: -22.9068, lng: -43.1729, special: ["Baixa Visão"], phone: "21988888888", verified: false, address: "Rua Sete de Setembro, 50 - Centro, Rio de Janeiro - RJ", bio: "Especialista em reabilitação visual e auxílios ópticos para baixa visão." },
-            { id: 3, name: "Eliana Souza", state: "MG", city: "Belo Horizonte", lat: -19.9167, lng: -43.9345, special: ["Pediatria", "Lentes Especiais"], phone: "31977777777", verified: true, address: "Praça da Liberdade, 300 - Funcionários, Belo Horizonte - MG", bio: "Focada em contactologia avançada e atendimento clínico pediátrico." },
-            { id: 4, name: "Ricardo Santos", state: "RS", city: "Porto Alegre", lat: -30.0346, lng: -51.2177, special: ["Terapia Visual"], phone: "51966666666", verified: false, address: "Av. Ipiranga, 6681 - Partenon, Porto Alegre - RS", bio: "Especialista em terapia visual binocular." },
-            { id: 5, name: "Letícia Amorim", state: "BA", city: "Salvador", lat: -12.9714, lng: -38.5014, special: ["Pediatria"], phone: "71955555555", verified: true, address: "Av. Tancredo Neves, 1283 - Caminho das Árvores, Salvador - BA", bio: "Especialista em processamento visual e aprendizagem." },
-            { id: 6, name: "Felipe Neves", state: "PR", city: "Curitiba", lat: -25.4290, lng: -49.2671, special: ["Lentes Especiais"], phone: "41944444444", verified: false, address: "Rua XV de Novembro, 200 - Centro, Curitiba - PR", bio: "Referência em lentes de contato esclerais." },
-            { id: 7, name: "Patrícia Lima", state: "PE", city: "Recife", lat: -8.0578, lng: -34.8778, special: ["Terapia Visual"], phone: "81933333333", verified: true, address: "Av. Agamenon Magalhães, 4500 - Derby, Recife - PE", bio: "Atuação em reabilitação visual pós-trauma." }
-        ];
+        // Função para gerar 70 usuários fictícios em capitais do Brasil
+        function generate70Specialists() {
+            const capitals = [
+                { uf: 'SP', city: 'São Paulo', lat: -23.55, lng: -46.63 },
+                { uf: 'RJ', city: 'Rio de Janeiro', lat: -22.90, lng: -43.17 },
+                { uf: 'MG', city: 'Belo Horizonte', lat: -19.91, lng: -43.93 },
+                { uf: 'DF', city: 'Brasília', lat: -15.79, lng: -47.88 },
+                { uf: 'BA', city: 'Salvador', lat: -12.97, lng: -38.50 },
+                { uf: 'RS', city: 'Porto Alegre', lat: -30.03, lng: -51.21 },
+                { uf: 'PR', city: 'Curitiba', lat: -25.42, lng: -49.26 },
+                { uf: 'PE', city: 'Recife', lat: -8.05, lng: -34.87 },
+                { uf: 'CE', city: 'Fortaleza', lat: -3.71, lng: -38.54 },
+                { uf: 'AM', city: 'Manaus', lat: -3.11, lng: -60.02 },
+                { uf: 'SC', city: 'Florianópolis', lat: -27.59, lng: -48.54 },
+                { uf: 'GO', city: 'Goiânia', lat: -16.68, lng: -49.25 }
+            ];
 
-        // Configuração do Mapa
-        const map = L.map('map').setView([-15.78, -47.93], 4);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© OpenStreetMap',
-            className: 'map-tiles'
+            const specialtiesPool = ["Pediatria", "Terapia Visual", "Baixa Visão", "Lentes Especiais"];
+            const surnames = ["Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Gomes"];
+            const names = ["Ana", "João", "Maria", "Pedro", "Juliana", "Marcos", "Patrícia", "Ricardo", "Letícia", "Felipe"];
+
+            const result = [];
+            for (let i = 1; i <= 70; i++) {
+                const capital = capitals[Math.floor(Math.random() * capitals.length)];
+                const specCount = Math.floor(Math.random() * 2) + 1;
+                const specs = [];
+                for(let j=0; j<specCount; j++) specs.push(specialtiesPool[Math.floor(Math.random() * specialtiesPool.length)]);
+
+                // Adiciona um pequeno ruído às coordenadas para não ficarem exatamente no mesmo ponto
+                const jitterLat = (Math.random() - 0.5) * 0.15;
+                const jitterLng = (Math.random() - 0.5) * 0.15;
+
+                result.push({
+                    id: i,
+                    name: `${names[Math.floor(Math.random() * names.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`,
+                    state: capital.uf,
+                    city: capital.city,
+                    lat: capital.lat + jitterLat,
+                    lng: capital.lng + jitterLng,
+                    special: [...new Set(specs)],
+                    phone: "11999999999",
+                    verified: Math.random() > 0.6,
+                    address: `Clínica Visual, Sala ${100 + i}, Centro`,
+                    bio: "Profissional dedicado ao cuidado visual especializado e atendimento humanizado."
+                });
+            }
+            return result;
+        }
+
+        const specialists = generate70Specialists();
+
+        // Configuração do Mapa com Cluster
+        const map = L.map('map', { scrollWheelZoom: false }).setView([-15.78, -47.93], 4);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
+            attribution: '© CartoDB'
         }).addTo(map);
-        let markerGroup = L.layerGroup().addTo(map);
+
+        // Grupo de Clusters (Evita poluição visual)
+        let markerClusterGroup = L.markerClusterGroup({
+            showCoverageOnHover: false,
+            maxClusterRadius: 50
+        });
+        map.addLayer(markerClusterGroup);
 
         // DOM Elements
         const resultsContainer = document.getElementById('results');
         const countDisplayTotal = document.getElementById('count-total');
         const stateFilter = document.getElementById('state-filter');
-        const specialtyCheckboxes = document.querySelectorAll('#specialty-filters input');
-        const resetBtn = document.getElementById('reset-filters');
+        const nameSearch = document.getElementById('name-search');
         const modal = document.getElementById('profile-modal');
         const modalContent = document.getElementById('modal-content');
 
-        // Função para pegar iniciais
-        function getInitials(name) {
-            return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-        }
-
-        // Cores suaves para os avatares baseadas no nome
-        const avatarColors = ['#2dd4bf', '#fb7185', '#60a5fa', '#a78bfa', '#f59e0b'];
-        function getAvatarColor(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            return avatarColors[Math.abs(hash) % avatarColors.length];
-        }
-
         function applyFilters() {
             const selectedState = stateFilter.value;
-            const selectedSpecialties = Array.from(specialtyCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            const searchVal = nameSearch.value.toLowerCase();
 
             const filtered = specialists.filter(spec => {
                 const matchesState = selectedState === "" || spec.state === selectedState;
-                const matchesSpecialty = selectedSpecialties.length === 0 || selectedSpecialties.some(s => spec.special.includes(s));
-                return matchesState && matchesSpecialty;
+                const matchesSearch = spec.name.toLowerCase().includes(searchVal) || spec.city.toLowerCase().includes(searchVal);
+                return matchesState && matchesSearch;
             });
 
             updateUI(filtered);
-
             if (filtered.length > 0 && selectedState !== "") {
-                map.flyTo([filtered[0].lat, filtered[0].lng], 6);
-            } else if (selectedState === "") {
-                map.flyTo([-15.78, -47.93], 4);
+                 map.flyTo([filtered[0].lat, filtered[0].lng], 8);
             }
         }
 
         function updateUI(data) {
-            markerGroup.clearLayers();
+            markerClusterGroup.clearLayers();
             resultsContainer.innerHTML = '';
             countDisplayTotal.innerText = data.length;
 
             if (data.length === 0) {
-                resultsContainer.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 font-medium italic">Nenhum especialista encontrado com os filtros aplicados.</div>`;
+                resultsContainer.innerHTML = `<div class="py-10 text-center text-slate-400 font-bold italic">Nenhum especialista encontrado.</div>`;
                 return;
             }
 
             data.forEach(spec => {
-                const initials = getInitials(spec.name);
-                const bgColor = getAvatarColor(spec.name);
+                const initials = spec.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                const colors = ['#2dd4bf', '#fb7185', '#60a5fa', '#a78bfa', '#f59e0b'];
+                const bgColor = colors[spec.id % colors.length];
 
-                // Marcador no Mapa
+                // Marcador no Cluster
                 const marker = L.marker([spec.lat, spec.lng]);
-                
-                // NOVO: Ao clicar no marcador, abre o modal diretamente
-                marker.on('click', () => {
-                    openProfile(spec.id);
-                });
-                
-                // Tooltip simples apenas para mostrar o nome ao passar o mouse (opcional, deixa mais rico)
-                marker.bindTooltip(`Dra. ${spec.name}`, { direction: 'top', offset: [0, -10] });
+                marker.on('click', () => openProfile(spec.id));
+                markerClusterGroup.addLayer(marker);
 
-                markerGroup.addLayer(marker);
-
-                // Card
+                // Card na Lista
                 const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col";
+                card.className = "bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group";
+                card.onclick = () => {
+                    map.flyTo([spec.lat, spec.lng], 15);
+                    openProfile(spec.id);
+                };
+                
                 card.innerHTML = `
-                    <div onclick="focusMap(${spec.lat}, ${spec.lng})" class="flex items-center space-x-4 mb-4">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-14 h-14 rounded-2xl avatar-initials shadow-inner" style="background-color: ${bgColor}">
-                                ${initials}
-                            </div>
-                            ${spec.verified ? `
-                                <div class="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-sm">
-                                    <div class="w-4 h-4 bg-orange-400 rounded-full flex items-center justify-center text-[8px] text-white">⭐</div>
-                                </div>
-                            ` : ''}
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-2xl avatar-initials flex-shrink-0 text-xs shadow-inner" style="background-color: ${bgColor}">
+                            ${initials}
                         </div>
-                        <div class="overflow-hidden">
-                            <h4 class="font-bold text-slate-800 truncate group-hover:text-teal-600">Dra. ${spec.name}</h4>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-tighter">${spec.city}, ${spec.state}</p>
+                        <div class="overflow-hidden flex-1">
+                            <h4 class="font-black text-slate-800 truncate text-sm">Dra. ${spec.name}</h4>
+                            <p class="text-[9px] text-teal-600 font-bold uppercase tracking-widest">${spec.city}, ${spec.state}</p>
                         </div>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5 mb-6">
-                        ${spec.special.map(s => `<span class="text-[10px] bg-slate-50 text-slate-600 px-2.5 py-1 rounded-lg border border-slate-100 font-bold">${s}</span>`).join('')}
-                    </div>
-                    <div class="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
-                         <button onclick="openProfile(${spec.id})" class="text-xs font-black text-teal-600 hover:text-teal-700 tracking-widest uppercase">Ver Detalhes</button>
-                         <svg class="w-4 h-4 text-slate-200 group-hover:text-teal-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        ${spec.verified ? `<span class="bg-orange-100 text-orange-600 p-1.5 rounded-full"><svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg></span>` : ''}
                     </div>
                 `;
                 resultsContainer.appendChild(card);
             });
         }
 
-        function focusMap(lat, lng) {
-            map.flyTo([lat, lng], 13);
-        }
-
         function openProfile(id) {
             const spec = specialists.find(s => s.id === id);
-            const initials = getInitials(spec.name);
-            const bgColor = getAvatarColor(spec.name);
+            const initials = spec.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
             
             modalContent.innerHTML = `
-                <div class="flex flex-col">
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 mb-8 text-center sm:text-left">
-                        <div class="relative">
-                            <div class="w-24 h-24 rounded-3xl avatar-initials text-3xl shadow-lg" style="background-color: ${bgColor}">
-                                ${initials}
-                            </div>
-                            ${spec.verified ? `
-                                <div class="absolute -top-2 -right-2 bg-orange-400 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border-4 border-white shadow-md">Selo EntreOptos</div>
-                            ` : ''}
+                <div class="text-center sm:text-left">
+                    <div class="flex flex-col sm:flex-row items-center gap-6 mb-8">
+                        <div class="w-20 h-20 rounded-[1.5rem] avatar-initials text-2xl shadow-xl flex-shrink-0 bg-teal-500">
+                            ${initials}
                         </div>
-                        <div class="pt-2">
+                        <div>
                             <h3 class="text-2xl font-black text-slate-800">Dra. ${spec.name}</h3>
-                            <p class="text-teal-600 font-bold uppercase tracking-widest text-xs">${spec.city}, ${spec.state}</p>
+                            <p class="text-teal-600 font-black uppercase tracking-widest text-xs">${spec.city} • ${spec.state}</p>
                         </div>
                     </div>
                     
-                    <div class="space-y-6 text-left">
-                        <div>
-                            <h4 class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2">Biografia Clínica</h4>
-                            <p class="text-sm text-slate-600 leading-relaxed">${spec.bio}</p>
-                        </div>
-
-                        <div>
-                            <h4 class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2">Especialidades Atendidas</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${spec.special.map(s => `<span class="bg-teal-50 text-teal-700 text-xs px-3 py-1.5 rounded-xl border border-teal-100 font-bold">${s}</span>`).join('')}
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 p-6 rounded-[1.5rem] border border-slate-100">
+                            <h4 class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-3">Onde Atende</h4>
+                            <p class="text-sm font-bold text-slate-700">${spec.address}</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                ${spec.special.map(s => `<span class="bg-white text-teal-600 text-[10px] px-3 py-1.5 rounded-xl border border-teal-100 font-black">${s}</span>`).join('')}
                             </div>
                         </div>
-
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                            <h4 class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2">Localização e Endereço</h4>
-                            <p class="text-sm font-bold text-slate-700 mb-1">${spec.address}</p>
-                            <p class="text-xs text-slate-500 italic">Consulte disponibilidade de agenda.</p>
-                        </div>
+                        <p class="text-sm text-slate-500 leading-relaxed px-2">${spec.bio}</p>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-                        <a href="https://wa.me/${spec.phone}" target="_blank" class="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-green-100">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217s.231.001.332.005c.101.004.242-.038.385.308.145.35.495 1.21.539 1.297.044.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
-                            <span>WhatsApp Direto</span>
+                    <div class="flex flex-col gap-3 mt-10">
+                        <a href="https://wa.me/${spec.phone}" target="_blank" class="w-full flex items-center justify-center space-x-3 bg-brand-coral text-white font-black py-5 rounded-2xl shadow-xl shadow-rose-100 hover:bg-rose-500 transition-all">
+                            <span>FALAR NO WHATSAPP</span>
                         </a>
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=${spec.lat},${spec.lng}" target="_blank" class="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-slate-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Traçar Rota</span>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${spec.lat},${spec.lng}" target="_blank" class="w-full flex items-center justify-center space-x-2 bg-slate-100 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-200 transition-all">
+                            <span>VER ROTA NO MAPA</span>
                         </a>
                     </div>
                 </div>
@@ -369,15 +366,16 @@
             document.body.style.overflow = 'auto';
         }
 
-        modal.onclick = (e) => { if(e.target === modal) closeModal(); };
-
-        stateFilter.onchange = applyFilters;
-        specialtyCheckboxes.forEach(cb => cb.onchange = applyFilters);
-        resetBtn.onclick = () => {
-            stateFilter.value = "";
-            specialtyCheckboxes.forEach(cb => cb.checked = false);
+        function detectLocation() {
+            stateFilter.value = "SP";
             applyFilters();
-        };
+            map.flyTo([-23.55, -46.63], 10);
+        }
+
+        nameSearch.oninput = applyFilters;
+        stateFilter.onchange = applyFilters;
+        document.getElementById('reset-filters-btn').onclick = applyFilters;
+        modal.onclick = (e) => { if(e.target === modal) closeModal(); };
 
         window.onload = () => applyFilters();
     </script>
